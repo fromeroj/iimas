@@ -1,0 +1,80 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{ amssymb }
+\usepackage{color}
+
+\title{Curso de Estructura de Datos Y Teoría de Algoritmos\\
+Tarea 1 }
+\author{Fabián Romero}
+
+\begin{document}
+\lstset{language=python}
+\maketitle
+
+\begin{itemize}
+  \item[\bf{Pregunta 1}] Demuestra que todo torneo tiene un rey y un súbdito. Es decir, un vértice desde el cual se puede llegar a todos los demás vértices pasando a lo más por dos arcos, y uno al cual todos pueden llegar pasando a lo más por dos arcos
+
+  \item[Inducción:] 
+    Demostremos por inducción que cada torneo tiene un rey\\
+    El caso base es la gráfica de 1 vértice, que por vacuidad del conjunto de aristas se tiene que el único vertice es rey.\\
+    Asumamos que es cierto que cualquier torneo de $n$ vertices tiene un rey.\\
+    Sea $G$ un torneo de $n+1$ vértices y tomemos un vértice cualquiera $v$, entendamos $G_{-v}$ la grafíca $G$ eliminando $v$ y todas las aristas incidentes a $v$, $G_{-v}$ es un torneo, pues $G$ es un torneo y entre cualquiera dos vertices hay una arista.
+    Por hipótesis de inducción siendo $G_{-v}$ un torneo de $n$ vértices, tiene un rey, sea $r_{G_{-v}}$ dicho rey, por definición, sabemos que $\forall x \in vertices(G_{-v})$ son dominados por $r_{G_{-v}}$ directamente, o son dominados por $r_{G_{-v}}$ en 2 arcosqur, llamemos $\delta_{r}$ al conjunto de vertices que son directamente dominados y $\gamma_{r}$ al conjunto de vertices que son dominados indirectamente.  Observacion $i$:  si un vértice está en $\gamma_{r}$ significa que hay un vértice en $\delta_{r}$ que lo domina directamente .
+
+Analicemos a $G$.
+Si $r_{G_{-v}} \rightarrow v$ dado que $r_{G_{-v}}$ es rey en $G_{-v}$, entonces $r_{G_{-v}}$ es rey en $G$ y por lo tanto $G$ tiene un rey.\\
+En caso de que $v \rightarrow r_{G_{-v}}$ Observemos que si un pasa que $x \rightarrow v$ para algun vértice $x \in \gamma_{r}$ entonces $r_{G_{-v}}$ es un rey en $G$, pues $r_{G_{-v}}$ es rey en  $G_{-v}$ y domina en 2 arcos a $v$ en $G$.
+Así entonces solo queda el caso de que $v \rightarrow r_{G_{-v}}$ y $\forall x \in \gamma_{r}  v \rightarrow x$, pero en ese caso $v$ domina a todo vertice en $\delta_{r}$ y por la observación $i$ domina en (cuando más) dos arcos a todo vértice en $\gamma_{r}$ y por lo tanto $v$ es rey en $G$ $\blacksquare$.\\
+
+  \item[Reducción al absurdo:]
+    El enunciado a probar es: \\
+Cada torneo tiene al menos un rey, y el vértice $v$ con mayor número de elementos dominados es uno de ellos.\\
+    Supongamos que no es cierto, es decir: Hay un torneo $G$ donde el vértice $v$ con mayor número de elementos dominados no es rey. \\
+    Sea $\delta_{v}$ el conjunto de todos los vértices dominados directamente por $v$ en $G$.\\
+    Como $v$ no es rey, podemos afirmar que hay en $G$ un vértice $x$ que no es dominado por $v$ ni directamente ni en 2 arcos, es decir $ x \rightarrow v$  y 
+$ x \rightarrow v_{i} \forall v_{i} \in \delta_{v} $. Observemos el número de vértices dominados por $x$, es al menos el número de elementos en $\delta_{v}$ más 1  pues $x \rightarrow v$ , es decir mayor al de $v$ lo cual contradice nuestra hipotesis  $\blacksquare$.\\
+
+\item[Existencia del súbdito:]
+Para demostrar que cada torneo es un súbdito, basta notar que un rey en un torneo $G$ es un súbdito en el torneo $\widehat G$ que se obtiene cambiando la orientación de cada arista en $G$, así, por su significado simetrico, como cada torneo tiene un rey, cada torneo tiene un súbdito.\\
+
+\item[\bf{Pregunta 2}] Presenta un algoritmo para encontrar un rey, y analiza su complejidad y
+correctez.
+
+\item[Algoritmo]
+  El algoritmo es el sigiente:
+  Recorrase el torneo buscando el elemento que tiene mayor número de elementos dominados.
+
+\begin{lstlisting}[frame=single] 
+  maximo = none
+  rey = none
+  for {v | v in vertices(G)}:
+     if |v| > maximo:
+       maximo = |v|
+       rey = v
+\end{lstlisting}
+Este algorirmo es correcto en encontrar el vertice de mayor grado, pues busca exhaustivamente.\\
+Asumiendo que la representación de $G$ es la gráfica de adyacencia, el algoritmo es del orden de $O(n + m)$, pues cada vértice se recorre una vez y ya en el y solo se toma el tamaño de la lista de adyacencia, lo cual es en el caso de una lista ligada $O(m)$.
+Por la prueba por demostración al absurdo, sabemos que el vértice con mayor número de elementos dominados es un rey, lo cual hace al algoritmo correcto en buscar al rey.
+
+\item[\bf{Pregunta 3}] Demuestra que todo torneo tiene un camino dirigido Hamiltoniano.
+\item[Por inducción:]
+      El caso base es la gráfica de 1 vértice, el camino es el mismo vértice.\\
+      Supongamos que es cierto que todo torneo de tamaño $n$ tiene un camino Hamiltoniano, y demostremos que un torneo de tamaño $n+1$ tambien lo tiene.
+
+      Análogamente a la pregunta 1 tomemos un vertice $v$ y la gŕafica $G_{-v}$ inducida al eliminarlo de $G$, sabemos que en $G_{-v}$ hay un camino Hamiltoniano por hipotesis de inducción, sea $H=(v_1,v_2,...,v_n)$ tal camino.
+      Si $v \rightarrow v_{1}$, $(v,v_1,v_2,...,v_n)$ es un camino Hamiltoniano en $G$.\\
+      en caso contrario $v_1 \rightarrow v$, sea $v_i$ el primer elemento en $H$ tal que $v \rightarrow v_i$, ahi tenemos que $(v_1,v_2,.,v_{i-1},v,v_i,..,v_n)$ es un camino Hamiltoniano en $G$.
+      Y si no hay un primero elemento, es decir cada vértice en $H$ domina a $v$ $(v_1,v_2,...,v_n,v)$ es un camino Hamiltoniano en $G \blacksquare$.\\
+
+
+\item[\bf{Pregunta 4}] Prueba que en un torneo aleatorio de n vértices, la probabilidad de que todo vértice sea un rey y un subdito tiende a 1 conforme n tiende a infinito.
+\item[Respuesta] sea $p(n)$ la probabilidad de que cada vértice sea rey, y denotemos $\overline p(n)$ su complemento 1 - $p(n)$ la probabilidad de que no cada vértice sea rey.\\
+
+Si no todo vértice es rey, entonces existen vértices $x_1$ y $x_2$ tal que $x_2 \rightarrow x_1$ y $\forall v \in G x_1 \rightarrow  v  \Rightarrow d \rightarrow x_2$
+sea &\psi& 
+\end{itemize}
+
+
+
+\end{document}
