@@ -33,12 +33,12 @@ class Tablero{
      bo=cuadro_vacio(r.x0);
      if(r.x0 != bo){
        if(r.x0 > bo  && esta_vacio(r,r.x0-1 , r.y0)){
-         r.moveLeft();
+         r.izquierda();
        }else if(r.x0 < bo  && esta_vacio(r, r.x0+1,r.y0)){
-         r.moveRigth();
+         r.derecha();
        }
      }else if( r.y0<n-1 && esta_vacio(r,r.x0,r.y0+1)){
-         r.moveUp();
+         r.arriba();
      }
    }
    return r;
@@ -113,16 +113,16 @@ class Robot {
     rect(xpos+200/n ,ypos+200/n,200/n,200/n);
   }  
   
-  void moveUp(){
+  void arriba(){
     move(this.x0,this.y0+1);
   }
-  void moveDown(){
+  void abajo(){
     move(this.x0,this.y0-1);
   }
-  void moveLeft(){
+  void izquierda(){
     move(this.x0-1,this.y0);
   }
-  void moveRigth(){
+  void derecha(){
     move(this.x0+1,this.y0);
   }
   
