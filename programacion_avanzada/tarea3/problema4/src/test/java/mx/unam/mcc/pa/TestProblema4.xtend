@@ -2,7 +2,7 @@ package mx.unam.mcc.pa
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-class TestProblema3 {
+class TestProblema4 {
 
     @Test
     def void basicTest(){
@@ -10,65 +10,21 @@ class TestProblema3 {
     }
 
     @Test
-    def void TestEqual(){
-        assertEquals( new Complejo(1.5,2.0),new Complejo(1.5,2.0));
+    def void TestPositionNewRobot(){
+        val t=new Tablero()
+        val r=new Robot(t)
+        assertEquals(r.posicion,new Coordenada(0,0));
     }
 
     @Test
-    def void TestSumaComplejos(){
-        val x=new Complejo(1.5,2.0)
-        val y=new Complejo(3.0,4.0)
-        assertEquals(x+x,y);
-    }
-
-    @Test
-    def void TestSumaEscalar(){
-        val x=new Complejo(1.5,2.0)
-        val y=new Complejo(3.0,2.0)
-        assertEquals(x + 1.5 ,y);
-    }
-
-    @Test
-    def void TestRestaComplejos(){
-        val x=new Complejo(1.5,2.0)
-        val y=new Complejo(3.0,4.0)
-        assertEquals(y-x,x);
-    }
-
-    @Test
-    def void TestRestaEscalar(){
-        val x=new Complejo(1.5,2.0)
-        val y=new Complejo(3.0,2.0)
-        assertEquals(y-1.5 ,x);
-    }
-
-    @Test
-    def void TestMultiplicacionComplejos(){
-        val x=new Complejo(2.0,3.0)
-        val y=new Complejo(3.0,1.0)
-        val z=new Complejo(3.0,11.0)
-        assertEquals(x*y,z);
-    }
-
-    @Test
-    def void TestMultiplicacionEscalar(){
-        val x=new Complejo(1.5,2.0)
-        val y=new Complejo(3.0,4.0)
-        assertEquals(x*2.0,y);
-    }
-
-    @Test
-    def void TestDivisionComplejos(){
-        val x=new Complejo(2.0,3.0)
-        val y=new Complejo(3.0,1.0)
-        val z=new Complejo(3.0,11.0)
-        assertEquals(z/x,y);
-    }
-
-    @Test
-    def void TestDivisionEscalar(){
-        val x=new Complejo(1.5,2.0)
-        val y=new Complejo(3.0,4.0)
-        assertEquals(y/2.0,x);
+    def void TestNoMovimientoPosicionInvalida(){
+        val t=new Tablero()
+        val r1=new Robot(t)
+        r1.arriba()
+        assertEquals(r1.posicion,new Coordenada(0,1));
+        val r2=new Robot(t)
+        r2.arriba()
+        println(r2.posicion)
+        assertEquals(r2.posicion,new Coordenada(0,0));
     }
 }

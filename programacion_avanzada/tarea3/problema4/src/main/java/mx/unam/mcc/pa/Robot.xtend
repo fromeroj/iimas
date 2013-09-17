@@ -1,43 +1,74 @@
 package mx.unam.mcc.pa
+import java.util.ArrayList
+import java.util.List
 
-@Data class Complejo{
-    double real
-    double imaginaria
+@Data class Coordenada{
+    int x
+    int y
     override toString(){
-        '''(«this.real»,«this.imaginaria»)'''
+        '''(«this.x»,«this.y»)'''
         }
 
-    def equals(Complejo otro){
-        return (this.real==otro.real) && (this.imaginaria==otro.imaginaria)
+    def equals(Coordenada otra){
+        return (this.x==otra.x) && (this.y==otra.y)
         }
+    def operator_plus(Coordenada otra) {
+        return new Coordenada(this.x + otra.x,this.y + otra.y)
+        }
+}
 
-    def operator_plus(Complejo otro) {
-        return new Complejo(this.real + otro.real,this.imaginaria + otro.imaginaria)
-        }
+class Tablero{
+    @Property List<Robot> robots
 
-    def operator_plus(Double x) {
-        return new Complejo(this.real + x,this.imaginaria)
-        }
+    new(){
+        this.robots=new ArrayList<Robot>()
+    }
+
+    def libre(Coordenada c){
+        !this.robots.exists[ it.posicion == c ]
+    }
+
+}
+
+class Robot{
+    @Property Coordenada posicion    
+    Tablero tablero
  
-    def operator_minus(Complejo otro) {
-        return new Complejo(this.real - otro.real,this.imaginaria - otro.imaginaria)
-        }
-    def operator_minus(Double x) {
-        return new Complejo(this.real - x,this.imaginaria)
-        }
+     new(Tablero tablero){
+        this.posicion=new Coordenada(0,0)
+        this.tablero=tablero
+        tablero.robots.add(this)
+     }
 
-    def operator_multiply(Complejo otro) {
-        return new Complejo( (this.real * otro.real) - (this.imaginaria * otro.imaginaria), (this.real * otro.imaginaria)+ (this.imaginaria * otro.real))
-        }
-    def operator_multiply(Double x) {
-        return new Complejo( (this.real * x) , (this.imaginaria * x))
-        }
+     def arriba(){
+        val newPos=this.posicion+new Coordenada(0,1)
+        if(tablero.libre(newPos)){
+            this.posicion=newPos
+            }
+        this
+     }
 
-    def operator_divide(Complejo otro) {
-        val mod=otro.real*otro.real +otro.imaginaria*otro.imaginaria
-        return new Complejo( ((this.real * otro.real) + (this.imaginaria * otro.imaginaria))/mod , ((this.imaginaria * otro.real) - (this.real * otro.imaginaria))/mod)
-        }    
-    def operator_divide(Double c) {
-        return new Complejo(this.real/c ,this.imaginaria/c)
-        }    
+     def abajo(){
+        val newPos=this.posicion+new Coordenada(0,-1)
+        if(tablero.libre(newPos)){
+            this.posicion=newPos
+            }
+        this
+     }
+
+     def izquierda(){
+        val newPos=this.posicion+new Coordenada(-1,0)
+        if(tablero.libre(newPos)){
+            this.posicion=newPos
+            }
+        this
+     }
+
+     def derecha(){
+        val newPos=this.posicion+new Coordenada(1,0)
+        if(tablero.libre(newPos)){
+            this.posicion=newPos
+            }
+        this
+     }
 }
