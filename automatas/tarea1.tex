@@ -7,7 +7,6 @@
 
 \title{Autómatas y lenguajes formales. Tarea 1}
 \author{Fabián Romero Jiménez}
-\date{September 6, 2013}
 \begin{document}
 \maketitle
 \begin{enumerate}
@@ -41,7 +40,7 @@ $$ 2 \times Sum(n::l) = 2 \times (n + Sum(l))=2 \times n + 2 \times Sum(l) $$
 desarrollando la parte derecha tenemos:
 $$ Sum(doble(n::l)) = Sum(2 \times n :: doble(l)) = 2 \times n + Sum (doble(l)) $$
 y usando la hipotesis de inducción tenemos que:
-$$ 2 \times Sum(l) = Sum(doble(l))   \blacksquare$$
+$$ 2 \times Sum(l_{k+1}) = Sum(doble(l_{k+1}))   \blacksquare$$
 
 \item[\bf{Problema 2}] Dados $0 \le m < k$ y $2 \le p$, sea
 $$A_{k,m,p} = \{\alpha \in \{0,1,2,...,p-1\}^\star | x \equiv k (mod\ m) \}$$ donde $\alpha$ es una representación p-aria de x.
@@ -203,29 +202,22 @@ Así tenemos el DFA
 Minimizando tenemos:
 $$ \{q_1,q_2,q_3,(q_4,q_1)\} , \{S,(q_0,s),(q_5,S)\} $$
 $$ \{q_1,q_2,q_3\}, \{(q_4,q_1)\} , \{S,(q_0,s),(q_5,S)\} $$
-$$ \{q_1,q_3\},\{q_2\}, \{(q_4,q_1)\} , \{S,(q_0,s),(q_5,S)\} $$
-$$ \{q_1\}, \{q_3\},\{q_2\}, \{(q_4,q_1)\} , \{S,(q_0,s),(q_5,S)\} $$
+$$ \{q_1,q_3\},\{q_2\}, \{(q_4,q_1),q1\} , \{S,(q_0,s),(q_5,S)\} $$
 
-y finalmente tenemos el DFA optimizado:
+y finalmente tenemos el DFA minimizado:
 
 \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2cm,
   thick,main node/.style={circle,fill=blue!20,draw,font=\sffamily\Large\bfseries}]
    \node[state,initial,accepting] (S)   {$S$};
-   \node[state ]                  (q_1)  [above right=of S]     {$q_1$};
-   \node[state ]                  (q_2)  [below right=of q_1]   {$q_2$};
-   \node[state ]                  (q_3)  [below=of q_2]         {$q_3$};
-   \node[state ]                  (q_4)  [below =of S]   {$q_4,q_1$};
+   \node[state ]                  (q_4)  [right=of S]           {$q_4,q_1$};
+   \node[state ]                  (q_2)  [right=of q_4]        {$q_2,q_3$};
     \path[->] 
-    (S)   edge    [loop right]   node        {0}          ()
-          edge    [bend left]  node        {1}          (q_1)
-    (q_1) edge    [bend left]   node       {0}          (q_2)
+    (S)   edge    [loop above]   node        {0}          ()
+          edge    [bend left]  node        {1}          (q_4)
     (q_2) edge    [bend left]   node       {0}          (q_4)
-          edge    [bend left]   node        {1}         (q_3)
+          edge    [loop right]   node        {1}          ()
     (q_4) edge    [bend left]   node        {0}         (q_2)
-          edge    [bend left]   node        {1}         (S)
-    (q_3) edge    [bend left]   node        {0}         (q_4)
-          edge    [loop right]   node        {1}          ();
-
+          edge    [bend left]   node        {1}         (S);
 \end{tikzpicture}
 
 
