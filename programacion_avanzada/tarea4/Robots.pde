@@ -15,7 +15,7 @@ void draw() {
     line(50,50+400*i/n,450,50+400*i/n);
     line(50+400*i/n,50,50+400*i/n,450);   
   }
-  t.moveAll();
+  t.move_all();
 }
 
 class Tablero{
@@ -24,11 +24,11 @@ class Tablero{
     return color(65*i*7 % 255,65*i*5%255,65*11*7%255); 
   }
   
-  void moveAll(){
-    for(k=0;k<n;k++){buenaOpcion(robots[k]).display();}
+  void move_all(){
+    for(k=0;k<n;k++){buena_opcion(robots[k]).display();}
   }
 
- Robot buenaOpcion(Robot r){
+ Robot buena_opcion(Robot r){
    if(r.y0!=(n-1)){
      bo=cuadro_vacio(r.x0);
      if(r.x0 != bo){
@@ -67,12 +67,12 @@ class Tablero{
     return true;
   }
 
-  int[] vacioAleatorio(){
+  int[] vacio_aleatorio(){
     boolean vacio=false;
     int[] coo=new int[2];
     while(!vacio){
-      coo[0]=int(random(n-1));  
-      coo[1]=int(random(n-1));
+      coo[0]=int(random(n));  
+      coo[1]=int(random(n));
       vacio=esta_vacio(null,coo[0],coo[1]);
     }
     return coo;
@@ -81,7 +81,7 @@ class Tablero{
   Tablero(int n){
     robots=new Robot[n];
     for(j=0;j<n;j++){
-      int[] coo=vacioAleatorio();
+      int[] coo=vacio_aleatorio();
       robots[j] = new Robot(c(j),coo[0],coo[1]); 
     }
   }
@@ -96,8 +96,8 @@ class Robot {
   int xp(int x){return 50+400*x/n;}
   int yp(int y){return 450-400/n-400*y/n;}
   
-  Robot(color tempC, int x, int y) { 
-    c = tempC;
+  Robot(color cc, int x, int y) { 
+    c = cc;
     x0=x;
     y0=y;
     x1=x;
