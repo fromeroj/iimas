@@ -164,13 +164,60 @@ Sin embargo, si encontrara a $v_3$  por medio de $v_2$ tendría un costo total d
 
 \section{Ford.}
 \begin{itemize}
-  \item[\bf{a)}] Demuestra que el algoritmo de Ford funciona en una digráfica en la cual puede haber pesos negativos en los arcos, pero no hay ningún ciclo de peso negativo al cual se pueda llegar desde s. También que al terminar, calcula correctamente la distancia de s a todos
-los demás vértices.
+  \item[\bf{a)}] Demuestra que el algoritmo de Ford funciona en una digráfica en la cual puede haber pesos negativos en los arcos, pero no hay ningún ciclo de peso negativo al cual se pueda llegar desde s. También que al terminar, calcula correctamente la distancia de s a todos los demás vértices.
+
+\begin{lstlisting}[frame=single] 
+procedure BF(G,s):
+       d= new float[|vertices|]
+       padre=new vertice[|vertices|]
+   for each v in G.vertices:
+       if v is s then d[v] = 0
+       else d[v] = infinito
+       padre[v] = null
+   
+   #A este ciclo lo llamamos 'relajar'
+   for i from 1 to |vertices|-1:
+       for each arista (u, v), peso w in G.aristas:
+           if d[u] + w < d[v]:
+               # si llego aqui decimos que 
+               # la arista fue 'relajada'
+               d[v] = d[u] + w
+               padre[v] = u
+
+   for each arista (u, v), peso w in G.aristas:
+       if d[u] + w < d[v]:
+           error "Ciclo negativo"
+\end{lstlisting}
+
+\item[\bf{Demostración}]
+  Si $G=(V,E)$ no contiene ciclos negativos, después de ejecutar BF $d_v=\delta(s,v), \forall v \in V$
+
+  Demostraremos que:
+  
+  Si un valor $d_v$ no converge despues de $|v|-1$ pasos de la ejecución entonces $G$ contiene un ciclo negativo.
+  
+  Lo cual implica la forma original del problema, pues es su contrapositiva.
+
+  primero observe que si tenemos un camino simple $c = (v_{c_1},v_{c_2},...,v_{c_k})$ se tiene que $k<|v|$ puesto que al ser simple no repite vértices.
+
+  digamos que un camino es minimal, si es mínimo con respecto a la suma de los pesos de las aristas que recorre y mínimo en $G$ en el número de aristas que recorre.
+
+  $\forall v \in V  $ sea $ c_v = (v_{c_0},v_{c_2},...,v_{c_k}), v_{c_0}=s, v_{c_k}=v $ con $c$ uno de los caminos mínimales.
+
+  observemos que si $(v_{c_0},...,v_{c_k}) $ que denotaremos como $c_{v[i,j]}$ es un subcamino de un camino minimal $c_v$, también es un camino mínimal, puesto que si hubiera una optimización de  $c_{v[i,j]}$ también optimizaria $c_v$ a esta observación le llamaremos \emph{propiedad de subestructura óptima} 
+
+  Así entonces probemos por inducción que:
+
+  Todo camino minimal que parte de $s$ ha sido encontrado hasta $c_{v[0,i]}$ para el paso $i$ de la ejecucción.
+  Para el caso base $d[v_{c_0}]=\delta(s,v_{c_0})$ puesto que la distancia de $s$ a si mismo es 0
+
+  Supongamos que hasta el paso $k$, tenemos que $d[v_{c_k}]=\delta(s,v_{c_k})$ y demostremos que para el paso $k+1$ se tiene que $d[v_{c_(k+1)}]=\delta(s,v_{c_(k+1)})$, lo cual es cierto pues en el ciclo de relajación pasamos por todas las aristas en particular por $v_{c_k},v_{c_(k+1)}$, no encontraremos otro camino mas corto en este camino, puesto que infingiría la \emph{propiedad de subestructura óptima} y por lo tanto se alcanzaron todos los vertices alcanzables en a lo más $|v|-1$ pasos $\blacksquare$
+
+Como corolario se tiene que si despues de $|v|-1$ pasos encontramos que una arista puede ser relajada entonces hay un vértice $v$ para el que hay en $G$ un camino no simple de $s$ a $v$ y que contiene un ciclo negativo, y por constucción del algoritmo cuando llegamos a este punto encontramos el camino negativo.
 
 \item[\bf{b)}] Explica por qué el algoritmo es de complejidad exponencial.
   
-\item[\bf{c)}] Demuestra que en la versión avanzada, la complejidad es orden de n por m, donde n es
-el número de vértices y m el número de arcos.
+\item[\bf{c)}] Demuestra que en la versión avanzada, la complejidad es orden de n por m, donde n es el número de vértices y m el número de arcos.
 
 \item[\bf{d)}] Explica como utilizar esta versión para detectar si hay un ciclo de peso negativo alcanzable desde s.
 
