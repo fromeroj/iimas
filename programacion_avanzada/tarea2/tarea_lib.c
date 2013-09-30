@@ -38,23 +38,18 @@ void delete_arreglo(i_arreglo *ids_a, int dim_proc) {
 
 i_matriz* indices_arreglo_matriz (int dim_proc, int dim_m, int dim_n) {
   i_matriz* result = malloc(sizeof(i_matriz)*dim_proc);
-  int datos_t = dim_m * dim_n, base = (int)(datos_t / dim_proc), res = datos_t % dim_proc;
-  for(int p=0; p<dim_proc; p++){
-    result[p].indice = 0;
-    result[p].tam_inds_d = res > 0 ? base + 1 : base;
-    res--;
-    result[p].inds_d = malloc(sizeof(i_pos)*result[p].tam_inds_d);
+
+  int ii=0;
+  for(int i=0;i<dim_m * dim_n;i++){
+    if(i<dim_proc){
+      result[i].indice=0;
+      ii=(i%dim_proc < (dim_m*dim_n) %dim_proc)?1:0;
+      result[i].tam_inds_d =ii + (dim_m*dim_n)/dim_proc;
+      result[i].inds_d = malloc(sizeof(i_pos)*result[i].tam_inds_d);
+    }
+    result[i%dim_proc].inds_d[i/dim_proc].dim_m = (int)(i / dim_n);
+    result[i%dim_proc].inds_d[i/dim_proc].dim_n = (int)(i % dim_n);
   }
-
-  for(int i=0; i<datos_t; i++) {
-    int pidx = i % dim_proc;
-    result[pidx].inds_d[result[pidx].indice].dim_m = (int)(i / dim_n);
-    result[pidx].inds_d[result[pidx].indice++].dim_n = i % dim_n;
-  }
-
-  for(int q=0; q<dim_proc; q++)
-    result[q].indice = q;
-
   return result;
 }
 
@@ -70,9 +65,13 @@ void pinta_indices_arreglo_matriz (i_matriz *ids_m, int dim_proc) {
 
 void delete_matriz(i_matriz *ids_m, int dim_proc) {
   for(int p=0; p<dim_proc; p++){
+    if(ids_m[p].inds_d!=NULL){
     free(ids_m[p].inds_d);
+    }
   }
-  free(ids_m);
+  if(ids_m!=NULL){
+    free(ids_m);
+  }
 }
 
 i_matriz_matriz* indices_matriz_matriz (int dim_r, int dim_s, int dim_m, int dim_n) {
@@ -113,7 +112,11 @@ void pinta_indices_matriz_matriz (i_matriz_matriz *ids_mm, int dim_r, int dim_s)
 
 void delete_matriz_matriz(i_matriz_matriz *ids_mm, int dim_p_m, int dim_p_n) {
   int procs = dim_p_m*dim_p_n;
-  for(int i=0; i<procs; i++)
+  for(int i=0; i<procs; i++){
+    if(ids_mm[i].inds_d!=NULL)
     free(ids_mm[i].inds_d);
+  }
+  if(ids_mm !=NULL){
   free(ids_mm);
+  }
 }

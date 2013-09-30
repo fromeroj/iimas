@@ -24,7 +24,6 @@ int test3(int dim_r, int dim_s, int dim_m,int dim_n){
 
 int main()
 {
-  //Encabezado Problema 1
   printEncabezado1();
   test1(3,2);
   test1(10,10);
