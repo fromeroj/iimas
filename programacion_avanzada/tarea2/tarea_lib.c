@@ -95,7 +95,7 @@ i_matriz_matriz* indices_matriz_matriz (int dim_r, int dim_s, int dim_m, int dim
 void pinta_indices_matriz_matriz (i_matriz_matriz *ids_mm, int dim_r, int dim_s) {
   int dim_proc =  dim_r*dim_s;
   for(int p=0; p<dim_proc; p++) {
-    printf("Procesador (%i,%i) tareas -> ", ids_mm[p].indice.dim_m, ids_mm[p].indice.dim_n);
+    printf("Procesador (%i,%i) %i tareas -> ", ids_mm[p].indice.dim_m, ids_mm[p].indice.dim_n,ids_mm[p].tam_inds_d);
     for(int q=0; q<ids_mm[p].tam_inds_d; q++) {
       printf(" (%i,%i) ", ids_mm[p].inds_d[q].dim_m, ids_mm[p].inds_d[q].dim_n);
     }
