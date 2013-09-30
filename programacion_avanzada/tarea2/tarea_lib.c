@@ -38,7 +38,6 @@ void delete_arreglo(i_arreglo *ids_a, int dim_proc) {
 
 i_matriz* indices_arreglo_matriz (int dim_proc, int dim_m, int dim_n) {
   i_matriz* result = malloc(sizeof(i_matriz)*dim_proc);
-
   int ii=0;
   for(int i=0;i<dim_m * dim_n;i++){
     if(i<dim_proc){
@@ -55,7 +54,7 @@ i_matriz* indices_arreglo_matriz (int dim_proc, int dim_m, int dim_n) {
 
 void pinta_indices_arreglo_matriz (i_matriz *ids_m, int dim_proc) {
   for(int i=0; i<dim_proc; i++) {
-    printf("Procesador (%i) tareas -> ", i);
+    printf("Procesador (%i) %i tareas -> ", i,ids_m[i].tam_inds_d);
     for(int j = 0; j < ids_m[i].tam_inds_d; j++) {
       printf("(%i,%i) ", ids_m[i].inds_d[j].dim_m, ids_m[i].inds_d[j].dim_n);
     }
@@ -74,37 +73,31 @@ void delete_matriz(i_matriz *ids_m, int dim_proc) {
   }
 }
 
+
 i_matriz_matriz* indices_matriz_matriz (int dim_r, int dim_s, int dim_m, int dim_n) {
-  int proc_t = dim_r * dim_s, datos_t = dim_m * dim_n;
-  i_matriz_matriz* result = malloc(sizeof(i_matriz_matriz)*proc_t);
-
-  int ent = (int)(datos_t / proc_t), res = datos_t % proc_t;
-  int* procs_idx = malloc(sizeof(int)*proc_t);
-  for(int p=0; p<proc_t; p++) {
-    result[p].indice.dim_m = (int)(p / dim_s);
-    result[p].indice.dim_n = p % dim_s;
-    result[p].tam_inds_d = res > 0 ? ent + 1 : ent;
-    res--;
-    result[p].inds_d = malloc(sizeof(i_pos)*result[p].tam_inds_d);
-    procs_idx[p] = 0;
+  int dim_proc=dim_r*dim_s;
+  i_matriz_matriz* result = malloc(sizeof(i_matriz_matriz)*dim_proc);
+  int ii=0;
+  for(int i=0;i<dim_m * dim_n;i++){
+    if(i<dim_proc){
+      ii=(i%dim_proc < (dim_m*dim_n) %dim_proc)?1:0;
+      result[i].indice.dim_m = (int)(i / dim_s);
+      result[i].indice.dim_n = i % dim_s;
+      result[i].tam_inds_d =ii + (dim_m*dim_n)/dim_proc;
+      result[i].inds_d = malloc(sizeof(i_pos)*result[i].tam_inds_d);
+    }
+    result[i%dim_proc].inds_d[i/dim_proc].dim_m = (int)(i / dim_n);
+    result[i%dim_proc].inds_d[i/dim_proc].dim_n = (int)(i % dim_n);
   }
-
-  for(int i=0; i<datos_t; i++) {
-    int pidx = i % proc_t;
-    result[pidx].inds_d[procs_idx[pidx]].dim_m = (int)(i / dim_n);
-    result[pidx].inds_d[procs_idx[pidx]++].dim_n = i % dim_n;
-  }
-
-  free(procs_idx);
-
   return result;
 }
+
 void pinta_indices_matriz_matriz (i_matriz_matriz *ids_mm, int dim_r, int dim_s) {
-  int procs =  dim_r*dim_s;
-  for(int p=0; p<procs; p++) {
-    printf("Procesador (%i,%i) tareas ->", ids_mm[p].indice.dim_m, ids_mm[p].indice.dim_n);
+  int dim_proc =  dim_r*dim_s;
+  for(int p=0; p<dim_proc; p++) {
+    printf("Procesador (%i,%i) tareas -> ", ids_mm[p].indice.dim_m, ids_mm[p].indice.dim_n);
     for(int q=0; q<ids_mm[p].tam_inds_d; q++) {
-      printf("(%i,%i) ", ids_mm[p].inds_d[q].dim_m, ids_mm[p].inds_d[q].dim_n);
+      printf(" (%i,%i) ", ids_mm[p].inds_d[q].dim_m, ids_mm[p].inds_d[q].dim_n);
     }
     printf("\n");
   }
