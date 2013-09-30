@@ -1,5 +1,5 @@
-CC=gcc
-CFLAGS=-I.
+CC = gcc
+CFLAGS = -I -c -std=c99 -Werror
 
-tarea: tarea.o tarea_lib.o
-	$(CC) -o tarea tarea.o tarea_lib.o -I.
+tarea: tarea.o 
+	$(CC) $(CFLAGS) -o tarea tarea.o

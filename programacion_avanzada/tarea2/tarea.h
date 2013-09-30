@@ -1,8 +1,30 @@
-#ifndef inds_arreglo_
-#define inds_arreglo_
+#include <stdlib.h>
+#include <stdio.h>
 
-i_arreglo* indices_arreglo_arreglo (int dim_proc, int dim_datos);
-void del_arreglo (i_arreglo *ids_a);
-void pinta_indices_arreglo_arreglo (i_arreglo *ids_a, int dim_proc);
-#endif // inds_arreglo_
-  
+#ifndef proc_structs_
+#define proc_structs_
+
+typedef struct inds_arreglo {
+  int indice;
+  int *inds_d;
+  int tam_inds_d;
+} i_arreglo;
+
+typedef struct pos_mat {
+	int dim_m;
+	int dim_n;
+} i_pos;
+
+typedef struct inds_arreglo_mat {
+	int indice;
+	i_pos *inds_d;
+	int tam_inds_d;
+} i_matriz;
+
+typedef struct inds_mat_mat {
+	i_pos indice;
+	i_pos *inds_d;
+	int tam_inds_d;
+} i_matriz_matriz;
+
+#endif // proc_structs
