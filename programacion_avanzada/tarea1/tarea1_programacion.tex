@@ -1,0 +1,160 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{color}
+\title{Tarea 1 \\ Programación Avanzada \\ Postgrado IIMAS }
+\author{Fabián Romero}
+
+\begin{document}
+\lstset{language=bash,basicstyle=\tiny}
+\maketitle
+
+\begin{enumerate}
+  \item Mencione 3 carácteristicas diferentes entre el sistema de control de versiones cvs y git.
+
+    \begin{itemize}
+    \item Centralizado vs distribuido. \hfill \\
+cvs es centralizado, es decir existe un único repositorio y los clientes se sincronizan a el, en cuanto git cada cliente
+tiene su propio repositorio independiente.
+
+   \item Conjunto de cambios (changeset) \hfill \\
+cvs controla archivos, git controla historia de archivos y directorios
+
+    \item Atomicidad \hfill \\
+      cvs no es atómico, asi que si una operación al repositorio es interrumpida el repositorio puede quedar en un estado inconsistente, git por el contrario es atómico, asi que un commit es exitoso como un todo o falla sin hacer ningun cambio.
+  \end{itemize}
+
+
+  \item ¿Que es el \emph{area stage} y en que casos se utiliza?.\hfill \\
+En git, al hacer un conjunto de cambios, los archivos y directorios cambiados estan en el \emph{area stage}, uno puede querer hacer un commit
+de solo un subconjunto de estos cambios, se hace un commit y posiblemente operaciones de push y/o pull y el resto de los cambios, permanecen en el \emph{area stage}.
+
+  \item ¿Que diferencia existe en los commit de cvs y git?. \hfill \\
+
+La principal diferencia radica en el modelo de sincronicidad de cvs y de git, en cvs al ser centralizado, al momento de hacer commit, los cambios
+se envían al repositorio central usando la red y afectando el repositorio de todos los demas usuarios al ellos actualizar, en git, un commit es local
+la forma de afectar otro usuario es por medio de operaciones \emph{push} y \emph{pull}
+
+  \item Haga un proyecto git en cualquier lenguaje de programación con tres commits y finalmente otro cambio en el
+área stage, verique sus respuestas. \hfill \\
+
+\begin{lstlisting}[frame=single] 
+fabian@Clas:/tmp$ mkdir git_test
+fabian@Clas:/tmp$ cd git_test/
+fabian@Clas:/tmp/git_test$ echo '\#*#' > .gitignore
+fabian@Clas:/tmp/git_test$ more .gitignore 
+\#*#
+fabian@Clas:/tmp/git_test$ git init 
+Initialized empty Git repository in /tmp/git_test/.git/
+fabian@Clas:/tmp/git_test$ echo "Primer archivo" > test1.txt
+fabian@Clas:/tmp/git_test$ git status
+# On branch master
+#
+# Initial commit
+#
+# Untracked files:
+#   (use "git add <file>..." to include in what will be committed)
+#
+#	.gitignore
+#	test1.txt
+nothing added to commit but untracked files present (use "git add" to track)
+fabian@Clas:/tmp/git_test$ git add .gitignore test1.txt
+fabian@Clas:/tmp/git_test$ git commit -m "primer commit"
+[master (root-commit) c8bd778] primer commit
+ 2 files changed, 2 insertions(+)
+ create mode 100644 .gitignore
+ create mode 100644 test1.txt
+fabian@Clas:/tmp/git_test$ git status
+# On branch master
+nothing to commit (working directory clean)
+fabian@Clas:/tmp/git_test$ echo " cambiando archivo" >> test1.txt 
+fabian@Clas:/tmp/git_test$ git status
+# On branch master
+# Changes not staged for commit:
+#   (use "git add <file>..." to update what will be committed)
+#   (use "git checkout -- <file>..." to discard changes in working directory)
+#
+#	modified:   test1.txt
+#
+no changes added to commit (use "git add" and/or "git commit -a")
+fabian@Clas:/tmp/git_test$ git commit -m "segundo commit"
+# On branch master
+# Changes not staged for commit:
+#   (use "git add <file>..." to update what will be committed)
+#   (use "git checkout -- <file>..." to discard changes in working directory)
+#
+#	modified:   test1.txt
+#
+no changes added to commit (use "git add" and/or "git commit -a")
+fabian@Clas:/tmp/git_test$ git add test1.txt
+fabian@Clas:/tmp/git_test$ git commit -m "segundo commit"
+[master af6f144] segundo commit
+ 1 file changed, 1 insertion(+)
+fabian@Clas:/tmp/git_test$ echo " cambiando archivo por segunda vez" >> test1.txt 
+fabian@Clas:/tmp/git_test$ git add test1.txt
+fabian@Clas:/tmp/git_test$ git commit -m "tercer commit"
+[master 4dc4021] tercer commit
+ 1 file changed, 1 insertion(+)
+fabian@Clas:/tmp/git_test$ git log
+commit 4dc4021a343467033fb6a5657fb9f32f574a606a
+Author: Fabian <fromeroj@gmail.com>
+Date:   Thu Aug 29 00:26:40 2013 -0500
+
+    tercer commit
+
+commit af6f14405c5e8609b3afc29c91c2594ba452c72c
+Author: Fabian <fromeroj@gmail.com>
+Date:   Thu Aug 29 00:25:11 2013 -0500
+
+    segundo commit
+
+commit c8bd7780032e2f6042749714f480d1d6af68706e
+Author: Fabian <fromeroj@gmail.com>
+Date:   Thu Aug 29 00:23:30 2013 -0500
+
+    primer commit
+\end{lstlisting}
+
+
+  \item Para trabajar con git es necesario configurarlo con nuestro nombre y correo ¿que comandos se deben de utilizar?. \hfill \\
+
+\begin{lstlisting}[frame=single] 
+git config --global user.name "Fabian Romero" 
+git config --global user.email fromeroj@gmail.com 
+\end{lstlisting}
+
+  \item  ¿Cuál es el comando git para ver las diferencias de código entre la última versión y el área stage? \hfill \\
+\begin{lstlisting}[frame=single] 
+git status
+\end{lstlisting}
+  \item ¿Cuál es el comando git para ver las diferencias de código entre la última versión y la segunda?.  \hfill \\
+\begin{lstlisting}[frame=single] 
+git diff 0da94be 59ff30c
+\end{lstlisting}
+donde 0da94be 59ff30c son los nombres de las revisiones segunda y ultima, en particular se puede usar HEAD en vez de la ultima revisión y HEAD\^{}n es el predecesor n-ésimo de HEAD
+
+  \item ¿Cuál es el comando git para crear una rama?.  \hfill \\
+
+\begin{lstlisting}[frame=single] 
+git checkout -b nombre_rama
+\end{lstlisting}
+
+  \item  ¿Qué comando se debe de ejecutar para crear una copia local de un proyecto existente?. \hfill \\
+git clone, ejemplo:
+\begin{lstlisting}[frame=single] 
+git clone git://git.kernel.org/../linux-2.6 my2.6
+\end{lstlisting}
+
+  \item ¿Cuál es el comando para ver la historia de los cambios?.  \hfill \\
+\begin{lstlisting}[frame=single] 
+git log
+\end{lstlisting}
+  \item Configure git para que no tome en cuenta los archivos de respaldo de emacs.  \hfill \\
+el el archivo .gitignore
+se añade la linea
+\begin{lstlisting}[frame=single] 
+\#*#
+\end{lstlisting}
+
+\end{enumerate}
+\end{document}
