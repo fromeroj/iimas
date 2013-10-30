@@ -298,6 +298,26 @@ $C \rightarrow 0|1|2|..|9|CC$ // Constante
 
 
 \item[\bf{Problema 6}]  Describe un NPDA que acepte este lenguaje de programación.
+
+En general, podemos convertir cualquier CFG dado en  GNF a un NPDA de la siguiente forma:\\
+
+sea $G=(\Sigma_g,\Gamma_g,S_g,\rightarrow_g)$ la Gramática en GNF, 
+costruimos una NPDA $M=(Q_m,\Sigma_m,\Gamma_m, \gamma_m,s_m)$ con aceptación con pila vacía siguiendo las reglas:\\
+$Q_m={q}$ Un único estado\\
+$\Sigma_m = \Gamma_g$ Los símbolos de entrada de M, son los simbolos terminales de $G$
+$\Gamma_m = \Sigma_g$ Los símbolos de pila de M, son todos los simbolos de de $G$
+$s_m = S_g$ El simbolo inicial de M es el simbolo inicial de G.
+
+Las función de transición será la siguiente:\\
+para toda $\alpha \in \Sigma_g$ es decir, para todos los simbolos terminales, hay una transición:\\
+$\delta(q,a,a)=(q,\epsilon)$
+como esta en GNF, las otras producciones del tipo $$\beta \rightarrow \alpha\beta_1\beta_2...\beta_n$$
+se agrega a la función de transición:
+$\delta(q,\alpha,\beta) = (q,\beta_1\beta_2...\beta_n)$
+en caso de que sea n sea 0 es decir una producción de la forma $\beta \rightarrow \alpha$  se agrega $\delta(q,\alpha,\beta) = (q,\epsilon)$
+
+y este NPDA acepta el mismo lenguage que la CFG en GNF dada.
+
 \item[\bf{Problema 7}]  El teorema de Chomsky-Schützenberger nos dice que hay existen $n \in \mathbb{N}, R \in Reg$ tales que existe un homomorfismo entre $D^{\star}_n \cap R$ y el lenguaje de programación anterior. Da un valor de n y justifica tu respuesta.
 
 
@@ -315,9 +335,9 @@ $A \rightarrow aA|Ab|b $\\
 
 \item[\bf{c)}]  $ \{a,b\}^{\star} - \{palindromas\}$\\
 
-$S \rightarrow aSa| bSb | A $\\
-$A \rightarrow aBb| bBa $\\
-$B \rightarrow aBa|bBb|a|b|\epsilon $\\
+$S \rightarrow aSa| bSb | aSb | bSa | AB | BA $\\
+$A \rightarrow a|aA  $\\
+$B \rightarrow b|bB  $\\
 
 
 \item[\bf{Problema 9}] Demuestra que los siguientes conjuntos no son CFL:
