@@ -300,7 +300,8 @@ $C \rightarrow 0|1|2|..|9|CC$ // Constante
 \item[\bf{Problema 6}]  Describe un NPDA que acepte este lenguaje de programación.
 \item[\bf{Problema 7}]  El teorema de Chomsky-Schützenberger nos dice que hay existen $n \in \mathbb{N}, R \in Reg$ tales que existe un homomorfismo entre $D^{\star}_n \cap R$ y el lenguaje de programación anterior. Da un valor de n y justifica tu respuesta.
 
-
+\item[\bf{Respuesta}]
+El teorema de Chomsky-Schützenberger nos muestra en su construcción que si un lenguaje libre de contexto esta dado en CNF se puede hacer un isomormismo ente cada simbolo terminal a un tipo de parentesis, y cada producción a no terminales a 2 pares, asi, en el CNF dado aqui, tiene 28 producciones a simbolos terminales y 33 producciones a no terminales, por lo que 94 tipos de caracteres son suficientes para este lenguage
 
 \item[\bf{Problema 8}]  Da CFG para los lenguages:
 
@@ -315,9 +316,9 @@ $A \rightarrow aA|Ab|b $\\
 
 \item[\bf{c)}]  $ \{a,b\}^{\star} - \{palindromas\}$\\
 
-$S \rightarrow aSa| bSb | A $\\
-$A \rightarrow aBb| bBa $\\
-$B \rightarrow aBa|bBb|a|b|\epsilon $\\
+$S \rightarrow aSa| bSb | aSb | bSa | AB | BA $\\
+$A \rightarrow a| aA $\\
+$B \rightarrow b|bB $\\
 
 
 \item[\bf{Problema 9}] Demuestra que los siguientes conjuntos no son CFL:
