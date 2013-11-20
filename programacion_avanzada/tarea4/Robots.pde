@@ -1,4 +1,5 @@
-int i,j,k,iv,ix,bo,n,vel;
+int i,j,k,iv,ix,bo,n,vel,direccion;
+boolean movimiento_aleatorio,asignado;
 Tablero t;
 
 void setup() {  
@@ -6,6 +7,7 @@ void setup() {
   vel=3;
   size(500,500);
   t = new Tablero(n);
+  movimiento_aleatorio=true;
 }
 
 void draw() {
@@ -25,8 +27,28 @@ class Tablero{
   }
   
   void move_all(){
-    for(k=0;k<n;k++){buena_opcion(robots[k]).display();}
+    for(k=0;k<n;k++){
+      if(movimiento_aleatorio){
+      opcion_aleatoria(robots[k]).display();
+      }else{
+      buena_opcion(robots[k]).display();
+      }
+    }
   }
+
+ Robot opcion_aleatoria(Robot r){
+   if(r.y0!=(n-1)){
+     direccion=int(random(3));
+     if(direccion==0  && esta_vacio(r,r.x0-1 , r.y0)){
+       r.izquierda();
+     }else if(direccion==1  && esta_vacio(r, r.x0+1,r.y0)){
+       r.derecha();
+     }else if( direccion==2 && esta_vacio(r,r.x0,r.y0+1)){
+       r.arriba();
+     }
+   }
+   return r;
+ }
 
  Robot buena_opcion(Robot r){
    if(r.y0!=(n-1)){
@@ -56,6 +78,7 @@ class Tablero{
  
   boolean esta_vacio(Robot r, int x,int y){
     //return true;
+    if (0>x || x>=n || 0>y || y>=n) return false; 
     for(iv=0;iv<n;iv++){
       if(robots[iv]!=null && robots[iv]!=r){
         if((robots[iv].x0==x && robots[iv].y0==y) || 
