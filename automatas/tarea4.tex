@@ -1,0 +1,52 @@
+\documentclass{article}
+\usepackage{tikz}
+\usepackage[utf8]{inputenc}
+\usepackage{ amssymb }
+\usepackage{amsfonts}
+\newcommand\defeq{\stackrel{\mathclap{\normalfont\mbox{def}}}{=}}
+\usetikzlibrary{automata,positioning,arrows}
+
+
+
+\title{Autómatas y lenguajes formales. Tarea 4}
+\author{Fabián Romero Jiménez}
+\begin{document}
+\maketitle
+Considera las siguientes funciones:\\
+Factorial: \\
+$0! = 1$ \\
+$(n + 1)! = n!  (n + 1)$ \\
+Exponenciación \\
+$n^0=1$ \\
+$n^{m+1}=n^m \times n$ \\
+
+\begin{enumerate}
+\item[\bf{Problema 1}] Formula estas funciones en el formato de las  
+funciones recursivas $\mu$ 
+
+\item[\bf{Factorial}]
+$Factorial(0)  \stackrel{def}{\equiv} 1$\\
+$Factorial(y+1) \stackrel{def}{\equiv} mult(y+1,Factorial(y))$
+
+\item[\bf{Exp}]
+$Exp(x,0)  \stackrel{def}{\equiv} 1$\\
+$Exp(x,y+1) \stackrel{def}{\equiv} mult(x,Exp(x,y))$
+
+\item[\bf{Problema 2}] Transforma tus definiciones anteriores de acuerdo con las convenciones vistas para el cálculo $\lambda$.
+
+\item[\bf{Factorial}]
+
+
+$FACTORIAL \stackrel{def}{\equiv} Y\lambda f.$
+\item[\bf{Problema 3}] Defínelas por medio de programas URM.
+
+\item[\bf{Problema 4}]Define la semántica del comando
+for $i := 1$ to n do P
+y utilízalo para definir la recursión primitiva de una manera más directa
+
+\item[\bf{Problema 4}] Define la minimalización no acotada por medio de programas $while$.
+
+\end{enumerate}
+
+
+\end{document}  
