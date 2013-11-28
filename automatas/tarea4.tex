@@ -6,8 +6,6 @@
 \newcommand\defeq{\stackrel{\mathclap{\normalfont\mbox{def}}}{=}}
 \usetikzlibrary{automata,positioning,arrows}
 
-
-
 \title{Autómatas y lenguajes formales. Tarea 4}
 \author{Fabián Romero Jiménez}
 \begin{document}
@@ -26,18 +24,20 @@ funciones recursivas $\mu$
 
 \item[\bf{Factorial}]
 $Factorial(0)  \stackrel{def}{\equiv} 1$\\
-$Factorial(y+1) \stackrel{def}{\equiv} mult(y+1,Factorial(y))$
+$Factorial(n+1) \stackrel{def}{\equiv} mult(n+1,Factorial(n))$
 
 \item[\bf{Exp}]
-$Exp(x,0)  \stackrel{def}{\equiv} 1$\\
-$Exp(x,y+1) \stackrel{def}{\equiv} mult(x,Exp(x,y))$
+$Exp(n,0)  \stackrel{def}{\equiv} 1$\\
+$Exp(n,m+1) \stackrel{def}{\equiv} mult(n,Exp(n,m))$
 
 \item[\bf{Problema 2}] Transforma tus definiciones anteriores de acuerdo con las convenciones vistas para el cálculo $\lambda$.
 
 \item[\bf{Factorial}]
 
+$Factorial \stackrel{def}{\equiv}  Y \lambda f . \lambda n.(Cero \: n)(\bar 1)(MULT(n)(f(P n))) $\\
 
-$FACTORIAL \stackrel{def}{\equiv} Y\lambda f.$
+\item[\bf{Exp}]$Exp \stackrel{def}{\equiv}  Y \lambda f . \lambda n,m.(Cero \: m)(\bar 1) (MULT(n)(f\:n\:(P m) )) $\\
+
 \item[\bf{Problema 3}] Defínelas por medio de programas URM.
 
 \item[\bf{Problema 4}]Define la semántica del comando
@@ -46,7 +46,45 @@ y utilízalo para definir la recursión primitiva de una manera más directa
 
 \item[\bf{Problema 4}] Define la minimalización no acotada por medio de programas $while$.
 
+
+1:J(2,3,0)
+2:
+
+
+1:J(6,8,9)
+2:J(5,7,6)
+3:S(4)
+4:S(7)
+5:J(1,1,1)
+6:Z(7) --- salto
+7:S(8)
+8:J(1,1,1)
+9:T(4,1)
+
+------------
+
+1:J(6,8,0)
+2:J(5,7,6)
+3:S(4)
+4:S(7)
+5:J(1,1,1)
+6:Z(7) --- salto
+7:S(8)
+8:J(1,1,1)
+9:T(4,1)
+
+
+---------
+      
+1:J(3,5,0)
+2:J(2,4,6)
+3:S(1)
+4:S(4)
+5:J(1,1,1)
+6:Z(4)
+7:S(5)
+8:J(1,1,1)
+
+
 \end{enumerate}
-
-
-\end{document}  
+\end{document}
