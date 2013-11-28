@@ -1,13 +1,11 @@
 \documentclass{article}
-\usepackage{tikz}
+\usepackage{listings}
 \usepackage[utf8]{inputenc}
 \usepackage{ amssymb }
 \usepackage{amsfonts}
-\newcommand\defeq{\stackrel{\mathclap{\normalfont\mbox{def}}}{=}}
-\usetikzlibrary{automata,positioning,arrows}
 
 \title{Autómatas y lenguajes formales. Tarea 4}
-\author{Fabián Romero Jiménez}
+\author{Fabián Romero Jiménez \\ Israel Sandoval Grajeda}
 \begin{document}
 \maketitle
 Considera las siguientes funciones:\\
@@ -30,61 +28,127 @@ $Factorial(n+1) \stackrel{def}{\equiv} mult(n+1,Factorial(n))$
 $Exp(n,0)  \stackrel{def}{\equiv} 1$\\
 $Exp(n,m+1) \stackrel{def}{\equiv} mult(n,Exp(n,m))$
 
-\item[\bf{Problema 2}] Transforma tus definiciones anteriores de acuerdo con las convenciones vistas para el cálculo $\lambda$.
+\item[\bf{Problema 2}] Transforma tus definiciones anteriores de acuerdo con las convenciones vistas para el cálculo $\lambda$.\\
+Sean: \\
+$H \stackrel{def}{\equiv}  \lambda x_1.x_1$ \\
+$MULT \stackrel{def}{\equiv} Y \lambda f . \lambda x,y . (Cero\:x)(H\bar0)(SUMA(f(P x)y)y)$\\$\bar1 = S(\bar0)$\\
 
 \item[\bf{Factorial}]
 
-$Factorial \stackrel{def}{\equiv}  Y \lambda f . \lambda n.(Cero \: n)(\bar 1)(MULT(n)(f(P n))) $\\
+$Factorial \stackrel{def}{\equiv}  Y \lambda f . \lambda n.(Cero \: n)(H\bar 1)(MULT(n)(f(P n))) $\\
 
-\item[\bf{Exp}]$Exp \stackrel{def}{\equiv}  Y \lambda f . \lambda n,m.(Cero \: m)(\bar 1) (MULT(n)(f\:n\:(P m) )) $\\
+\item[\bf{Exp}]$Exp \stackrel{def}{\equiv}  Y \lambda f . \lambda n,m.(Cero \: m)(H\bar 1) (MULT(n)(f\:n\:(P m) )) $\\
 
 \item[\bf{Problema 3}] Defínelas por medio de programas URM.
 
+Este programa usa 6 registros, los valores iniciales son:
+$1,n,0,0,0,0$ donde $n$ es el numero del que se quiere el factorial y el resultado
+será guardado en el registro $1$ \\
+
+\item[\bf{Factorial}]
+\begin{lstlisting}[frame=single] 
+1:S(3)     -- inc contador fact
+2:J(2,3,0) -- Detencion al finalizar
+3:T(1,4)   -- Res -> multiplicando
+4:Z(6)     -- Reset contador mult
+5:Z(5)     -- Reset contador suma
+6:J(4,6,1) -- mult concluida cont fact 
+7:J(3,5,11)-- suma concluida cont mult
+8:S(1)     -- inc result
+9:S(5)     -- inc contador suma
+10:J(1,1,6)-- iterar suma
+11:S(6)    -- inc contador mult
+12:J(1,1,5)-- iterar mult
+\end{lstlisting}
+
+
+\item[\bf{Exp}]
+
+Este programa usa 7 registros, los valores iniciales son:
+$1,n,m,0,0,0,0$ donde $n$ es el numero a elevar a la potencia $m$ y el resultado
+será guardado en el registro $1$ \\
+
+\begin{lstlisting}[frame=single] 
+1:J(3,4,0) -- Detencion al finalizar
+2:S(4)     -- inc contador pow
+3:T(1,5)   -- Res -> multiplicando
+4:Z(7)     -- Reset contador mult
+5:Z(6)     -- Reset contador suma
+6:J(5,7,1) -- mult concluida cont pow
+7:J(2,6,11)-- suma concluida cont mult
+8:S(1)     -- inc result
+9:S(6)     -- inc contador suma
+10:J(1,1,6)-- iterar suma
+11:S(7)    -- inc contador mult
+12:J(1,1,5)-- iterar mult
+\end{lstlisting}
+
+\newpage
 \item[\bf{Problema 4}]Define la semántica del comando
-for $i := 1$ to n do P
+for $i := 0$ to n do P
 y utilízalo para definir la recursión primitiva de una manera más directa
 
-\item[\bf{Problema 4}] Define la minimalización no acotada por medio de programas $while$.
+Se define:\\
+\begin{lstlisting}[frame=single] 
+for i := 0 to n do P
+\end{lstlisting}
+
+como:\\
+\begin{lstlisting}[frame=single] 
+i:=0;              
+while i < n  do      
+    P
+    i=i+1;
+\end{lstlisting}
+
+Así la definición de recursión primitiva con: \\
+$[Ph]\sigma(X_0) = h(\sigma(X_1))$\\
+$[Pg]\sigma(X_0) = g( \sigma(Z),\sigma(X_1),\sigma(X_2))$\\
+queda definido por:\\
+
+\begin{lstlisting}[frame=single] 
+W:=Z;
+Y1=X1;
+Ph;
+for I:=0 to W do
+  Z:=I;
+  X1=Y1;
+  X2=X0;
+  Pg
+\end{lstlisting}
+
+\newpage
+\item[\bf{Problema 5}] Define la minimalización no acotada por medio de programas $while$.
+
+La minimalización no acotada se define como:
 
 
-1:J(2,3,0)
-2:
+Sea $ g: \mathbb{N}^{n+1} \rightarrow  \mathbb{N} $ una función computable.
+Entonces la función\\
+$f: \mathbb{N}^{n+1} \rightarrow \mathbb{N}$ definida como:\\
+$f(\bar x)= min\{m \in \mathbb{N} |g(x,m)=0, \forall i \le m . g(x,n) \}$
+o indefinida si el conjunto es vacío. En clase vimos la existencia y consistencia de tal definición.
 
+Y suponiendo la existencia del programa $[Pg]$\\
+$[Pg]\sigma(X_o,X_1) \rightarrow g(\sigma(X_0),\sigma(X_1))$
 
-1:J(6,8,9)
-2:J(5,7,6)
-3:S(4)
-4:S(7)
-5:J(1,1,1)
-6:Z(7) --- salto
-7:S(8)
-8:J(1,1,1)
-9:T(4,1)
+Lo cual podemos expresar con el siguiente programa while:\\
 
-------------
-
-1:J(6,8,0)
-2:J(5,7,6)
-3:S(4)
-4:S(7)
-5:J(1,1,1)
-6:Z(7) --- salto
-7:S(8)
-8:J(1,1,1)
-9:T(4,1)
-
-
----------
-      
-1:J(3,5,0)
-2:J(2,4,6)
-3:S(1)
-4:S(4)
-5:J(1,1,1)
-6:Z(4)
-7:S(5)
-8:J(1,1,1)
-
-
+\begin{lstlisting}[frame=single] 
+M:=0;                %El minimo valor
+Z:=False;           
+while Z=False do     %Si no todos son ceros
+    Z:=True;         %En el conjunto vacio es cierto
+    I:=0;            %El indice desde 0 hasta M
+    M:=M+1;         
+    X0=M;            %El valor de salida es M 
+    while (M>I) do   %Buscando desde 0 a M
+      Y0=C0;         %Primer parametro de Pg
+      Y1=C1;         %Segundo parametro de Pg
+      Pg;            %Evaluacion de la funcion       
+      Z=Z and (X0=0) %si el resultado es 0 hasta I
+      I=I+1          %Incrementamos I
+\end{lstlisting}
+Observese que aunque la función $[Pg]$ es total, la minimización no necesariamente termina, pues requiere de hacer la búsqueda del mínimo sin cota superior.
 \end{enumerate}
 \end{document}
