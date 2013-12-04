@@ -7,6 +7,7 @@
 
 \title{Autómatas y lenguajes formales. Tarea 3}
 \author{Fabián Romero Jiménez}
+\date{}
 \begin{document}
 \maketitle
 \begin{enumerate}
@@ -89,12 +90,23 @@ Supongamos que si, que $TOT = \{ M | M $ se detiene con todas las entradas$ \}$ 
   \hline  
 \end{tabular}
 
+Por lo tanto hay una maquina de turing $TM_{TOT}$ que acepta el lenguage $TOT$ y podemos crear una maquina $TM_{NO} = \{M | M \in TOT \wedge M$ no acepta $M \}$ simplemente poniendo la maquina que evalua a una maquina con ella misma como entrada después de pasarla por $TOT$, como $TOT$ regresa solo maquinas totales cuando evaluamos $M$ en $M$ termina eventualmente por lo que $TM_{NO}$ es entonces recursivente enumerable.
+ahora $TM_{NO}$ se detiene con $TM_{NO}$?, si esto pasa entonces por definición no debería deternese y si se detiene tendría que no deterse. Contradiccción a la hipotesis de que sea recursivamente enumerable.\\
 
 
- por lo tanto hay una maquina de turing $TM_{TOT}$ que acepta el lenguage $TOT$ y podemos crear una maquina $TM_{NO} = \{M | M \in TOT \wedge M$ no acepta $M \}$ simplemente poniendo la maquina que evalua a una maquina con ella misma como entrada después de pasarla por $TOT$, como $TOT$ regresa solo maquinas totales cuando evaluamos $M$ en $M$ termina eventualmente por lo que $TM_{NO}$ es entonces recursivente enumerable.
-ahora $TM_{NO}$ se detiene con $TM_{NO}$?,  si 
 
- 
+\item[\bf{Problema 4}]Demuestra la siguiente extensión del teorema de Rice: toda propiedad no trivial de pares de conjuntos recursivamente enumerables es indecidible. Utilízalo para demostrar que, dadas dos máquinas $N, M \in MT$, los siguientes problemas son indecidibles:
+\\
+
+(a) ¿$L(m) = L(N)$?; (b) ¿$L(m) \cap L(N)=\empty$  (c) ¿$L(m) \subseteq L(N)$?; (d) ¿$L(m)\cap L(N)$ es recursivo?
+
+
+\item[\bf{Problema 5}]Ubica a TOT en la jerarquía aritmética por medio de un predicado. 
+\item[\bf{Respuesta}]
+considerando la descripcion de $TOT$ como \\
+$TOT=\{M| \forall x \exists t. M $ se detiene en la entrada $ x $ en $ n $ pasos $\}$\\
+Sabemos que $TOT$ esta en $\Pi_2^0$
+
 
 \end{enumerate}
 
