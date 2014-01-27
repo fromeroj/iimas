@@ -96,10 +96,19 @@ ahora $TM_{NO}$ se detiene con $TM_{NO}$?, si esto pasa entonces por definición
 
 
 \item[\bf{Problema 4}]Demuestra la siguiente extensión del teorema de Rice: toda propiedad no trivial de pares de conjuntos recursivamente enumerables es indecidible. Utilízalo para demostrar que, dadas dos máquinas $N, M \in MT$, los siguientes problemas son indecidibles:
-\\
 
-(a) ¿$L(m) = L(N)$?; (b) ¿$L(m) \cap L(N)=\empty$  (c) ¿$L(m) \subseteq L(N)$?; (d) ¿$L(m)\cap L(N)$ es recursivo?
+\item[\bf{Extensión}] Podemos construir una maquina de turing que simule un paso la primera propiedad y un paso la segunda, así, la propiedad no trivial de pares es una propiedad no trivial de la maquina que hace la composición, y se aplica el teorema de Rice en su forma normal.
 
+\item[\bf{Aplicaciones}]
+\begin{enumerate} 
+\item $L(M) = L(N)$
+La máquina composicion: acepta x si ambos M y N aceptan x, nos da la equivalencia con saber si acepta un lenguage no vacío que es indecidible.
+\item $L(M) \cap L(N)=\emptyset$
+Exactamente la misma maquina, pero ahora rechaza si ambos aceptan, tambien se reduce al problema del lenguage vacío.
+\item$L(M) \subseteq L(N)$
+Misma máquina, condicionando la evaluacion de N si M ya acepto.
+
+\end{enumerate}
 
 \item[\bf{Problema 5}]Ubica a TOT en la jerarquía aritmética por medio de un predicado. 
 \item[\bf{Respuesta}]

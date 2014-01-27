@@ -22,4 +22,4 @@ def dv_mult(a,b):
     x3=dv_mult(a2,b2)
     print [a1,a2,b1,b2]
     print [x1,x2,x3]
-    return x1 + x2.zfill(n) + x3.zfill(n)
+    return x1 + x2 + x3
