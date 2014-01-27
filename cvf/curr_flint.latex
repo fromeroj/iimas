@@ -1,0 +1,248 @@
+\listfiles
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage{ucs}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{eso-pic}
+\usepackage{graphicx,color}
+\usepackage{colortbl}
+\usepackage[dvips]{geometry}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{longtable}
+\usepackage[letterpaper,colorlinks=false,bookmarks=false,pdfpagemode={UseThumbs},
+				pdftitle={Propuesta Ivoire},
+				pdfauthor={Propuesta Ivoire},
+				pdfsubject={Propuesta Ivoire},
+				pdfcreator={Flint Technologies},
+				pdfkeywords={Flint Technologies},pdfstartview={FitH},pdfpagelayout={OneColumn}]{}
+\usepackage{tabularx}
+\pagenumbering{arabic}
+\pagestyle{fancyplain}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\renewcommand{\footnoterule}{\vspace*{-3pt} \noindent\rule{5cm}{1pt}\vspace*{2.6pt}}
+  \newcommand\BackgroundPicture{%
+   \put(0,0){%
+     \parbox[b][\paperheight]{\paperwidth}{%
+       \vfill
+       \centering
+        \includegraphics[width=\paperwidth,height=\paperheight,%	                       	 
+							 keepaspectratio]{watermark1}%
+                        	  \vfill
+     }}}
+
+\AddToShipoutPicture{\BackgroundPicture}
+\fancyhead[R]{}
+\fancyhead[L]{}
+\fancyhead[C]{}
+\rfoot{\textcolor{white}{\textbf{\thepage/\pageref{LastPage}}} }
+
+\makeatletter
+\def\maketitle{%
+  \null
+  \thispagestyle{empty}%
+  \vfill
+  \begin{center}\leavevmode
+    \normalfont
+    {\LARGE \@title\par}%
+    \vskip 3cm
+    {\Large \@author\par}%
+    \vskip 3cm
+    {\Large \@date\par}%
+  \end{center}%
+  \vfill
+  \null
+  \cleardoublepage
+  }
+\makeatother
+
+
+\title{\textsc{Propuesta de Servicios Profesionales}}
+\author{Fabian Romero \\ Flint Technologies S.A de C.V }
+\date{Octubre 17, 2012}
+\definecolor{olivegreen}{rgb}{0.419608,0.556863,0.137255}
+\definecolor{flint}{rgb}{0.00784314,0.40392157,0.50588235}
+\definecolor{naranja}{rgb}{1,0.40392157,0} 
+
+\newcommand{\flint}{
+    \textcolor{flint}{FLINT TECHNOLOGIES}
+}
+
+\begin{document}
+\section{About Flint}
+\flint, 
+We are a mexican company with a subsidiary in London, having an extensive experience in the technology market with over 17 years of service, during this time we have created a large number of web applications, implementations of diverse technology and integrations for government and private companies.
+\\
+Our work philosophy is based on collaboration, trust and hard work, to provide the best value and technology to our customers.
+\\
+\\
+% Define box and box title style
+\tikzstyle{mybox} = [draw=flint, fill=flint, very thick,
+    rectangle, rounded corners=15pt, inner sep=10pt, inner ysep=10pt]
+%sep vspace
+%ysep hspace
+\begin{center}
+	\begin{tikzpicture}
+	\node [mybox] (box){%
+		\begin{minipage}{0.50\textwidth}
+		   \begin{center}
+			\textcolor{white}{\fontsize{18}{20}\selectfont{Philosophy}}
+		   \end{center}
+		\end{minipage}
+	};
+	\end{tikzpicture}%
+\end{center}
+
+\tikzstyle{mybox2} = [draw=flint, fill=white, thick,
+    rectangle, rounded corners=28pt, inner sep=10pt, inner ysep=10pt]
+\tikzstyle{fancytitle} =[fill=naranja, text=white, ,font=\bf]	
+\begin{center}
+	\begin{tikzpicture}
+	\node [mybox2] (box){%
+		\begin{minipage}{0.40\textwidth}
+		   \begin{flushright}
+			\textcolor{naranja}{\scriptsize{We will help you choose the most appropriate technological options for your business goal. We will think very hard on the best possible technology choices, systems and interfaces, so you and your customers won't have to. }}
+		   \end{flushright}
+		\end{minipage}
+		\hspace{0.6cm}
+		\begin{minipage}{0.40\textwidth}
+			\textcolor{naranja}{\fontsize{18}{20}\selectfont{\ \ \ Simplicity}}
+		\end{minipage}
+	};
+	\node[fancytitle, rounded corners] at (box.center) {$\Psi$};
+	\end{tikzpicture}%
+	
+\end{center}
+\tikzstyle{mybox3} = [draw=flint, fill=white, thick,
+    rectangle, rounded corners=28pt, inner sep=10pt, inner ysep=10pt]
+\tikzstyle{fancytitle2} =[fill=flint, text=white, ,font=\bf]
+
+\begin{center}
+	\begin{tikzpicture}
+	\node [mybox3] (box){%
+		\begin{minipage}{0.40\textwidth}
+		   \begin{flushright}
+			\textcolor{flint}{\scriptsize{We differentiate ourselves by offering a wide range of technologies, languages ​​and platforms that allow us to develop adaptive and accurate solutions to meet the needs of our customers..}}
+		   \end{flushright}
+		\end{minipage}
+		\hspace{0.6cm}
+		\begin{minipage}{0.40\textwidth}
+			\textcolor{flint}{\fontsize{18}{20}\selectfont{\ \ \ Versatility}}
+		\end{minipage}
+	};
+	\node[fancytitle2, rounded corners] at (box.center) {$\Xi$};
+	\end{tikzpicture}%
+	
+\end{center}
+
+\tikzstyle{mybox2} = [draw=flint, fill=white, thick,
+    rectangle, rounded corners=28pt, inner sep=10pt, inner ysep=10pt]
+\tikzstyle{fancytitle} =[fill=naranja, text=white, ,font=\bf]	
+\begin{center}
+	\begin{tikzpicture}
+	\node [mybox2] (box){%
+		\begin{minipage}{0.40\textwidth}
+		   \begin{flushright}
+			\textcolor{naranja}{\scriptsize{We help our customers to visualize their technological development beyond the immediacy, so we can provide innovative technology, flexible, upgradeable and long-term platforms.}}
+		   \end{flushright}
+		\end{minipage}
+		\hspace{0.6cm}
+		\begin{minipage}{0.40\textwidth}
+			\textcolor{naranja}{\fontsize{18}{20}\selectfont{Responsibility}}
+		\end{minipage}
+	};
+	\node[fancytitle, rounded corners] at (box.center) {$\Phi$};
+	\end{tikzpicture}%
+	
+\end{center}
+\tikzstyle{mybox3} = [draw=flint, fill=white, thick,
+    rectangle, rounded corners=28pt, inner sep=10pt, inner ysep=10pt]
+\tikzstyle{fancytitle2} =[fill=flint, text=white, ,font=\bf]
+
+\begin{center}
+	\begin{tikzpicture}
+	\node [mybox3] (box){%
+		\begin{minipage}{0.40\textwidth}
+		   \begin{flushright}
+			\textcolor{flint}{\scriptsize{For us it is vital to make long-term projects so that our work our quality and our attention is focused on to become technological PARTNERS of the companies we work with.}}
+		   \end{flushright}
+		\end{minipage}
+		\hspace{0.6cm}
+		\begin{minipage}{0.40\textwidth}
+			\textcolor{flint}{\fontsize{18}{20}\selectfont{\ \ \ Associability}}
+		\end{minipage}
+	};
+	\node[fancytitle2, rounded corners] at (box.center) {$\Im$};
+	\end{tikzpicture}%
+	
+\end{center}
+\newpage
+\section{Alcance del proyecto}
+\subsection{Objetivo general del proyecto}
+Desarrollo de una solución integral y modular para la administración de la  cartera de GFMega;
+permitiendo administrar múltiples variables. Deberá cumplir con toda la funcionalidad y
+normativas especificadas. El desarrollo es considerado popio y GFMega tendrá el código 
+\subsection{Facturación Electrónica}
+
+
+
+
+Hemos analizado cuidadosamente la información que gfmega nos ha proporcionado y estimado con la mayor precisión posible a nuestra comprensión del problema el esfuerzo requerido para crear una herramienta como la que solicitan.
+
+Es harto evidente a partir de la información que tenemos que usan un modelo de valuación ad-hoc que resultaría excesivamente complicado configurarlo directamente en una herramienta financiera existente, por lo que coincidimos que un desarrollo a la medida es lo mas conveniente y menos riezgoso en este caso, la elección de la plataforma JAVA/SOA también nos parece que ofrece beneficios en la interoperabilidad de esta plataforma.
+
+Tambien es evidente que la participación y apoyo de gfmega con la verificación y supervisión del cálculo de los modelos es indispensable para el éxito de la implementación de la aplicación descrita, puesto que la versatilidad y usos de los modelos, son poco comunes y totalmente adecuados a las necesidades de gfmega. Por lo una condición para poder hacer este desarrollo, es contar con un analista financiero de gfmega con experiencia suficiente en la creación y uso de estos modelos disponible por lo menos un dia laboral a la semana dedicado ininterrumpidamente a este fin durante la duración del desarrollo del sistema.
+
+
+
+
+Lograr que cada punto de venta emita facturas electrónicas, bajo el supuesto de que es el mismo certificado digital para todos los puntos de venta 
+y la misma razón social. en caso de no ser así presentaríamos un alcance a esta propuesta.
+
+La factura electrónica que proponemos ofrece las máximas ventajas ya que:
+
+\begin{enumerate}
+    \item Está certificada por el SAT tanto para esquema CFD como CFDI.
+    \item Está certificada por la AMECE GS1 México para Addendas.
+    \item Se cuenta con el respaldo de UNISYS para los Data Centers, compañía con el máximo grado de seguridad, confidencialidad, y continuidad en el servicio
+    \item La opción más económica, use sólo lo que necesite.
+    \item El sistema puede accederse vía internet desde cualquier computadora.
+    \item El sistema es muy amigable, comience a trabajar de inmediato.
+    \item Se cuenta con los mejores sistemas tecnológicos de apoyo.
+    \item Se cuenta con los máximos estándares de seguridad.
+    \item Brindamos soporte técnico en línea.
+    \item La velocidad y capacidad transaccional de la aplicación es la más alta del mercado.
+    \item No es necesario comprar actualizaciones de software, Flint cubrirá todas las actualizaciones necesarias en el sistema.
+    \item Contamos con conexiones para diversos programas Administrativos.
+\end{enumerate}	
+
+\subsection{Reportes}
+6 Reportes en Crystal Reports
+\newpage
+\section{Diagrama de Gantt}
+\newpage
+\section{Inversión}
+La duración del proyecto será de 12 semanas. Estos tiempos están calculados considerando el involucramiento del equipo descrito.
+ Los honorarios de Flint serán de \$119,870.00 (ciento diecinueve mil ochocientos setenta pesos), más el impuesto al valor agregado (IVA).
+
+El pago será efectuado en las siguientes exhibiciones:
+
+El tiempo de desarrollo de un sistema como el descrito es de 16 semanas, incluidas pruebas de validación y de uso por parte de gfmega, y el costo de el desarrollo es de \$1,623,000.00 pesos mexicanos + IVA.
+
+La forma de pago es de 30\% de anticipo, 20\% a la semana 7 donde se contara con una versión 'prototipo' del sistema, 20\% en la semana 14 al entrar en pruebas de carga, validación del modelo y pruebas uso finales y 10\% en la puesta a producción del sistema.
+
+Se contara con una garantía de 3 meses en la cual se dara soporte y mantenimiento al sistema.
+
+Anexo el curriculum de Focus que es una empresa en sociedad con Flint, con la cual hemos desarrollado en conjunto software financiero para GMAC, Christofferson Robb and Company. Además de la experiencia independiente de Focus y de Flint.
+
+\begin{itemize}    
+\item 35\% del total como anticipo
+\item 30\% del total al finalizar la quinta semana  
+\item 35\% del total a la entrega final.
+\end{itemize}
+\end{document}
