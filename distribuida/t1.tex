@@ -1,0 +1,69 @@
+\documentclass{article}
+\usepackage{listings}
+\usepackage[utf8]{inputenc}
+\usepackage{ amssymb }
+\usepackage{amsfonts}
+
+\title{Sistemas Distribuidos y Verificación \\ Tarea 1}
+\author{Fabián Romero Jiménez}
+\begin{document}
+\maketitle
+
+\begin{enumerate}
+
+\item[\bf{Problema 1}] En clase se vio el complejo de la Figura 1, donde los mundos eran compa- tibles si difieren en un bit.\\
+
+\begin{enumerate}
+
+\item Como sería el complejo si los mundos son compatibles cuando las vistas(etiquetas) difieren en 2 bits.\\
+
+Aqui podemos observar que como son 3 bits y el proceso negro solo puede mentir en el bit del medio, el proceso blanco nunca podrá ser engañado, es decir, en cada caso puede saber si el proceso negro esta mintiendo o no y por lo tanto saber exactamente el estado del proceso negro, por lo que el modelo de conocimiento será exactamente el complejo visto en clase.\\
+
+\emph{Demostración:} Observemos que si el mensaje difiere en 0 bits, dado que el proceso blanco sabe que sus visiones difieren en exactamente un bit, puede deducir que el proceso negro esta mintiendo (y sabe que esto es en el bit del medio), si el mensaje difiere en 1 bit, el proceso blanco sabe que el proceso negro no esta mintiendo y si difiere en 2 bits uno de ellos tiene que ser el del medio (pues si difiere en ambos extremos sus visiones no tendrian exactamente un bit de diferencia) y el proceso blanco de nuevo sabe que el proceso negro esta mintiendo, no puede diferir en 3 bits, por que es sabido que inicialmente difieren en exactamente un bit y se puede mentir en solo uno, por lo que a lo más, podria diferir en 2 bits.\\
+
+Ahora si queremos representar no el conocimiento, sino la comunicación, donde son distinguibles el mundo donde el proceso negro dijo la verdad y donde dijo una mentira (La distinción será que hay dos estados, en ambos el proceso blanco sabe exactamente el estado del proceso negro, pero en un estado sabe que el proceso negro mintio y en el otro sabe que el proceso negro dijo la verdad). El complejo sería el siguiente.
+
+\item{Como sería el complejo si los mundos son compatibles cuando las vistas(etiquetas) difieren en 2 bits.}
+
+En este caso, por paridad, se crean 2 complejos disjuntos y complementarios, uno que tiene etiquetas con una cantidad par de 1's y otro con una cantidad impar de 1's, ya que si cambian 2 bits hay dos casos, que estos sean diferentes y al cambiarlos la cantidad de 1's se conserva, y si los bits son iguales, o bien la cantidad de 1's aumenta en dos o bien disminuye en dos pero preserva la paridad. Los complejos serán:
+
+\end{enumerate}
+
+\item[\bf{Problema 2}] Considera el complejo de la Figura 2, que representa la entrada de una tarea tal que a la salida sólo un proceso regresa cero y los otros dos regresan 1.
+
+\begin{lstlisting}[frame=single] 
+M:=0;                %El minimo valor
+Z:=False;           
+while Z=False do     %Si no todos son ceros
+    Z:=True;         %En el conjunto vacio es cierto
+    I:=0;            %El indice desde 0 hasta M
+    M:=M+1;         
+    X0=M;            %El valor de salida es M 
+    while (M>I) do   %Buscando desde 0 a M
+      Y0=C0;         %Primer parametro de Pg
+      Y1=C1;         %Segundo parametro de Pg
+      Pg;            %Evaluacion de la funcion       
+      Z=Z and (X0=0) %si el resultado es 0 hasta I
+      I=I+1          %Incrementamos I
+\end{lstlisting}
+Observese que aunque la función $[Pg]$ es total, la minimización no necesariamente termina, pues requiere de hacer la búsqueda del mínimo sin cota superior.
+
+\item[\bf{Problema 3}] Recuerden el problema de las esposas infieles (a.k.a. Niños enlodados, Muddy Children). Sea n el número de caballeros y k el número de caballeros engañados. Demuestra por inducción, que si el cantinero da como información inicial que hay al menos 3 caballeros engañados, entonces en la ronda k-3 se levantan los k engañados. Escribe el pseudo código del algoritmo que ejecutan
+
+\item[\bf{Demostración}] 
+Observemos que en todo momento, cada uno de los caballeros sabe que al menos hay tantos engañados como engañados ve, y que a lo más, hay los que ve mas uno (el mismo).
+Por lo que siempre sabe con certeza una cota máxima que es el número de engañados que ve más uno.
+
+Demostraremos por inducción sobre el número de rondas que han pasado que:\\
+Si hay k caballeros engañados, en cada ronda s $(0 \le s \le k)$ sabe que hay al menos (s+3) engañados y en la ronda k-3 sabe que si se llego hasta ahi, el es uno de los engañados y puede levantarse (simultaneamente que todos los demás).\\
+
+Caso base: s=0 rondas.\\
+En este caso, cada uno de los caballeros engañados, ve a otros (k-1) engañados y sabe que hay al menos 3 engañados, asi que si k=3 sabe inmediatamente (en tiempo 0) que el es engañado y se levanta.\\
+
+Hipotesis de inducción: Supongamos que es correcto hasta el caso de n rondas y demostremos con n+1.
+
+Por hipotesis de inducción sabemos que
+
+
+\end{enumerate}
+\end{document}
