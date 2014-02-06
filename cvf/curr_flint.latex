@@ -76,8 +76,10 @@
 \begin{document}
 \section{About Flint}
 \flint, 
-We are a mexican company with a subsidiary in London, having an extensive experience in the technology market with over 17 years of service, during this time we have created a large number of web applications, implementations of diverse technology and integrations for government and private companies.
+We are a Mexican company with a subsidiary in London, having an extensive experience in the technology market with over 17 years of service, during this time we have created a large number of web applications, implementations of diverse technology and integrations for government and private companies.
 \\
+We are (CMMi) Level 3 certified, and every team leader is PSP Certified developer. 
+
 Our work philosophy is based on collaboration, trust and hard work, to provide the best value and technology to our customers.
 \\
 \\
@@ -127,7 +129,7 @@ Our work philosophy is based on collaboration, trust and hard work, to provide t
 	\node [mybox3] (box){%
 		\begin{minipage}{0.40\textwidth}
 		   \begin{flushright}
-			\textcolor{flint}{\scriptsize{We differentiate ourselves by offering a wide range of technologies, languages ​​and platforms that allow us to develop adaptive and accurate solutions to meet the needs of our customers..}}
+			\textcolor{flint}{\scriptsize{We differentiate ourselves by offering a wide range of technologies, languages ​​and platforms that allow us to develop adaptive and accurate solutions to meet the needs of our customers.}}
 		   \end{flushright}
 		\end{minipage}
 		\hspace{0.6cm}
@@ -179,70 +181,24 @@ Our work philosophy is based on collaboration, trust and hard work, to provide t
 	};
 	\node[fancytitle2, rounded corners] at (box.center) {$\Im$};
 	\end{tikzpicture}%
-	
 \end{center}
 \newpage
-\section{Alcance del proyecto}
-\subsection{Objetivo general del proyecto}
-Desarrollo de una solución integral y modular para la administración de la  cartera de GFMega;
-permitiendo administrar múltiples variables. Deberá cumplir con toda la funcionalidad y
-normativas especificadas. El desarrollo es considerado popio y GFMega tendrá el código 
-\subsection{Facturación Electrónica}
+\section{Customers}
+\subsection{Public Sector}
+\begin{itemize}
+\item Secrtetaria de Economia (Ministry of Economy)
+We helped this institution with many systems and services, developing there the system for  Prosoft 
+\item Indesol  (National institute of social development).
+One of the central programs on this institution is the program of social co-investment, which we built a system to manage it. 
+\item Coneval  (The National Council for the Evaluation of Social Development Policy).
+We helped to integrate and scale operations, implemented the content managment system, build the webpage.
+\end{itemize}
 
-
-
-
-Hemos analizado cuidadosamente la información que gfmega nos ha proporcionado y estimado con la mayor precisión posible a nuestra comprensión del problema el esfuerzo requerido para crear una herramienta como la que solicitan.
-
-Es harto evidente a partir de la información que tenemos que usan un modelo de valuación ad-hoc que resultaría excesivamente complicado configurarlo directamente en una herramienta financiera existente, por lo que coincidimos que un desarrollo a la medida es lo mas conveniente y menos riezgoso en este caso, la elección de la plataforma JAVA/SOA también nos parece que ofrece beneficios en la interoperabilidad de esta plataforma.
-
-Tambien es evidente que la participación y apoyo de gfmega con la verificación y supervisión del cálculo de los modelos es indispensable para el éxito de la implementación de la aplicación descrita, puesto que la versatilidad y usos de los modelos, son poco comunes y totalmente adecuados a las necesidades de gfmega. Por lo una condición para poder hacer este desarrollo, es contar con un analista financiero de gfmega con experiencia suficiente en la creación y uso de estos modelos disponible por lo menos un dia laboral a la semana dedicado ininterrumpidamente a este fin durante la duración del desarrollo del sistema.
-
-
-
-
-Lograr que cada punto de venta emita facturas electrónicas, bajo el supuesto de que es el mismo certificado digital para todos los puntos de venta 
-y la misma razón social. en caso de no ser así presentaríamos un alcance a esta propuesta.
-
-La factura electrónica que proponemos ofrece las máximas ventajas ya que:
-
-\begin{enumerate}
-    \item Está certificada por el SAT tanto para esquema CFD como CFDI.
-    \item Está certificada por la AMECE GS1 México para Addendas.
-    \item Se cuenta con el respaldo de UNISYS para los Data Centers, compañía con el máximo grado de seguridad, confidencialidad, y continuidad en el servicio
-    \item La opción más económica, use sólo lo que necesite.
-    \item El sistema puede accederse vía internet desde cualquier computadora.
-    \item El sistema es muy amigable, comience a trabajar de inmediato.
-    \item Se cuenta con los mejores sistemas tecnológicos de apoyo.
-    \item Se cuenta con los máximos estándares de seguridad.
-    \item Brindamos soporte técnico en línea.
-    \item La velocidad y capacidad transaccional de la aplicación es la más alta del mercado.
-    \item No es necesario comprar actualizaciones de software, Flint cubrirá todas las actualizaciones necesarias en el sistema.
-    \item Contamos con conexiones para diversos programas Administrativos.
-\end{enumerate}	
-
-\subsection{Reportes}
-6 Reportes en Crystal Reports
-\newpage
-\section{Diagrama de Gantt}
-\newpage
-\section{Inversión}
-La duración del proyecto será de 12 semanas. Estos tiempos están calculados considerando el involucramiento del equipo descrito.
- Los honorarios de Flint serán de \$119,870.00 (ciento diecinueve mil ochocientos setenta pesos), más el impuesto al valor agregado (IVA).
-
-El pago será efectuado en las siguientes exhibiciones:
-
-El tiempo de desarrollo de un sistema como el descrito es de 16 semanas, incluidas pruebas de validación y de uso por parte de gfmega, y el costo de el desarrollo es de \$1,623,000.00 pesos mexicanos + IVA.
-
-La forma de pago es de 30\% de anticipo, 20\% a la semana 7 donde se contara con una versión 'prototipo' del sistema, 20\% en la semana 14 al entrar en pruebas de carga, validación del modelo y pruebas uso finales y 10\% en la puesta a producción del sistema.
-
-Se contara con una garantía de 3 meses en la cual se dara soporte y mantenimiento al sistema.
-
-Anexo el curriculum de Focus que es una empresa en sociedad con Flint, con la cual hemos desarrollado en conjunto software financiero para GMAC, Christofferson Robb and Company. Además de la experiencia independiente de Focus y de Flint.
-
-\begin{itemize}    
-\item 35\% del total como anticipo
-\item 30\% del total al finalizar la quinta semana  
-\item 35\% del total a la entrega final.
+\subsection{Retail}
+We are experts on retail, we won't give you complicated advice and baffle you with spreadsheets and technology. We are here to help you increase revenue and/or decrease cost - whether that be by helping you increase the volume of sales or by changing your pricing strategy, or your customer proposition, or perhaps by helping you to cut costs from your supply chain. 
+\begin{itemize}
+\item Piel canela   http://pielcanela.com.mx/
+\item Mu tights     http://www.mytights.com/
+\item Smart Turnout http://www.smartturnout.com/
 \end{itemize}
 \end{document}

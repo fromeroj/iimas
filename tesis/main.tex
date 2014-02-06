@@ -169,14 +169,15 @@ Copyright \copyright\ \the\year\ \thanklessauthor
 
 \chapter{Background} % The asterisk leaves out this chapter from the table of contents
 
-There are many libraries for financial calculation, most of them are proprietary, and since speed and accuracy play an important role specially in the valuation and trading areas, most of them are made in ``close to the metal'' languages such as c++. Another very important trait is correctness, but since it has been long thought that it is infeasible to achieve it, it has been marginalized to use unit testing, some model validation techniques and extensive debugging is made to reach certain level of correctness.\\
+There are many libraries for quantitative finance. Most of them are proprietary and programmed in ``close to the metal'' languages such as c++, this is because speed and accuracy play an important role specially in the valuation and trading areas. Another very important trait is correctness, but since it has been long thought that it is infeasible to achieve it, it has been marginalized and replaced with lesser goals, such as unit testing, model validation techiques and extensive debugging.\\
 
-For some other problems such as stock valuation which in its very nature exhibits a very complex interdependent and concurrent behaviour, where real-time analysis is critical, specially today where high frequency trading (HFT) is the norm, having a valuation done faster or more accurately even if is just a $\mu s$ faster or a $\mu \pounds$ more accurate than that of a competitor can yield a vast and potentially insurmountable advantage. There are many problems with the current software, mostly due to the need for speed and craft nature of the development of realtime systems, creating a potpourri of techniques used but lacking a coherent approach.\\
+For some other problems such as stock valuation which in its very nature exhibits a very complex interdependent and concurrent behaviour, where real-time analysis is critical, specially today where high frequency trading (HFT) is the norm, having a valuation done faster or more accurately even if is just a $\mu s$ faster or a $\mu \pounds$ more accurate than that of a competitor can yield a vast and potentially insurmountable advantage. There are many problems with the current software, mostly due to the need for speed and craft nature of the development of realtime systems, hence using potpourri of techniques focused on speed but lacking a coherent approach.\\
 
-On the other hand, functional programming (FP) and particularly \pfds are gaining traction given everyday more capable compilers and mode sophisticated techniques which allow to use effectively and reliably the everyday more common parallelism, distributed power which virtualisation and other ``cloud'' computing techniques are allowing, also lots of progress has been made in the field of formal proof systems which happen to be mature enough to create software formally proved correct in budget and timely. 
-Session types have helped to specify and type data exchanges, having matured in its simple yet expressive elegance, allowing to describe and reason about concurrent systems guaranteeing communication safety, fidelity and type soundness.
+On the other hand, functional programming (FP) and particularly purely functional data structures \pfds are gaining traction given everyday more capable compilers and mode sophisticated techniques which allow to use effectively and reliably the current distributed power which virtualisation, multicore, paralellisation and other ``cloud'' computing advantages, also lots of progress has been made in the field of formal proof systems which happen to be mature enough to create software formally proved correct in budget and timely. \\
 
-Sadly most of the current libraries of \pfds are mostly used in domestic consumption and used by functional programming researchers and enthusiasts, and little has been leaked for use on other fields. 
+Session types have helped to specify and properly type data exchanges, having matured in its simple yet expressive elegance, allowing to describe and reason about concurrent systems guaranteeing communication safety, fidelity and type soundness.
+
+Sadly most of the current libraries of \pfds are mostly used in ``domestic consumption'' and used almost exclusively by \fp researchers and enthusiasts, and little has been leaked to be used on other fields. 
 
 %This sample book discusses the design of Edward Tufte's books\cite{Tufte2001,Tufte1990,Tufte1997,Tufte2006} and the use of the \doccls{tufte-book} and \doccls{tufte-handout} document classes.
 
@@ -189,6 +190,7 @@ Sadly most of the current libraries of \pfds are mostly used in domestic consump
 \chapter{Hypothesis}
 \label{ch:tufte-design}
 
+\fp, Session types and \pfds can be succesfully implemented on mission critical financial problem preserving the speed and accuracy of current methods, and offering the solid foundations of \fp and provide some really important advantajes as sype sound concurrency and formally proved 
 
 There are some widely used open source financial libraries for finance, but none of these makes uses exclusivelly of purely functional data structures (\pfds), using \pfds will likely yield many benefits, among them, will simplify parallelism  and concurrent computations, because \pfds are immutable locking is unnecesary, they will also benefit of lazines, and given that \pfds are persistent, no recalculation is necesary, which is a common issue on financial libraries, \pfds also make simpler (or possible in some cases) to make algebraic reasoning on them, wich given the sofistication on some calculus, is a very usefull feature.
 
