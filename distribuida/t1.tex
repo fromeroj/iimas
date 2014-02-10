@@ -19,16 +19,9 @@
   Figura 1
 \end{center}
 
-%\begin{figure}[p]
-%    \centering
-%    \includegraphics{cubo1.png}
-%    \caption{Figura 1}
-%    \label{fig:cubo1}
-%\end{figure}
-
 \begin{enumerate}
 
-\item Como sería el complejo si los mundos son compatibles cuando las vistas(etiquetas) difieren en 2 bits.\\
+\item Como sería el complejo en la primera ronda en un modelo en el que a lo más un mensaje se pierde y el proceso negro puede mentir en el bit de enmedio.
 
 Demostraremos que como el proceso negro solo puede mentir en el bit del medio, el proceso blanco nunca podrá ser engañado, es decir, en cada caso puede saber si el proceso negro esta mintiendo o no y por lo tanto saber exactamente el estado del proceso negro, por lo que el modelo de conocimiento será exactamente el complejo visto en clase (Figura 2).\\
 
@@ -37,7 +30,7 @@ Demostraremos que como el proceso negro solo puede mentir en el bit del medio, e
   Figura 2
 \end{center}
 
-\emph{Demostración:} Si el mensaje difiere en 0 bits, dado que el proceso blanco sabe que sus visiones difieren en exactamente un bit, puede deducir que el proceso negro esta mintiendo (y sabe que esto es en el bit del medio). Si el mensaje difiere en 1 bit, el proceso blanco sabe que el proceso negro no esta mintiendo.  Si difiere en 2 bits tambien sabe que esta mintiendo y no puede diferir en 3 bits, por que es sabido que inicialmente difieren en exactamente un bit y se puede mentir en solo uno, por lo que a lo más podrá diferir en 2 bits.\\
+\emph{Demostración:} Si el mensaje difiere en 0 bits, dado que el proceso blanco sabe que sus vistas difieren en exactamente un bit, puede deducir que el proceso negro esta mintiendo (y sabe que esto es en el bit del medio). Si el mensaje difiere en 1 bit, el proceso blanco sabe que el proceso negro no esta mintiendo.  Si difiere en 2 bits tambien sabe que esta mintiendo y no puede diferir en 3 bits, por que es sabido que inicialmente difieren en exactamente un bit y se puede mentir en solo un bit más, teniendo a lo más 2 diferencias.
 
 Si queremos representar no el conocimiento, sino la comunicación, donde son distinguibles el mundo donde el proceso negro dijo la verdad y donde dijo una mentira (La distinción será que hay dos mundos, en ambos el proceso blanco sabe exactamente la etiqueta del proceso negro, pero en un mundo sabe que el proceso negro mintio y en el otro sabe que el proceso negro dijo la verdad). El complejo sería el de la Figura 3.
 
@@ -46,19 +39,19 @@ Si queremos representar no el conocimiento, sino la comunicación, donde son dis
   Figura 3
 \end{center}
 
-Que es mas fácil visualisar en la Figura 4
+Cuyas caras son como lo mostrado en la Figura 4
 
 \begin{center}
   \includegraphics{cubo3_2.png}\\
   Figura 4
 \end{center}
 
-Donde cada arista, aquí solo representada la que une los datos 110 con 111, pero en general es equivalente a cada una de ellas representa las comunicaciones, que son las que ya se habian descrito en el caso visto en clase mas una ``oreja'' que representa 2 mundos más, en aquel que el proceso negro miente y en aquel que miente, pero ese mensaje se pierde.
+Aqui está representada solamente la arista que une los procesos con etiquetas 110 con 111, pero en general es equivalente a cualquier otra, las comunicaciónes son las que ya se habian descrito en el caso visto en clase más una ``oreja'' que representa 2 mundos más, en aquel que el proceso negro miente y en aquel que miente, pero ese mensaje se pierde.
 
 \item{Como sería el complejo si los mundos son compatibles cuando las vistas(etiquetas) difieren en 2 bits.}\\
-En este caso, por paridad, se crean 2 complejos disjuntos y complementarios, uno que tiene etiquetas con una cantidad par de 1's y otro con una cantidad impar de 1's, Esto es asi puesto que si cambian 2 bits hay dos casos, que estos sean diferentes y al cambiarlos la cantidad de 1's se conserva o que los bits sean iguales en este caso la cantidad de 1's aumenta en dos o bien disminuye en dos pero preserva la paridad, por lo que si cambian 2 bits la etiqueta vecina conserva la paridad de 1's.
-Como se muestra en la Figura 5:
 
+En este caso, por paridad, se crean 2 complejos disconexos y complementarios, uno que tiene etiquetas con una cantidad par de 1's y otro con una cantidad impar de 1's, Esto es así puesto que si cambian 2 bits hay dos casos, que estos sean diferentes y al cambiarlos la cantidad de 1's se conserva o que los bits sean iguales en este caso la cantidad de 1's aumenta en dos o bien disminuye en dos pero preserva la paridad, por lo que si cambian 2 bits la etiqueta vecina conserva la paridad de 1's.
+Como se muestra en la Figura 5:
 
 \begin{center}
   \includegraphics{cubo4.png}\\
@@ -78,28 +71,29 @@ Como se muestra en la Figura 5:
 \begin{enumerate}
 \item Da un algoritmo que resuelva la tarea, y demuestra que es correcto.
 
-El modelo de comunicación es síncrona y de memoria compartida.
+El modelo de comunicación es síncrona, sin perdida de mensajes y de memoria compartida.
 El algoritmo es el siguiente:
 En cada turno, cada proceso escribe un número aleatorio y su nombre en la memoria compartida, repitiendo hasta que sean todos distintos, cuando lo son.\\
 
 Aqui por simplicidad, se supone la existencia de una función ``rand'' genuinamente aleatoria, en la practica podria tomar una función semialeatoria con una semilla inteligentemente elejida o alguna forma de determinar unicamente la identidad del proceso como semilla, o el mismo identificador del proceso como resultado de ``rand'' si sabemos que tal identificador es único.
 \newpage
-Programa:\\
+
+Programa: (Es el mismo para todos los procesos)\\
 \begin{lstlisting}[frame=single]
 do {
-  // toma un valor aleatorio
-  value=rand();                        
-  // lo escribe en la memoria compartida
-  write(this.name, value);             
-  // espera a que termine el turno
-  wait(1);                   
-  // verifica que        
+ // toma un valor aleatorio
+ value=rand();                        
+ // lo escribe en la memoria compartida
+ write(this,value);             
+ // espera a que termine el turno
+ wait(1);                   
+ // verifica que        
 } while(all_unique(read_values())==false); 
-  // determina si es el menor
-  is_min=value==min(read_values());
-  // si lo es pone en su salida un 0, o bien
-  // 1 en caso contrario
-  out=(is_min)?0:1;       
+ // determina si es el menor
+ is_min=value==min(read_values());
+ // si lo es pone en su salida un 0, o bien
+ // 1 en caso contrario
+ out=(is_min)?0:1;       
 \end{lstlisting}
 
 {\bf Demostración de correctitud:}
@@ -111,7 +105,6 @@ Una vez que sale del ciclo, dado que los 3 números son distintos hay exactament
 Denotamos $A1$ el proceso con nombre $A$ y salida $1$ y equivalentemente a los demas, así, los vértices con un uno, A1, B1, C1, viven cada cual en 2 mundos, por ejemplo A1 vive en ${(A,1),(B,0),(C,1)}$ y en ${(A,1),(B,1),(C,0)}$  
 
 \begin{center}
-  
   \includegraphics{figura7.png}\\
   Figura 7
 \end{center}
@@ -132,7 +125,6 @@ Cada uno de los caballeros engañados, ve a otros (k-1) engañados y sabe que ha
 
 Hipotesis de inducción: Supongamos que es correcto hasta el caso de n rondas y demostremos con n+1.\\
 Cada uno de los caballeros engañados, ve a otros (k-1) engañados y sabe que hay al menos n+3 engañados, asi que si k=n+3 sabe inmediatamente que el también es engañado y se levanta, si k>n+3, sabe que el ve a k y que el mismo puede ser engañado, pero que como por el momento por hipotesis de inducción la cota es n+3 , todavia no puede levantarse y espera una ronda más $\blacksquare$.\\
-
 
 
 
@@ -168,7 +160,7 @@ El complejo como se muestra en la figura 8, podemos pegar la linea de arriba y a
 Otra forma de verlo es como superponer los 3 hexagonos de la figura 9
 
 \begin{center}
-  \includegraphics{figura9.png}\\
+  \includegraphics[width=350pt]{figura9.png}\\
   Figura 9
 \end{center}
 
@@ -181,7 +173,7 @@ demás).\\
 
 Es el mismo complejo anterior eliminando el hexágono que tiene como centro A1, como se muestra en la figura 10.
 \begin{center}
-  \includegraphics{figura10.png}\\
+  \includegraphics[width=350pt]{figura10.png}\\
   Figura 10
 \end{center}
 
@@ -194,17 +186,18 @@ sin mentir, y en esos estados, cual seria el efecto de hacer el anuncio
 En el caso de que Bety no tenga la carta 1, entonces sabe que Carla debe de tenerla y existen los dos mundos de la figura 11, pero Bety sabe bien cual de ellos es el caso.
 
 \begin{center}
-  \includegraphics{figura11a.png}\\
+  \includegraphics[width=350pt]{figura11a.png}\\
   Figura 11
 \end{center}
 
 En el caso de que Bety si la tenga, pues los dos mundos posibles que se muestran en la 
-figura 11 siguen subsistiendo.
+figura 12 siguen subsistiendo.
 
 \begin{center}
-  \includegraphics{figura11.png}\\
-  Figura 11
+  \includegraphics[width=350pt]{figura11.png}\\
+  Figura 12
 \end{center}
+
 
 \end{enumerate}
 \end{document}
