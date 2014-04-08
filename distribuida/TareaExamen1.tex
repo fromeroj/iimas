@@ -1,0 +1,135 @@
+\documentclass{article}
+\usepackage{listings}
+\usepackage[utf8]{inputenc}
+\usepackage{ amssymb }
+\usepackage{amsfonts}
+\usepackage{lmodern}
+\usepackage{graphicx}
+\usepackage{calligra}
+\usepackage[T1]{fontenc}
+
+\title{Sistemas Distribuidos y Verificación \\ Tarea Exámen 1}
+\author{Fabián Romero Jiménez}
+\begin{document}
+\date {}
+\maketitle
+
+\begin{enumerate}
+
+\item[\bf{Problema 1}] Escribir un resumen de no más de 3 páginas de la plática del Dr. Borzoo Bonakdarpour, que tenga las siguientes puntos.
+\begin{itemize}
+\item Contexto del tema de la plática
+\item Problemas que se resuelven
+\item Trabajos relacionados, ¿que otras soluciones existen?, etc.
+\item Cual es la idea de las soluciones, que tipo de técnicas se usan
+\item Trabajo futuro y preguntas abiertas
+\item Referencias bibliográficas
+\end{itemize}
+
+\item[\bf{Respuesta}]
+La platica del Dr. Bonakdarpour trato del tema de ``Reparación automática de programas'', dando como motivación dos problemas sencillos de consenso suceptibles a fallas de comunicación, de detención y fallas bizantinas, uno de semáforos y el clásico problema de los generales bizantinos. 
+
+El precepto fundamental fue una caracterización del computo distribuido, como un modelo de lógica lineal temporal (LTL).
+
+Para lo cuál dado un programa distribuido, se representa el conjunto de estados posibles como un autómata de estados finitos no deterministico (NFA), donde cada uno de los posibles estados de un conjunto de valores o propiedades a verificar son los estados del NFA, a esos valores o propiedades se les llama ``computos''.
+
+Una vez establecido el conjunto de cómputos, representa el NFA como una estructura de Kripke, de la siguiente forma:
+como una 4-tupla $M=(S,I,T,L)$ y $A$ donde 
+\begin{itemize}
+\item $A$ es el conjunto de proposiciones atómicas
+\item $S$ es el conjunto de estados (cómputos)
+\item $I$ es el conjunto de estados iniciales $I \subseteq S$
+\item $T$ es la relacion de transición $T \subseteq S \times S$
+\item $L$ es la función de etiquetamiento $L: S \rightarrow 2^A$
+\end{itemize}
+
+Con esta definición, se usan las transiciones del autómata finito, para decir que un estado puede llegar al otro. Y se puede emprender el problema de reparar automáticamente un programa $\Pi$ digamos que hay  $P,Q \subseteq S$ que queremos llegar eventualmente (esto es un conjuntos de estados donde una cualidad deseable se cumple, esta podría ser terminación, validez, que un valor es verdadero, etc.). Así diremos que $P$ lleva a $Q$ y se denota $P \mapsto Q$, si para cualquier ejecución de $\Pi$ si llego a $P$ entonces, necesariamente llegarara a $Q$ en un tiempo finito y ``lleva a'' induce un orden.\\
+
+O dicho en la semántica de lógica modal:  $ \Box (P \models \Diamond Q)  $
+
+Usando un resultado anterior cuyo argumento intuitivo es basado en la inyectividad de las ejecuciones y que se presentó sin demostración. Dada una especificación $S$ que prohibe $R \subseteq S$ y un programa distribuido $\Pi$, podriamos remover todos las computaciones que llevaran a estados en R, sin perder ninguna válida.
+
+Ahí, dio una descripción de la demostración de que si tenemos una propiedad progresiva (usando el orden que la relación "lleva a'' induce), y si podemos calcular en tiempo constante el valor de cada estado, entonces usando el autómata finito subyaciente, podemos en tiempo polinomial, podar el arbol (Usando Dijkstra y otros algoritmos) y  encontrar un programa $\Pi'$ tal que para toda ejecución válida de $\Pi$ sea posible en $\Pi'$.
+
+Se explico de forma informal como se podaría la gráfica de tal forma que todo ciclo que no este en $Q$ sea removido y como toda hoja que no este en $Q$ tambien será removido, de tal forma que computacionalmente $\Pi' \subseteq \Pi$ pero $\Pi'$ teniendo menos estados que $P$ cumple con la especificación $S$.
+
+Mencionó como, si en vez de una se buscan tener dos o más propiedades progresivas, el programa se convierte $NP$.
+
+Como problemas abiertos se comento que dar la caracterización para los cuales dos condiciones de progreso se puedan ``concatenar'' para crear un orden y que para tal caso se conserve la capacidad de ser resuelto en tiempo polinomial.\\
+
+
+Bibliografía:
+
+\begin{itemize}
+\item Borzoo Bonakdarpour, Ali Ebnenasir, and Sandeep S. Kulkarni, {\bf Complexity Results in Revising UNITY Programs }. ACM Transactions on Autonomous and Adaptive Systems (TAAS), volume 4, number 1, 2009
+
+\item Borzoo Bonakdarpour and Sandeep S. Kulkarni, {\bf Automated Program Repair for Distributed Systems}. To appear in the ACM SIGACT News Distributed Computing Column, volume 43, number 2, pp. 85-107, 2012
+\end{itemize}
+
+\item[\bf{Problema 2}] En clase hemos visto mapas portadores y mapas simpliciales. Sea $\Xi$ un mapa portador y sea $\delta$ un mapa simplicial que preserva estructura, demuestra que si la composición $\delta \circ \Xi$ es un mapa portador, entonces $\Xi \circ \delta$ es un mapa portador.
+
+\item[\bf{Demostración}] 
+
+$\delta$ es simplicial, es decir envía vértices en vértices y complejos simpliciales en complejos simpliciales y preserva estructura. \\
+$\Xi$ es un mapa portador, es decir dadas dos gráficas $G$ y $H$ \\ $\Xi:G \rightarrow 2^H$ toma cada complejo simplicial $\sigma \in G$ a una subgráfica monótona $\Xi(\sigma) \subseteq H$
+tal que $\forall \sigma, \tau \in G$ si $\sigma \subseteq \tau \Rightarrow \Xi(\sigma) \subseteq \Xi(\tau)$
+$\delta \circ \Xi$ es un mapa portador.\\
+
+Sean $\mu,\nu \in G$ y $\mu \subseteq \nu$ dos complejos simpliciales en $G$, por demostrar: $(\Xi \circ \delta) \mu \subseteq (\Xi \circ \delta) \nu$.\\
+
+Como $\delta$ es simplicial y preserva estructura, y dado que $\mu \subseteq \nu$ entonces $\delta(\mu) \subseteq \delta(\nu)$ y dado que $\Xi$ es un mapeo portador es monótono, por lo que $\Xi(\delta(\mu)) \subseteq \Xi(\delta(\nu)) $ equivalentemente $(\Xi \circ \delta) \mu \subseteq (\Xi \circ \delta) \nu$ $\blacksquare$
+
+
+\item[\bf{Problema 3}]  Diseña un algoritmo (secuencial) que dada una tarea $T = (I, O, \Delta)$ conteste si tiene o no solución en el modelo iterado asíncrono y sin espera visto en clase, y si la tiene, conteste en a lo más cuantas capas. Analiza su corrección y complejidad (como función del tamaño de la entrada), suponiendo que para cada vértice $v \in I$, $\Delta(v)$ consiste de un conjunto de a lo más k vértices, para una constante k.
+
+\item[\bf{Respuesta}]
+En clase hemos caracterizado ampliamante la solución.\\
+La tarea $T = (I, O, \Delta)$ de dos procesos, tiene solución en el modelo iterado asíncrono y sin espera, si y solo si, existe un mapeo portador conexo $\Phi: I \rightarrow 2^O$ que respeta a $\Delta$.
+
+\begin{lstlisting}[frame=single]
+def tiene_solucion (I,O,Delta):
+  maximo=0
+  foreach (v,w) in I:
+    for v_i in Delta(v):
+      for w_i in Delta(w):
+        if BFS(v_1,w_1 , Delta(v,w)) is empty:
+           return -1
+        else:
+           pasos=log_3(len(BFS(v_i,w_i)))
+           maximo= pasos if pasos>maximo
+  return pasos
+\end{lstlisting}
+
+El algoritmo regresa -1, si no hay solución y la cantidad de iteraciones requerida si la hay.
+Como vemos el algoritmo corre a lo más una instancia de BFS por cada arista en $I$, como BFS es correcto y tiene complejidad $O(V(O)+E(O))$,
+la complejidad en el peor de los casos es $E(I) \times O(V(O)+E(O))$
+
+
+\item[\bf{Problema 4}] En el modelo anónimo iterado para n procesos, $n \ge 1$, con $L = 1$ iteración, definir cuales son las posibles vistas de los procesos en una ejecución,
+cuyos valores de entrada son S. Es decir, para cada $x \in S$, al menos un proceso empieza con x. (pista: si el conjunto de entradas en la ejecución es un conjunto S, la vista de un proceso es un subconjunto de S, y las vistas $S_1,S_2,...,S_k$ están en la misma ejecución si y solo si todas son subconjuntos de S, y se pueden ordenar de forma que cada una este contenida o sea igual a la siguiente).
+
+
+\item[\bf{Respuesta.}] Observense dos procesos $P_i, P_j$ y supóngase sin pérdida de generalidad que $P_i$ escribió antes que $P_j$, por lo tanto, cuando $P_j$ leyo la memoria, el valor de $P_i$ ya estaba presente. De esta observación se desprende que la vista de $P_j$ contiene todo lo que contiene la vista de $P_i$. El inverso no es necesariamente cierto, pero es importante notar que es posible, que ambos tengan el mismo conjunto, para eso solo es necesario que la lectura de $P_i$ haya comenzado después de la escritura de $P_j$.
+
+Pero de esta observación se puede deducir que se induce un orden que establece que si $P_i$ escribió antes que $P_j$ la vista de $S_i \subseteq S_j$ donde la igualdad puede darse.
+
+Así, suponiendo que sin perdida de generalidad que $P_i$ escribió antes que $P_j$ $\forall i \le j$ se tiene $S_1 \subseteq S_2 \subseteq ... \subseteq S_n$ y que como cada proceso al menos se vio a si mismo, digamos que $x_i$ es el valor del proceso $P_i$ entonces $x_i \in S_i $, así tenemos que:
+$\forall i\le n  \bigcup_{k=0}^{k=i} x_i  \subseteq   S_k$
+
+\item[\bf{Problema 5}] Demuestra que un modelo anónimo y un modelo cromático tienen el mismo poder de cómputo, es decir, todas las tareas anónimas, $(I, O, \Delta)$ tal que
+I y O no tienen colores, que se pueden resolver en un modelo anónimo tambén las puede resolver un modelo cromático.
+Considera modelos para dos procesos, iterado y wait-free.
+
+\item[\bf{Respuesta}] La parte que el modelo cromático tiene al menos tanto poder como la anónima es trivial, pues basta suponer que pierde la información de su color y con eso basta para modelar el caso anónimo.\\
+
+Para demostrár que el converso, es decir que el modelo anónimo es tan poderoso como el cromático, basta demostrar que es cierto arista por arista.
+
+Esto es cierto debido a que si existe $\Xi$ un mapeo portador que resuelva la tarea con el protocolo cromático $(I_C, O_c, \Delta_c)$, necesitamos construir el protocolo anónimo $(I_A, O_A, \Delta_A)$. 
+Considere $\delta$ la función que mapea cada arista $(v_x,v_y) \mapsto \{(v_x',v_{x'y'}),(v_{x'y'},v_y')\}$ es decir que mapea cada arista en dos aristas que son el resultado de segmentar la arista por la mitad, así $\delta$ es simplicial y conserva estructura y es el resultado de correr una ronda de comunicación en el modelo asíncrono libre de espera.
+
+Por lo que tenemos que: En una ronda de comunicación en el modelo anónimo, se genera un mapeo simplicial $\delta$ que preserva estructura.
+
+Por la caracterización que hemos dado sobre los protocolos que resuelven una tarea en el modelo cromático, el modelo cromatico va a poder seguir resolviendo la tarea si y solo si puede resolverla con $\delta(I)$. Pero entonces tenemos que $\Xi$ es un mapeo portador y $\delta$ y que $\Xi \circ \delta$ es un protocolo que resuelve la tarea y por el resultado demostrado en el problema 2 $\delta \circ \Xi$ que es el resultado de aplicar una iteración de comunicación al modelo anónimo, es entonces un protocolo que resuelve la tarea $T$ $\circ$
+
+\end{enumerate}
+\end{document}

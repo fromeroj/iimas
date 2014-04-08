@@ -1,0 +1,50 @@
+\documentclass{article}
+\usepackage{listings}
+\usepackage[utf8]{inputenc}
+\usepackage{ amssymb }
+\usepackage{amsfonts}
+\usepackage{graphicx}
+
+\title{Sistemas Distribuidos y Verificación \\ Tarea 3}
+\author{Fabián Romero Jiménez}
+\date{}
+\begin{document}
+\maketitle
+\begin{enumerate}
+
+\item[\bf{Problema 1}]  Recuerden el modelo visto en clase con el que resolvimos la tarea 
+$\epsilon$-agreement para dos procesos. 
+Alice y Bob proponen un valor y quieren quedar de acuerdo en un valor que no diste más $\epsilon$ de lo que el otro decidió. Después vimos que necesitaban comunicarse y que para $\epsilon$ más pequeñas se necesitaban más y más rondas de comunicación.
+ Recuerdenque usamos el modelo de memoria compartida de lectura/escritura por capas full information (por cada escritura leiamos un nuevo arreglo y escribimos todo lo que sabemos cada vez).
+
+Ahora proponemos otros dos modelos de comunicación:
+El modelo chismoso y el modelo discusión civil. El modelo chismoso dice que si de Alice
+y Bob alguno de los 2 no escucho al otro entonces tienen otra ronda de comunicación.
+ Si los dos se escuchan entonces ahi temina la comunicación.
+
+Podriamos verlo como que se lanzan insultos e indirectas pero no de frente.
+
+El modelo discusión civil dice que mientras Alice y Bob esten escuchando mutuamente la conversación sigue. En el momento que uno ya no escucha al otro ahi se termina.
+
+Sea $M \ge 0$ el número de rondas máximo que se pueden comunicar Alice
+y Bob:
+
+\begin{enumerate}
+\item Para los 2 modelos dados describe el complejo del protocolo $M$. Tienes que dar la tripleta $( I, P_m , \Xi_ m)$
+\item  Para los 2 modelos describe cuál es la tarea  $\epsilon$-agreement óptima para cada $M \ge 0$. Nos referimos a optimo como que cada vist del protocolo va a un valor de decisión único.
+En otras palabras, encontrar $\epsilon$ en función de M.
+\end{enumerate}
+
+\item[\bf{Respuesta}]
+
+\item[\bf{Problema 2}] Con el modelo visto en clase define la función de decisión de equidad de género $\delta$, que no distingue entre Alice y Bob. Es decir Alice y Bob pueden tener ya sea el valor 0 o 1 de entrada. También da la $\delta$ óptima para este caso. Aqui debes de tener cuidado de como etiquetas los vértices para que siempre se cumpla la $\epsilon$.
+
+\item[\bf{Problema 3}] Ahora regresemos al modelo de memoria compartida y modifiquémoslo. Ahora supongamos que tenemos solo una memoria. Es decir ya no tenemos capas y sobrescribimos nuestra parte del arreglo cada ronda. También regresamos al caso en que Alice propone 0 y Bob 1.
+\begin{itemize}
+\item Describe el modelo (haz la gráfica) y ve como se ve la gráfica de vistas después de M rondas.
+\item ¿Cuál es la mejor $\epsilon$ que se puede resolver en la tarea del $\epsilon$ agreement en M rondas?
+\end{itemize}
+
+
+\end{enumerate}
+\end{document}

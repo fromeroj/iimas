@@ -1,3 +1,4 @@
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Tufte-Style Book (Documentation Template)
 % LaTeX Template
@@ -174,7 +175,7 @@ The goal of this project is to describe an implementation of a functional librar
 
 There are many libraries for finance. Most of them are proprietary and programmed in ``close to the metal'' languages such as c++. This is because speed and accuracy play an important role in finance, more so in the valuation and trading areas.\\
 
-In the case of stock valuation several goals collide. The analysis is hard due to the complex, interdependent and  concurrent behaviour.  Also, speed happens to be just as important. High frequency trading (HFT) is the norm. Having a valuation done faster or more accurately than that of a competitor yields a vast, potentially insurmountable advantage. Even if it is just a $\mu s$ faster or a $\mu \pounds$ more accurate.\\
+In the case of stock valuation several goals collide. The analysis is hard due to the complex, interdependent and  concurrent behaviour.  Speed happens to be just as important. High frequency trading (HFT) is the norm. Having a valuation done faster or more accurately than that of a competitor yields a vast, potentially insurmountable advantage. Even if it is just a $\mu s$ faster or a $\mu \pounds$ more accurate.\\
 
 Besides speed, another desirable trait is correctness. But it has been long thought that it is unfeasible to achieve it. So, the industry has settled with lesser goals, such as unit testing, model validation and extensive debugging.\\
 
@@ -208,11 +209,11 @@ Purely functional data structures, as defined on Okasaki's book, are immutable d
 \item {\bf Simplified Distribution} As Michel Raynal \cite{Raynal2013} ponted out, ``an execution (of a distributed program) is a partial order on operations''. However thanks to referential transperency in a pure functional program, the order of execution of side effect free functions is not important, and such ordering irrelevant.
 \end{itemize}
 
-Apparently a hefty price has to be paid for this advantages in terms of memory and efficiency. Because ephemeral data scrutures, only have to use the exact ammount of memory the ``current state'' needs. Fortunately this is not allways the case, in many cases we can reconcile amortization and persistence by using lazy evaluation, which is possible even in strictly evaluated functional languages. Therefore, it is often possible to create data structures that are asymptotically as efficient as the best imperative solutions.
+Apparently a hefty price has to be paid for this advantages in terms of memory and efficiency. Because ephemeral data scrutures, only have to use the exact ammount of memory that ``current state'' needs. Fortunately this is not allways the case, in many cases we can reconcile amortization and persistence by using lazy evaluation, which is possible to do even in strictly evaluated functional languages. Therefore, it is often possible to create data structures that are asymptotically as efficient as the best imperative solutions.
 
 \section{Structured finance}
 
-The essence of structured finance is the pooling of economic assets such as loans, bonds, mortgages, etc, and subsequent issuance of claims against them (tranches) using a prioritized capital structure. Those prioritization schemes used in structuring are created to repackage risks. As result, some tranches are safer than the average asset in the underlying pool. The resulting tranches are sold in the market as derivative securities.\\
+The essence of structured finance is the aggregation (pooling) of economic assets such as loans, bonds, mortgages, etc. And subsequent issuance of claims against them (tranches). Using a prioritized capital structure (structuring) in order to repackage risk. As result, some tranches are safer than the average asset in the underlying pool. The resulting tranches are sold in the market as derivative securities.\\
 
 The structuring, valuation and analysis of those securities, specifically Colletarized Debt Obligations (CDO) in residential mortgage backed securities (RMBS) has played a central role on the finance world, because as noted on Fabozzi's book \cite{Fabozzi2010} "the market of mortgage based securities has become the largest cash financial market in the world'' whose value is in the order of several trillion USD.\\
 
@@ -276,22 +277,20 @@ communication between processes is safe: i.e. it obeys the protocol specified by
 \chapter{Objectives}
 
 
+Create and describe a library to test the capabilities, strengths and weaknesses of the current research in the field of functional programming, specifically program verification, purelly funtional data structures and protocol verification in distributed computing.\\
 
-\chapter{Expected Outcomes}
+To create a library using only (\pfds). Formally proving all used algorithms. \\
+Create a mockup of a stock market, where all comunication is done with session typed protocols having ${\mu}s$ speed for elementary calculations and millisecond speed for the trade floor ``tick''
 
+\section{General Objectives}
 
-\newpage
-\section{nothing}
-we think of error freeness checked via typability, of internal mobility
-which nicely captures the idea of private conversations, of linearity and type
-duality which enforce the mirroring of the channel usage into its type, and of
-channel transmission, at the very basis of the pi-calculus, to model service dele-
-gation.
-Session Types 
+Create a library for analysis, structuring and risk assesment for mortgage backed securities using exclusivelly purelly functional data structures.\\
 
-A complete library can be done using only (\pfds). Formally proving most (all?) of their algorithms. Session types and \pfds can be successfully implemented on mission critical financial problems. Preserving the speed and accuracy of current methods. Offering the solid foundations of \fp and providing some advantages as type sound concurrency. Creating a more modern, scalable, safe and coherent approach.\\
+Create a trade floor mockup with and a protocol with all comunications required for its data interchange in session types. \\
 
-Using \pfds will likely provide many benefits. Among them, will simplify parallelism  and concurrency. \pfds enable algebraic reasoning over data structures. Which is a useful feature given the sophistication of some calculus. Since \pfds are immutable, locking is unnecessary.  To create fast software, we can't make hardware go faster. yet we can make software to achieve more with the same hardware, working less to achieve its goal. So, using a lazy language will prevent for working in something unnecessary. And since \pfds are persistent, many recalculations will be avoided.  \\
+Create an agent wich implement a minimizing price impact strategy communicating with this market and reactively enough to execute actions in a millisecond\\
+
+\section{Specific objectives}
 
 %----------------------------------------------------------------------------------------
 

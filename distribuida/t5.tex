@@ -1,0 +1,52 @@
+\documentclass{article}
+\usepackage{listings}
+\usepackage[utf8]{inputenc}
+\usepackage{ amssymb }
+\usepackage{amsfonts}
+\usepackage{graphicx}
+
+\title{Sistemas Distribuidos y Verificación \\ Tarea 5}
+\author{Fabián Romero Jiménez}
+\date{}
+\begin{document}
+\maketitle
+\begin{enumerate}
+
+\item[\bf{Problema 1}] Recuerden la platica de Borzoo sobre program repair. Encuentra un algoritmo polinomial que repare la secuencia de estados, en el caso de una sola condición de progreso $\box(P \models \Diamond Q)$, en donde hay un ciclo y solo puedes quitar transiciones. Demuestra que es correcto y que es polinomial.
+
+
+
+
+\item[\bf{Problema 2}] Explicar por qué el problema de encontrar un ciclo que pase por 2 vértices dados es NP-Completo. (Solo dar un esbozo de la prueba).
+
+\item[\bf{Problema 3}] Recordemos ahora el modelo de memoria compartida wait-free y asíncrono para n procesos. El algoritmo que ejecutan los procesos en primera instancia fue:
+
+\begin{lstlisting}[frame=single]
+Alg(id):
+    r := − 1
+    view := id
+    loop:
+        r := r+1
+        mem[r] := write(view)
+        X := scan(mem[r])
+        view := conjunto de id’s en X
+    until |view|= n−r
+output view
+\end{lstlisting}
+Después vimos una modificación al algoritmo, en el cual un proceso ``no olvida'' si en una iteración anterior vio a algún otro proceso. Cambiamos el código de la siguiente manera:
+\begin{lstlisting}[frame=single]
+Alg(id):
+    r := − 1
+    view := id
+    loop:
+        r := r+1
+        mem[r] := write(view)
+        X := scan(mem[r])
+        view := view U conjunto de id’s en X
+    until |view| >= n−r
+output view
+\end{lstlisting}.\\
+
+Demuestra que los dos algoritmos son correctos y que cumplen la propiedad de que las vistas de los procesos están contenidas de acuerdo al orden en que los procesos terminan su iteración. (i.e. el proceso j terminó después que el proceso k, entonces la vista del proceso j está contenida en la vista del proceso k).
+\end{enumerate}
+\end{document}

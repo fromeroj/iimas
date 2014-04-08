@@ -1,0 +1,337 @@
+\documentclass{article}
+\usepackage{listings}
+\usepackage[utf8]{inputenc}
+\usepackage{ amssymb }
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{boxproof}
+
+\title{Lógica Matemática. \\Tarea 1}
+\author{Fabián Romero Jiménez}
+\date{}
+\begin{document}
+\maketitle
+\begin{enumerate}
+
+\item[\bf{Problema 1}] Demuestra que si $f:\{V, F\}^n \to \{V, F\} (1 \le n)$, entonces $f$ se puede definir en términos de $\neg,\vee$:
+
+Demostración por inducción en el número de argumentos de la función.
+
+Caso base. Constantes, las conectuvas unarias y las binarias.
+
+Para las constante y las conectivas unarias, ellas mismas son la expresión, para 
+las 16 funciones binarias posibles, la fórmula usando únicamente $\neg,\vee$, funciones unarias, binarias y constantes es la siguiente para cada caso: 
+{\footnotesize
+\begin{tabular}{ |l|l||l|l|l|l|l|l|l|l|l|l|l|l|l|l|l|l| }
+\hline 
+  $V_0$ & $V_1$ & $S_0$ & $S_1$ & $S_2$ & $S_3$ & $S_4$ & $S_5$ & $S_6$ & $S_7$ & $S_8$ & $S_9$ & $S_{10}$ & $S_{11}$ & $S_{12}$ & $S_{13}$ & $S_{14}$ & $S_{15}$ \\
+\hline 
+  V & V &  V & V &  V & V &  V & V &  V & V &  F & F &  F & F &  F & F & F & F \\ 
+  V & F &  V & V &  V & V &  F & F &  F & F &  V & V &  V & V &  F & F & F & F \\ 
+  F & V &  V & V &  F & F &  V & V &  F & F &  V & V &  F & F &  V & V & F & F \\ 
+  F & F &  V & F &  V & F &  V & F &  V & F &  V & F &  V & F &  V & F & V & F\\
+\hline 
+\end{tabular}}
+{\footnotesize
+\begin{tabular}{ |l|l| }
+\hline
+  fn  & fórmula \\ 
+\hline
+  $S_0$ &  V\\
+  $S_1$ &  $\neg (V_0 \vee V_1)$\\
+  $S_2$ &  $ V_0 \vee \neg V_1$\\
+  $S_3$ &  $V_0$\\
+  $S_4$ &  $ \neg V_0 \vee  V_1$\\
+  $S_5$ &  $V_1$\\
+  $S_6$ &  $ \neg (\neg V_0 \vee \neg V_1) \vee \neg ( V_0 \vee V_1)$\\
+  $S_7$ &  $\neg (\neg V_0 \vee \neg V_1)$\\
+  $S_8$ &  $ (\neg V_0 \vee \neg V_1)$\\
+  $S_9$ &  $ \neg (\neg V_0 \vee V_1) \vee \neg ( \neg V_0 \vee V_1)$ \\
+  $S_{10}$ &  $\neg V_1$\\
+  $S_{11}$ &  $\neg (\neg V_0 \vee V_1)$\\
+  $S_{12}$ &  $\neg V_0$\\
+  $S_{13}$ &  $\neg ( V_0 \vee \neg V_1)$\\
+  $S_{14}$ &  $\neg (V_0 \vee V_1)$\\
+  $S_{15}$ &  F\\
+\hline 
+\end{tabular}}
+
+Hipotesis de inducción.
+$\forall k<n$ toda función booleana $f:\{V,F\}^k \rightarrow \{V,F\}$ se puede definir con expresiones que involucran $\neg,\vee$ un subconjunto de los parámetros de la función y las constantes ${V,F}$.
+
+Para el caso $n$, sea $f:\{V,F\}^n \rightarrow \{V,F\}$ una función binaria.
+observese que si se deja fija la última variable, (digamos a V), es una función binaria de $n-1$ parámetros, que por hipótesis de inducción puede expresarse como una expresión que involucra únicamente $\neg,\vee$ un subconjunto de los parámetros de la función y las constantes ${V,F}$, luego fijemos la última variable a F y ahora tenemos una mapeo de $f:\{V,F\}^{n-1}  \times \{V,F\} \rightarrow \{V,F\}$ y se puede aplicar la misma función binaria a este par y así tenemos una expresión que mapea $f:\{V,F\}^n \rightarrow \{V,F\}$ y que involucra únicamente $\neg,\vee$ un subconjunto de los parámetros de la función y las constantes ${V,F}$ $\blacksquare$
+
+
+\item[\bf{Problema 2}] Demuestra los siguientes teoremas de deducción natural:
+\begin{itemize}
+\item $\vdash_N(p \wedge q \rightarrow r) \leftrightarrow (p \rightarrow (q \rightarrow r ));$
+
+\begin{proofbox}
+  \[
+    \lbl{1}\:     p\land q \to r            \= \mbox{Hipótesis}\\
+    \[
+      \lbl{2}\:   p                         \= \mbox{Hipótesis}\\
+      \[
+        \lbl{3}\: q \=                      \mbox{Hipótesis}\\
+        \lbl{4}\: p\land q                  \= \intro\land(\ref{2},\ref{3})\\
+        \lbl{5}\: r                         \= \elim\to(\ref{1},\ref{4})\\
+      \]
+      \lbl{6}\:   q\to r                    \= \intro\to  \\
+    \]
+    \lbl{7}\:     p \to (q \to r)           \= \intro\to \\
+  \]
+  \[
+    \lbl{8}\:     p \to (q \to r)           \= \mbox{Hipótesis}\\
+    \[
+      \lbl{9}\:   p \land q                 \= \mbox{Hipótesis}\\
+      \lbl{10}\:  p                         \= \elim\land(\ref{9})\\
+      \lbl{11}\:  q \to r                   \= \elim\to(\ref{8},\ref{10})\\
+      \lbl{12}\:  q                         \= \elim\land(\ref{9})\\
+      \lbl{13}\:  r                         \= \elim\to(\ref{12},\ref{11})\\
+    \]
+    \lbl{14}\:    p\land q \to r            \= \intro\to \\
+  \]
+  \lbl{15}\:     (p\land q \to r) \leftrightarrow (p\land q \to r) \= \intro\leftrightarrow \\
+\end{proofbox}
+
+\item $\vdash_N(p \rightarrow q) \rightarrow (p \wedge r \rightarrow q \wedge r);$
+\begin{proofbox}
+  \[
+    \lbl{1}\:     p \to q            \= \mbox{Hipótesis}\\
+    \[
+      \lbl{2}\:   p \land r          \= \mbox{Hipótesis}\\
+      \lbl{3}\: p                   \= \elim\land(\ref{2})\\
+      \lbl{4}\: q                   \= \elim\to(\ref{1},\ref{3})\\ 
+      \lbl{5}\: r                   \= \elim\land(\ref{2})\\
+      \lbl{6}\: q \land r            \= \intro\land(\ref{4},\ref{5})\\
+    \]
+      \lbl{7}\:   p \land r \to q \land r    \= \intro\to  \\
+  \]
+  \lbl{8}\:    (p \to q) \to  (p \land r \to q \land r)   \= \intro\to \\
+\end{proofbox}
+
+\item $\vdash_N(p \rightarrow q) \rightarrow (p \vee r \rightarrow q \vee r);$
+
+\begin{proofbox}
+  \[
+    \lbl{1}\:     p \to q            \= \mbox{Hipótesis}\\
+    \[
+      \lbl{2}\:   p \lor r          \= \mbox{Hipótesis}\\
+      \[
+        \lbl{3}\: p                   \= \mbox{Hipótesis}\\
+        \lbl{4}\: q                   \= \elim\to(\ref{1},\ref{3})\\ 
+        \lbl{6}\: q \lor r            \= \intro\lor(\ref{4})\\
+      \]
+      \[
+        \lbl{7}\: r                   \= \mbox{Hipótesis}\\
+        \lbl{8}\: q \lor r            \= \intro\lor(\ref{7})\\
+      \]
+      \lbl{9}\:   q \lor r            \= \elim\lor(\ref{2})  \\
+    \]
+      \lbl{10}\:   p \lor r \to q \lor r    \= \intro\to  \\
+  \]
+  \lbl{11}\:    (p \to q) \to  (p \lor r \to q \lor r)   \= \intro\to \\
+\end{proofbox}
+
+\newpage
+\item $p \rightarrow q$,$q \rightarrow r \vee s, \neg s,p \vdash_N r.$
+
+\begin{proofbox}
+    \lbl{1}\:     p \to q            \= \mbox{Premisa}\\
+    \lbl{2}\:     q \to r \lor s     \= \mbox{Premisa}\\
+    \lbl{3}\:     \lnot s            \= \mbox{Premisa}\\
+    \lbl{4}\:     p                  \= \mbox{Premisa}\\
+    \lbl{5}\:     q                  \= \elim\to(\ref{1},\ref{4})\\ 
+    \lbl{6}\:     r \lor s           \= \elim\to(\ref{2},\ref{5})\\
+    \[ 
+      \lbl{7}\:   r                  \= \mbox{Hipótesis}\\
+    \]
+    \[ 
+      \lbl{8}\:   s                  \= \mbox{Hipótesis}\\
+      \lbl{9}\:   \bot               \= \elim\lnot(\ref{8},\ref{3})\\
+      \lbl{10}\:   r                 \= \intro\lnot(\ref{9})\\
+    \]
+    \lbl{10}\:   r                 \= \elim\lor(\ref{6}) \\
+\end{proofbox}
+
+
+\end{itemize}
+
+\item[\bf{Problema 3}] Realiza las siguientes sustituciones:
+\begin{itemize}
+\item $(((\forall x:(\exists y . P_2^2(x,z)))\vee P_2^1(y))))_{[x:=f_1^1(z)]})_{[y:=f_3^2(z,x)]}$\\
+$((\forall x:(\exists y . P_2^2(x,z)))\vee P_2^1(y))))_{[y:=f_3^2(z,x)]}$\\
+$\forall x:(\exists y . P_2^2(x,z)))\vee P_2^1(f_3^2(z,x))$\\
+
+\item $(((\exists x.(\forall z . (\exists y. P_1^3(x,y,z))))\Leftrightarrow P_2^3(x_1,y,z_2))_{[x_1:=f_1^2(x,y,z_3)]})_{[z:=f_1^2(y)]}$\\
+
+$((\exists x.(\forall z . (\exists y. P_1^3(x,y,z))))\Leftrightarrow P_2^3(f_1^2(x,y,z_3),y,z_2))_{[z:=f_1^2(y)]}$\\
+
+$(\exists x.(\forall z . (\exists y. P_1^3(x,y,z))))\Leftrightarrow P_2^3(f_1^2(x,y,z_3),y,z_2)$\\
+
+\item $((\exists x . P_1^3(x,y,z)) \Rightarrow P_1^1(x))_{[z:=f_1^2(x,y)]}$\\
+$(\exists x' . P_1^3(x',y,f_1^2(x,y))) \Rightarrow P_1^1(x)$
+
+\item $(((\forall y . P_1^3(x,y,z)) \wedge (\exists z . P_2^3(x,y,z)) \wedge(\forall x . P_3^3(x,y,z)))_{[x:=f_1^2(y,z)]})_{[y:=f_2^1(x,z)]} $\\
+$((\forall y' . P_1^3(f_1^2(y,z),y',z)) \wedge (\exists z' . P_2^3(f_1^2(y,z),y,z')) \wedge(\forall x . P_3^3(x,y,z)))_{[y:=f_2^1(x,z)]} $
+$(\forall y' . P_1^3(f_1^2(f_2^1(x,z),z),y',z)) \wedge (\exists z' . P_2^3(f_1^2(f_2^1(x,z),z),f_2^1(x,z),z')) \wedge(\forall x' . P_3^3(x',f_2^1(x,z),z)) $
+
+\end{itemize}
+
+
+\item[\bf{Problema 4}] Encuentra un modelo para el siguiente conjunto de fórmulas.
+\begin{enumerate}
+\item $\forall x. \exists y P_1^2(x,y)$
+\item $\forall x. \neg P_2^2(x,c) \rightarrow P_1^2(x,c) $
+\item $\neg \exists x . P_2^2(c,f_1^1(x))$
+\item $\neg \exists x . P_2^2(x,f_1^1(x))$
+\end{enumerate}
+
+Es muy sencillo buscar un modelo finito y muy pequeño, así, podemos verificar $\models_I \gamma$ de forma exahustiva con facilidad.
+Veamos la siguiente interpretación $I_Q=(\Psi,\Phi,\Pi)$\\
+$Q=\{0,1,2\}$\\
+$c=0$\\
+$f_1^1(0)=1,f_1^1(1)=2,f_1^1(2)=1$\\
+$P_1^2(x,y)$ es la relación $x\not=y$\\
+$P_2^2(x,y)$ es la relación $x=y$
+
+Demostremos la validez de cada fórmula:
+\begin{enumerate}
+\item $\forall x. \exists y P_1^2(x,y)$\\
+En la semántica dada: $\forall x. \exists y .  x\not=y $\\
+Lo cual es evidente, pues el conjunto $Q$ tiene 3 elementos, para cualquiera de ellos
+podemos elejir uno diferente.
+\item $\forall x. \neg P_2^2(x,c) \rightarrow P_1^2(x,c) $\\
+En la semántica dada: $\forall x. \neg x=0 \rightarrow x\not=0 $.\\
+También es evidente que cada elemento o bien es 0 o no lo es.
+\item $\neg \exists x . P_2^2(c,f_1^1(x))$
+En la semántica dada: $\neg \exists x . 0=f_1^1(x)$.\\
+Es decir que la función siempre envía a un valor distinto de 0, lo cual es cierto.
+\item $\neg \exists x . P_2^2(x,f_1^1(x))$\\
+En la semántica dada: $\neg \exists x . x=f_1^1(x)$\\
+Lo que dice que la función no envía a ningún valor a si mismo, lo cual es cierto.
+\end{enumerate}
+
+Por lo que ya demostramos cada premisa del modelo, haciendolo válido.$\blacksquare$
+
+
+\item[\bf{Problema 5}]
+Demuestra los siguientes teoremas de deducción natural.
+
+\begin{itemize}
+\item $\forall x . (\exists y . P_1^1(x) \rightarrow P_2^1(y)) \vdash_N \neg(\exists x . (\forall y . P_1^1(x) \wedge \neg P_2^1(y))) $
+
+\begin{proofbox}
+    \lbl{1}\: \mbox{$\forall x . (\exists y . P_1^1(x) \rightarrow P_2^1(y))$} \= \mbox{Premisa}\\
+    \[ 
+      \lbl{2}\: \mbox{$\exists x . (\forall y . P_1^1(x) \wedge \neg P_2^1(y))$} \= \mbox{Hipótesis}\\
+      \[[x:=x_0]: \lbl{3} \: \mbox{$ \forall y . P_1^1(x_0) \wedge \neg P_2^1(y) $} \= \elim\exists(\ref{2}) \\
+        \lbl{4}\: \mbox{$\exists y . P_1^1(x_0) \rightarrow P_2^1(y)$} \= \elim\forall(\ref{1})\\
+      \[[y:=y_0]: \lbl{5} \: \mbox{$ P_1^1(x_0) \rightarrow P_2^1(y_0)  $} \= \elim\exists(\ref{4}) \\
+    \lbl{6}\: \mbox{$ P_1^1(x_0) \wedge \neg P_2^1(y_0)  $}          \= \elim\forall(\ref{3})\\       
+    \lbl{7}\: \mbox{$ P_1^1(x_0) $}               \= \elim\land(\ref{6})\\       
+    \lbl{8}\: \mbox{$ \neg P_2^1(y_0) $}          \= \elim\land(\ref{6})\\       
+    \lbl{9}\: \mbox{$  P_2^1(y_0) $}          \= \elim\to(\ref{5},\ref{7})\\ 
+    \lbl{10}\:\bot                            \= \elim\lnot(\ref{8},\ref{9})\\
+        \]
+      \]
+    \]
+    \lbl{11}\: \mbox{$\neg(\exists x . (\forall y . P_1^1(x) \wedge \neg P_2^1(y)))$}                           \= \intro\lnot\\
+\end{proofbox}
+
+
+\item $\forall x .\forall y . P_1^1(x) \rightarrow P_2^1(x) \wedge P_3^1(y), P_1^1(c) \vdash_N \neg(\forall z \neg P_2^1(z))$
+
+\begin{proofbox}
+  \lbl{1}\: \mbox{$\forall x .\forall y . P_1^1(x) \rightarrow P_2^1(x) \wedge P_3^1(y)$} \= \mbox{Premisa}\\
+  \lbl{2}\: \mbox{$P_1^1(c)$} \= \mbox{Premisa}\\
+    \[ 
+      \lbl{3}\: \mbox{$\forall z \neg P_2^1(z)$} \= \mbox{Hipótesis}\\
+        \[ [x:=c] \lbl{4} \: \mbox{$\forall y . P_1^1(c) \rightarrow P_2^1(c) \wedge P_3^1(y)$} \= \elim\forall(\ref{1}) \\
+          \[y_0: \lbl{5} \: \mbox{$P_1^1(c) \rightarrow P_2^1(c) \wedge P_3^1(y_0)$} \= \elim\forall(\ref{4}) \\
+          \lbl{6}\: \mbox{$  P_2^1(c) \wedge P_3^1(y_0) $}          \= \elim\to(\ref{5},\ref{2})\\ 
+          \lbl{7}\:  \mbox{$P_2^1(c)$}            \= \elim\land(\ref{6})\\
+          \[[z:=c] \lbl{8} \: \mbox{$\neg P_2^1(c) $} \= \elim\forall(\ref{3}) \\
+          \lbl{9}\:\bot                            \= \elim\lnot(\ref{8},\ref{7})\\
+          \]
+          \]
+        \]
+    \]
+    \lbl{10}\: \mbox{$\neg \forall z \neg P_2^1(z)$}                           \= \intro\lnot\\
+\end{proofbox}
+
+\newpage
+
+\item $ \forall x. P_1^1(x) \rightarrow (\forall y. P_2^1(y) \rightarrow (\forall z . P_3^1(z)\rightarrow (P_4^1(z) \rightarrow (\exists x_1 . P_1^2(z,x_1))))),P_1^1(c),P_2^1(c),P_3^1(c) \vdash_N (\forall x_1 .\neg P_1^2(c,x_1)) \rightarrow \neg P_4^1(c)$
+
+\begin{proofbox}
+    \lbl{1}\: \mbox{$\forall x. P_1^1(x) \rightarrow (\forall y. P_2^1(y) \rightarrow (\forall z . P_3^1(z)\rightarrow (P_4^1(z) \rightarrow (\exists x_1 . P_1^2(z,x_1)))))$}                           \= \mbox{Premisa}\\
+    \lbl{2}\: \mbox{$P_1^1(c)$}                           \= \mbox{Premisa}\\
+    \lbl{3}\: \mbox{$P_2^1(c)$}                           \= \mbox{Premisa}\\
+    \lbl{4}\: \mbox{$P_3^1(c)$}                           \= \mbox{Premisa}\\
+      \[ [x:=c] \lbl{5} \: \mbox{$P_1^1(c) \rightarrow (\forall y. P_2^1(y) \rightarrow (\forall z . P_3^1(z)\rightarrow (P_4^1(z) \rightarrow (\exists x_1 . P_1^2(z,x_1)))))$} \= \elim\forall(\ref{1}) \\
+      \[ [y:=c] \lbl{6} \: \mbox{$P_1^1(c) \rightarrow (P_2^1(c) \rightarrow (\forall z . P_3^1(z)\rightarrow (P_4^1(z) \rightarrow (\exists x_1 . P_1^2(z,x_1)))))$} \= \elim\forall(\ref{5}) \\
+      \[ [z:=c] \lbl{7} \: \mbox{$P_1^1(c) \rightarrow (P_2^1(c) \rightarrow (P_3^1(c)\rightarrow (P_4^1(c) \rightarrow (\exists x_1 . P_1^2(c,x_1)))))$} \= \elim\forall(\ref{6}) \\
+      \lbl{8}\: \mbox{$P_2^1(c) \rightarrow (P_3^1(c)\rightarrow (P_4^1(c) \rightarrow (\exists x_1 . P_1^2(c,x_1))))$}          \= \elim\to(\ref{7},\ref{2})\\ 
+      \lbl{9}\: \mbox{$P_3^1(c)\rightarrow (P_4^1(c) \rightarrow (\exists x_1 . P_1^2(c,x_1)))$}          \= \elim\to(\ref{8},\ref{3})\\ 
+      \lbl{10}\: \mbox{$P_4^1(c) \rightarrow (\exists x_1 . P_1^2(c,x_1))$}          \= \elim\to(\ref{9},\ref{4})\\
+      \[ \lbl{11} \: \mbox{$\neg \exists x_1 . P_1^2(c,x_1)$} \= \mbox{Hipótesis} \\
+      \[ \lbl{12} \: \mbox{$P_4^1(c)$} \= \mbox{Hipótesis} \\
+      \lbl{13}\: \mbox{$\exists x_1 . P_1^2(c,x_1)$}         \= \elim\to(\ref{10},\ref{12})\\ 
+      \lbl{14}\:   \bot               \= \elim\lnot(\ref{11},\ref{13})\\
+      \]
+      \]
+      \]
+      \]
+      \]
+      \lbl{15}\: \mbox{$(\forall x_1 .\neg P_1^2(c,x_1)) \rightarrow \neg P_4^1(c)$} \= \intro\lnot\\
+\end{proofbox}
+
+\end{itemize} 
+ 
+
+\item[\bf{Problema 5}] Demuestra que las reglas de deducción natural $\wedge E, F, C y \forall I$ son correctas.
+
+Para establecer la corrección , buscamos demostrar que , si:\\
+$\phi_1,\phi_2,...,\phi_n \vdash \psi$\\ 
+Es una inferencia válida, entonces:\\
+$\phi_1,\phi_2,...,\phi_n \models \psi$\\ 
+
+La premisa aquí es que podemos utilizar la deducción natural para derivar $\psi$ de $\phi_1,\phi_2,...,\phi_n$. Es decir que $\psi$ es una sucesión de aplicaciones de reglas de deducción natural que toma $n$ pasos.\\
+La conclusión a la que deseamos arrivar es que cualquier asignación de valores de verdad a las proposiciones atómicas que hace todas las fórmulas $\phi_1,\phi_2,...,\phi_n$ verdaderas, también hacen de $\psi$ verdadera.\\
+
+Demostremos por inducción sobre el número de pasos en la prueba dada para establecer la validez de la consecuencia subsecuente. Sea k este número. 
+Observe que la hipotesis es que si la prueba tiene n deducciones, cada una de ellas, hasta la deducción $k$ es correcta.
+
+Caso base : El caso base es k = 1 . Debido a la naturaleza de la prueba por deducción natural, hay al menos un paso y si sólo hay 1 debe de ser una premisa que es precisamente la conclusión, por lo que , en efecto, una de las premisas $\phi_1,\phi_2,...,\phi_n$ debe ser $\psi$. En este caso la conclusión es cierta.\\
+
+Paso inductivo : Supongamos que hay una prueba de la válidez de la subsiguiente
+$\phi_1,\phi_2,...,\phi_n \vdash \psi$ 
+que requiere $n > 1$ aplicaciones de reglas de deduccion natural.
+la Hipotsis de inducción, es que para toda prueba de longitud hasta $k$, las reglas de la deducción natural se comportan semánticamente en la misma manera que las tablas de verdad correspondientes evalúan.
+
+Para el caso $n+1$ veamos cual fue la última regla de deducción natural aplicada.
+Por el requerimiento del ejercicio, supondremos que es una de las siguientes $\wedge E, F, C y \forall I$
+y demostremos que la conclusión deducida coincide con la tabla de verdad.
+
+\begin{itemize}
+\item $\wedge E$\\
+Es decir hay una fórmula anterior $\phi_k$ que es $\psi \wedge \phi_s$  $s < k \le n$
+
+Por hipotesis de inducción, establece que cualquier asignación de valores a las proposiciones atómicas que hacen a todas las formulas de $\phi_1,\phi_2,...,\phi_n$ ciertas, hace cierta toda la cadena de conclusiones, y como hacia cierta a $\psi \wedge \phi_s$ y sabemos que una conjunción es cierta solo si ambos de sus elementos son ciertos, por lo que podemos asegurar que en esos casos $\psi$ es cierto.
+
+\item $F$\\
+En este caso, hay dos formulas $\phi_k,\phi_s$ $s < k \le n$ tales que una es la negación de la otra, la hipóteis de inducción establece que cualquier asignación de valores a las proposiciones atómicas que hace a todas las formulas de $\phi_1,\phi_2,...,\phi_n$ verdaderas.
+Pero claramente esto no puede pasar, pues no pueden simultaneamente ser cierta una conclusión y su negación, por lo que la hipótesis no se cumple, por lo que podemos deducir cualquier cosa en particular nuestra conclusión.
+
+\item $C$\\
+En este caso, se saben que hay dos elementos de $\phi_1,\phi_2,...,\phi_n$ que no se concluyeron directamente, sino por medio de la introduccíon de la hipotesis $\alpha$ y $\neg \alpha$ respectivamente, pero por construcción, consideramos esas pruebas, como parte de la hipótesis de inducción, sin embargo en ambos casos llegamos a una contradicción, de la forma $\beta \wedge \neg \beta$, pues esa es la forma $C$ y análogamente al caso de $F$ no podría haber una asignación de valores a las proposiciones atómicas que hiciera a la cadena de formulas $\phi_1,\phi_2,...,\phi_n$ verdaderas, de ahi se sigue cualquier conclusión, en particular nuestro caso inductivo.
+
+\item $\forall I$\\
+En esta caso, se acepta la inclusión de la lógica de predicados, todos los argumentos hasta el momento son para lógica proposicional, por lo que solo esbozaré la idea central de la prueba, que si vamos a eliminar un $\forall$ se tiene un predicado de la forma $\forall x. \alpha$ y se da un valor específico para la substitución de $\alpha$. La hipotesis ya no puede ser exahustiva, por que no podemos verificar todas las asignaciones que nos den verdadero, pero podemos considerar que sigue siendo cierto que si una asignacion de valores de las constantes y las proposiciónes atómicas hacen verdadera simultaneamente toda la cadena de deducciónes, en particular si lo hacian cierto con cualquier valor para la fórmula que contenia $\forall x$, claramente lo sigue siendo para el caso específico de $\alpha$, de caso contrario no podria haber sido cierto para  $\forall x$.
+
+\end{itemize}
+
+\end{enumerate}
+\end{document}

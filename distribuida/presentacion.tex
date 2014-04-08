@@ -1,0 +1,110 @@
+\documentclass[hyperref={pdfpagelabels=false}]{beamer}
+\usepackage[utf8]{inputenc}
+% By  using hyperref={pdfpagelabels=false} you get rid off:
+% Package hyperref Warning: Option `pdfpagelabels' is turned off
+% (hyperref)                because \thepage is undefined. 
+% Hyperref stopped early 
+%
+
+\usepackage{lmodern}
+% Using lmondern and you get rid off this:
+% LaTeX Font Warning: Font shape `OT1/cmss/m/n' in size <4> not available
+% (Font)              size <5> substituted on input line 22.
+% LaTeX Font Warning: Size substitutions with differences
+% (Font)              up to 1.0pt have occurred.
+%
+
+% If \titel{$B!D(B} \author{$B!D(B} come after \begin{document} 
+% you get the following warnig:
+% Package hyperref Warning: Option `pdfauthor' has already been used,
+% (hyperref) ... 
+% So it is here before \begin{document}
+
+\usetheme{AnnArbor}
+\usecolortheme{beaver}
+\title{The Art of Multiprocessor
+Programming\\Introduction }   
+\author{Maurice Herlihy} 
+% additional usepackage{beamerthemeshadow} is used
+%\usepackage{beamerthemeshadow}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame} 
+
+
+ 
+\section{Introduction} 
+\begin{frame}
+\frametitle{Tools and problems}
+
+\begin{block}{Tools}
+\begin{enumerate}
+\item Interruptions (Cans)
+\pause 
+\item Flags
+\pause 
+\item Billboards
+\pause
+\end{enumerate}
+\end{block}
+
+\begin{block}{Problems}
+\begin{enumerate}
+\item Mutual Exclusion.
+\pause
+\item Producer–Consumer.
+\pause
+\item Readers–Writers.
+\end{enumerate}
+\end{block}
+\end{frame}
+
+
+\subsection{Properties}
+\begin{frame}
+\frametitle{Properties} 
+\begin{enumerate}
+\item mutual exclusion
+\pause
+\item safety
+\pause
+\item deadlock-freedom
+\pause
+\item starvation-freedom
+\pause
+\item no waiting
+\end{enumerate}
+\end{frame}
+
+
+\section{Amdal's law} 
+\subsection{Amdal's law}
+\begin{frame}
+$$ Speedup =  \frac{T_{Serial}}{T_{TotalParalelo}} $$
+\end{frame}
+
+\begin{frame}
+$$ Speedup =  \frac{T_{Serial}}{T_{Secuencial} + T_{Paralelizable} } $$
+\end{frame}
+
+\begin{frame}
+$$ Speedup =  \frac{1}{ (1-p) + \frac{p}{n} } $$
+\end{frame}
+
+\begin{frame}
+$$  \frac{1}{ (1-p) + \frac{p}{n} } <  \frac{1}{ (1-p) } $$
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Remarks}
+
+Concurrency and distribution are computing's most pressing problem. As we approach the 50th anniversary of Moore's Law, the rules are changing: processor core counts are doubling while clock speeds remain fixed, rendering explotation of concurrency essential. Meanwhile, we have entered an age where everyone has a computer in their pocket, depending crucially on communication with other computers to achieve their function. Without a way to routinely and reliably build concurrent and distributed systems, a half century of unprecedented technical progress will draw to a close.
+
+
+\end{frame}
+
+\end{document}

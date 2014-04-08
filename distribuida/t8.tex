@@ -1,0 +1,85 @@
+\documentclass{article}
+\usepackage{listings}
+\usepackage[utf8]{inputenc}
+\usepackage{ amssymb }
+\usepackage{amsfonts}
+\usepackage{graphicx}
+
+\begin{document}
+\begin{enumerate}
+
+\item[\bf{Problema 1}] Alice y Bob se enamoran y se casan y eventualmente se divorcian.
+El juez da Alice custodia de los animales y Bob tiene que alimentarlos. 
+Los perros ahora se llevan bien entre sí, Pero toman el lado de Alice.
+Así que atacan a Bob cuando lo ven.\\
+Alicia no debe liberar a los perros a menos que haya comida allí.\\
+Bob no quiere entrar en el patio a menos que los animales hayan consumido toda la comida y ya no estén en el patio.\\
+
+Alice y Bob deben hacer un protocolo utilizando latas y cuerdas que funciona si Bob no puede ver el estado de las latas en la ventana de Alice y viceversa.\\
+
+\item[\bf{Solución}]
+Se pone una lata en la ventana de cada lado, cada quién puede tirar a la opuesta y levantar la suya.
+
+Protocolo de Alicia.\\
+\begin{enumerate}
+\item[A1] Si los perros tienen hambre, revisa si no hay comida, en ese caso levanta su lata (si está tirada) y entonces tira de la lata de Bob.
+\item[A2] Espera a que su lata este caida. Entonces saca a los perros, cuando estos regresan, realiza la Acción A1.
+\end{enumerate}
+
+Protocolo de Bob.\\
+\begin{enumerate}
+\item[B1] Espera a que su lata esté caida, entonces sale al patio y pone comida, cuando regresa,  levanta su lata y tira la lata de Alicia.
+\end{enumerate}
+
+Propiedades buscadas.
+\begin{enumerate}
+\item{Exclusion mutua}. Bob y los perros no están nunca en el patio juntos.
+\item{No starvation}. Si Bob siempre esta listo para poner comida y los perros siempre tienen hambre, entonces los perros comerán muy frecuentemente.
+\item{Productor-Consumidor}. Los perros no entraran al patio a menos que haya comida y Bob no pondrá comida si no se ha agotado.
+\end{enumerate}
+
+Veamos que siempre se cumplen las propiedades.\\
+
+{\bf Exclusión mutua}\\
+Observese que se puede intrepretar 
+lata de Bob abajo: Ya no hay comida y que los perros no están en el patio.
+lata de Alice abajo: Ya hay comida y Bob no está en el patio.
+
+Caso 11 (Ambas latas arriba), así empieza el protocolo.
+     A1) Al final de este paso, si no hay comida establece la latas a 10, 
+         En todo este tiempo, ni los perros ni Bob salen al patio.
+     A2) No se ejecuta, pues solo lo hace si la lata de Alice esta abajo
+     B1) No se ejecuta, pues solo lo hace si la lata de Bob esta abajo
+
+Caso 10 (Alice arriba, Bob abajo).
+     A1) Al final de este paso, si no hay comida establece la latas a 10 (este mismo caso).
+         En todo este tiempo, ni los perros ni Bob salen al patio.
+     A2) No se ejecuta, pues solo lo hace si la lata de Alice esta abajo
+     B1) Bob pone comida, regresa y establece (01)
+         y como la lata de Alice esta todo el tiempo arriba hasta que Bob regresa, los perros no salen.
+
+Caso 01 (Alice abajo, Bob arriba).
+     A1) Al final de este paso, si no hay comida establece la latas a 10.
+     A2) Alice saca los perros, y cuando regresan opera A1.
+         Como la lata de Bob siempre esta arriba y solo se tira cuando los perros se acaban la comida y regresan, no se encuentran en el patio.
+     B1) No se ejecuta, pues solo lo hace si la lata de Bob esta abajo
+         
+Caso 00 (Alice abajo, Bob abajo).
+     Esto no puede ocurrir, pues las tres acciones dejan siempre al menos una lata arriba.
+
+Así, la exclusión mutua ya está probada.\\
+
+
+{\bf No starvation.}\\
+Por contradicción, supongamos que no es cierto, es decir:
+Que llege un momento que los perros tengan hambre, Bob este listo para poner comida pero no lo logre.
+
+Si la lata de Bob estuviera abajo, Bob saldría a poner comida contradidiendo la hipotesis de su disponibilidad.
+Si la lata de Bob estuviera arriba, Alicia realiza A1 pues los perros tienen hambre y al final tira la lata de Bob, llegando al caso anterior.
+
+{\bf Productor-Consumidor.}
+
+La propiedad de exclusión mutua implica que los perros y Bob nunca será en el patio juntos. Bob no entrará en el patio hasta que Alice tire la lata de Bob, que ella va a hacer sólo si no hay más comida. 
+Del mismo modo, los perros no entraran en el patio hasta que Bob tire la lata de Alicia que no sucedera sino hasta que Bob haya puesto comida y regresado a casa.
+\end{enumerate}
+\end{document}
