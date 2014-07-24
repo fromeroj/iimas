@@ -1,0 +1,49 @@
+%!PS-Adobe-2.0 EPSF-2.0
+%%BoundingBox: 0 0 10 10
+
+/r 2 def                % radius
+
+/circle                 % circle, x, y, r --> -
+{
+    0 360 arc           % draw circle
+} def
+
+/cross                  % cross, x, y --> -
+{
+    0 360 arc           % draw cross hair
+} def
+
+1 setlinewidth          % thin line
+newpath                 % open page
+0 setgray               % black color
+
+  3   5 moveto
+  3   5 lineto
+  9   4 lineto
+  9   6 lineto
+  9   8 lineto
+  3   5 lineto
+stroke
+
+  3   5 r circle
+stroke
+  4   5 r circle
+stroke
+  9   4 r circle
+stroke
+  8   5 r circle
+stroke
+  9   8 r circle
+stroke
+  3   7 r circle
+stroke
+  9   6 r circle
+stroke
+  9   3 r circle
+stroke
+  7   6 r circle
+stroke
+  4   3 r circle
+stroke
+
+showpage

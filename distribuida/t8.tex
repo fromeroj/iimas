@@ -5,17 +5,17 @@
 \usepackage{amsfonts}
 \usepackage{graphicx}
 
+
+\title{Sistemas Distribuidos y Verificación \\ Tarea 8}
+\author{Fabián Romero Jiménez}
+\date{}
 \begin{document}
+
+\maketitle
+
 \begin{enumerate}
 
-\item[\bf{Problema 1}] Alice y Bob se enamoran y se casan y eventualmente se divorcian.
-El juez da Alice custodia de los animales y Bob tiene que alimentarlos. 
-Los perros ahora se llevan bien entre sí, Pero toman el lado de Alice.
-Así que atacan a Bob cuando lo ven.\\
-Alicia no debe liberar a los perros a menos que haya comida allí.\\
-Bob no quiere entrar en el patio a menos que los animales hayan consumido toda la comida y ya no estén en el patio.\\
-
-Alice y Bob deben hacer un protocolo utilizando latas y cuerdas que funciona si Bob no puede ver el estado de las latas en la ventana de Alice y viceversa.\\
+\item[\bf{Problema 1}] En la fábula entre productores y consumidores, se asumió que Bob puede ver si la lata en la ventana de Alice esta arriba o abajo. Diseñar un protocolo utilizando latas y cuerdas que funciona si Bob no puede ver el estado de las latas. Demuestra que el protocolo cumple safety y liveness.
 
 \item[\bf{Solución}]
 Se pone una lata en la ventana de cada lado, cada quién puede tirar a la opuesta y levantar la suya.
@@ -23,6 +23,7 @@ Se pone una lata en la ventana de cada lado, cada quién puede tirar a la opuest
 Protocolo de Alicia.\\
 \begin{enumerate}
 \item[A1] Si los perros tienen hambre, revisa si no hay comida, en ese caso levanta su lata (si está tirada) y entonces tira de la lata de Bob.
+
 \item[A2] Espera a que su lata este caida. Entonces saca a los perros, cuando estos regresan, realiza la Acción A1.
 \end{enumerate}
 
@@ -33,7 +34,7 @@ Protocolo de Bob.\\
 
 Propiedades buscadas.
 \begin{enumerate}
-\item{Exclusion mutua}. Bob y los perros no están nunca en el patio juntos.
+\item{Safety - Exclusion mutua}. Bob y los perros no están nunca en el patio juntos.
 \item{No starvation}. Si Bob siempre esta listo para poner comida y los perros siempre tienen hambre, entonces los perros comerán muy frecuentemente.
 \item{Productor-Consumidor}. Los perros no entraran al patio a menos que haya comida y Bob no pondrá comida si no se ha agotado.
 \end{enumerate}
@@ -75,11 +76,35 @@ Por contradicción, supongamos que no es cierto, es decir:
 Que llege un momento que los perros tengan hambre, Bob este listo para poner comida pero no lo logre.
 
 Si la lata de Bob estuviera abajo, Bob saldría a poner comida contradidiendo la hipotesis de su disponibilidad.
-Si la lata de Bob estuviera arriba, Alicia realiza A1 pues los perros tienen hambre y al final tira la lata de Bob, llegando al caso anterior.
+Si la lata de Bob estuviera arriba, Alicia realiza A1 pues los perros tienen hambre y al final tira la lata de Bob, llegando al caso anterior.\\
 
 {\bf Productor-Consumidor.}
 
 La propiedad de exclusión mutua implica que los perros y Bob nunca será en el patio juntos. Bob no entrará en el patio hasta que Alice tire la lata de Bob, que ella va a hacer sólo si no hay más comida. 
 Del mismo modo, los perros no entraran en el patio hasta que Bob tire la lata de Alicia que no sucedera sino hasta que Bob haya puesto comida y regresado a casa.
+
+
+\item[\bf{Problema 2}] Suponiendo que se tiene un programa 30\% serial y 70\% paralelizable. si queremos hacerlo n veces más rápido, cuantos núcleos de proceso serán necesarios.
+
+
+\item[\bf{Respuesta}]
+
+Usando la ley de Amdahl que nos da el speedout.
+$ speedout = \frac{1}{(1-p) + \frac{p}{n}} $\\
+o despejando la $n$ se tiene 
+$ n = \frac{p}{\frac{1}{speedout} - (1-p)}$
+
+
+
+speedout 1: 1 un núcleo es suficiente pues $  \frac{0.7}{\frac{1}{1} - (0.3)}  = 1 $.
+
+speedout 2: 3.5 núcleos son suficientes  $ \frac{0.7}{\frac{1}{2} - (0.3)} = \frac{0.7}{0.2} = 3.5$.
+
+speedout 3: 21 núcleos son suficiente pues $ \frac{0.7}{\frac{1}{3} - (0.3)} = \frac{\frac{7}{10}}{\frac{1}{3}-\frac{3}{10}} = \frac{\frac{7}{10}}{\frac{1}{30}} = 21$.
+
+speedout 4 o mayor, ninguna cantidad de nucleos es suficiente, puesto que  $ speedout = \frac{1}{(1-p) + \frac{p}{n}}  < \frac{1}{(1-p)} = \frac{1}{(0.3)  } = 1\frac{1}{3}  < 3.34  $\\
+por lo que al aumentar la cantidad de núcleos el speedout se acercará asintóticamente a $3\frac{1}{3}$ y nunca podrá ser mayor a este número.
+
 \end{enumerate}
+
 \end{document}

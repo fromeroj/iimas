@@ -1,0 +1,406 @@
+\documentclass[12pt]{report}
+\usepackage[utf8x]{inputenc}
+
+%Warning: tipa declares many non-standard macros used by utf8x to
+%interpret utf8 characters but extra packages might have to be added
+%(e.g. "textgreek" for Greek letters not already in tipa).
+%Use coqdoc's option -p to add new packages.
+\usepackage{tipa}
+
+\usepackage[T1]{fontenc}
+\usepackage{fullpage}
+\usepackage{coqdoc}
+\usepackage{amsmath,amssymb}
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% This file has been automatically generated with the command
+%% coqdoc FabianT3.v --latex --utf8 --no-externals -o FabianT3.tex 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\coqlibrary{FabianT3}{Library }{FabianT3}
+
+\begin{coqdoccode}
+\end{coqdoccode}
+\section{Tarea 3 Fabián Romero}
+
+\begin{coqdoccode}
+\coqdocemptyline
+\coqdocemptyline
+\end{coqdoccode}
+\subsection{Problema 1}
+
+
+
+La semántica de las expresiones aritméticas está dada por la función $\mathcal{A}$. También podemos tomar un enfoque operacional y definir una semántica natural para expresiones aritméticas.
+Deberán existir 2 configuraciones:
+
+
+
+\begin{itemize}
+\item  $\sigma$ Denotando que a debe evaluarse en el estado $\sigma$
+
+\item  z Denotando un valor final. (elementos de $\mathbb{Z}$)
+
+\end{itemize}
+
+
+La relación de transición $\Rightarrow_{AExp}$ tendrá la forma :
+
+
+$\langle a, \sigma \rangle \Rightarrow_{AExp} z$
+
+
+Por ejemplo:
+
+
+
+\begin{itemize}
+\item  $\langle  n, \sigma \rangle \Rightarrow_{AExp} n $
+
+\item  $\langle x, \sigma \rangle \Rightarrow_{AExp} \sigma x$
+
+\item  $\frac{\langle a_1 , \sigma \rangle \Rightarrow_{AExp} z_1 \>\> \langle a_1 , \sigma \rangle \Rightarrow_{AExp} z_2}{ \langle a_1 + a_2 , \sigma \rangle \Rightarrow_{AExp}(z_1+z_2) }$
+
+\end{itemize}
+
+
+\subsubsection{Complete la definición del sistema de transiciones.}
+
+
+
+
+
+
+\begin{itemize}
+\item  $\frac{\langle a_1 , \sigma \rangle \Rightarrow_{AExp} z_1 \>\> \langle a_1 , \sigma \rangle \Rightarrow_{AExp} z_2}{ \langle a_1 * a_2 , \sigma \rangle \Rightarrow_{AExp}(z_1 * z_2) }$
+
+\item  $\frac{\langle a_1 , \sigma \rangle \Rightarrow_{AExp} z_1 \>\> \langle a_1 , \sigma \rangle \Rightarrow_{AExp} z_2}{ \langle a_1 - a_2 , \sigma \rangle \Rightarrow_{AExp}(z_1 - z_2) }$
+
+\end{itemize}
+\subsubsection{Demuestre que este enfoque es equivalente a la función $\mathcal{A}$.}
+
+\begin{coqdoccode}
+\coqdocemptyline
+\coqdocemptyline
+\end{coqdoccode}
+Definamos la operación de evaluación especificada. \begin{coqdoccode}
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Inductive} \coqdocvar{AEval\_op} : \coqdocvar{Aexp} \ensuremath{\rightarrow} \coqdocvar{State} \ensuremath{\rightarrow} \coqdocvar{Value} \ensuremath{\rightarrow} \coqdockw{Prop} :=\coqdoceol
+\coqdocindent{1.00em}
+\ensuremath{|} \coqdocvar{Aop\_n}  : \coqdockw{\ensuremath{\forall}} (\coqdocvar{s}: \coqdocvar{State}) (\coqdocvar{z}: \coqdocvar{Value}), \coqdocvar{AEval\_op} (\coqdocvar{N} \coqdocvar{z}) \coqdocvar{s} \coqdocvar{z}\coqdoceol
+\coqdocindent{1.00em}
+\ensuremath{|} \coqdocvar{Aop\_v}  : \coqdockw{\ensuremath{\forall}} (\coqdocvar{s}: \coqdocvar{State}) (\coqdocvar{x} :\coqdocvar{Vname}), \coqdocvar{AEval\_op} (\coqdocvar{V} \coqdocvar{x}) \coqdocvar{s} (\coqdocvar{s} \coqdocvar{x})\coqdoceol
+\coqdocindent{1.00em}
+\ensuremath{|} \coqdocvar{Aop\_sum} : \coqdockw{\ensuremath{\forall}} (\coqdocvar{s}: \coqdocvar{State}) (\coqdocvar{e1} \coqdocvar{e2}: \coqdocvar{Aexp}) (\coqdocvar{n1} \coqdocvar{n2}: \coqdocvar{Value}),\coqdoceol
+\coqdocindent{3.00em}
+\coqdocvar{AEval\_op} \coqdocvar{e1} \coqdocvar{s} \coqdocvar{n1} \ensuremath{\rightarrow} \coqdocvar{AEval\_op} \coqdocvar{e2} \coqdocvar{s} \coqdocvar{n2} \ensuremath{\rightarrow}\coqdoceol
+\coqdocindent{3.00em}
+\coqdocvar{AEval\_op} (\coqdocvar{Plus} \coqdocvar{e1} \coqdocvar{e2}) \coqdocvar{s} (\coqdocvar{n1} + \coqdocvar{n2})\coqdoceol
+\coqdocindent{1.00em}
+\ensuremath{|} \coqdocvar{Aop\_sub}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{s}: \coqdocvar{State}) (\coqdocvar{e1} \coqdocvar{e2}: \coqdocvar{Aexp}) (\coqdocvar{n1} \coqdocvar{n2}: \coqdocvar{Value}),\coqdoceol
+\coqdocindent{3.00em}
+\coqdocvar{AEval\_op} \coqdocvar{e1} \coqdocvar{s} \coqdocvar{n1} \ensuremath{\rightarrow} \coqdocvar{AEval\_op} \coqdocvar{e2} \coqdocvar{s} \coqdocvar{n2} \ensuremath{\rightarrow}\coqdoceol
+\coqdocindent{3.00em}
+\coqdocvar{AEval\_op} (\coqdocvar{Minus} \coqdocvar{e1} \coqdocvar{e2}) \coqdocvar{s} (\coqdocvar{n1} - \coqdocvar{n2})\coqdoceol
+\coqdocindent{1.00em}
+\ensuremath{|} \coqdocvar{Aop\_mul} : \coqdockw{\ensuremath{\forall}} (\coqdocvar{s}: \coqdocvar{State}) (\coqdocvar{e1} \coqdocvar{e2}: \coqdocvar{Aexp}) (\coqdocvar{n1} \coqdocvar{n2}: \coqdocvar{Value}),\coqdoceol
+\coqdocindent{3.00em}
+\coqdocvar{AEval\_op} \coqdocvar{e1} \coqdocvar{s} \coqdocvar{n1} \ensuremath{\rightarrow} \coqdocvar{AEval\_op} \coqdocvar{e2} \coqdocvar{s} \coqdocvar{n2} \ensuremath{\rightarrow}\coqdoceol
+\coqdocindent{3.00em}
+\coqdocvar{AEval\_op} (\coqdocvar{Prod} \coqdocvar{e1} \coqdocvar{e2}) \coqdocvar{s} (\coqdocvar{n1} \ensuremath{\times} \coqdocvar{n2}).\coqdoceol
+\coqdocemptyline
+\end{coqdoccode}
+
+
+Y finalmentente el resultado solicitado, que es demostrar la equivalencia 
+
+
+\begin{coqdoccode}
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Theorem}  \coqdocvar{equivalencia\_op}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{e}: \coqdocvar{Aexp}) (\coqdocvar{s}: \coqdocvar{State}) (\coqdocvar{n} :\coqdocvar{Value}),\coqdoceol
+\coqdocindent{1.00em}
+\coqdocvar{AEval\_op} \coqdocvar{e} \coqdocvar{s} \coqdocvar{n} \ensuremath{\leftrightarrow} \coqdocvar{aval} \coqdocvar{e} \coqdocvar{s} = \coqdocvar{n}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{split}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{intros}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{induction} \coqdocvar{H}; \coqdoceol
+\coqdocindent{2.00em}
+\coqdoctac{try}(\coqdoctac{reflexivity});\coqdoceol
+\coqdocindent{2.00em}
+\coqdoctac{try}(\coqdoctac{simpl};\coqdoctac{rewrite} \coqdocvar{IHAEval\_op1}, \coqdocvar{IHAEval\_op2};\coqdoctac{reflexivity}).\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{generalize} \coqdoctac{dependent} \coqdocvar{n}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{generalize} \coqdoctac{dependent} \coqdocvar{s}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{induction} \coqdocvar{e};\coqdoceol
+\coqdocindent{2.00em}
+\coqdoctac{try}(\coqdoctac{intros};\coqdoctac{rewrite} \ensuremath{\leftarrow} \coqdocvar{H};\coqdoctac{simpl};\coqdoctac{try} \coqdoctac{apply} \coqdocvar{Aop\_n}; \coqdoctac{try} \coqdoctac{apply} \coqdocvar{Aop\_v};\coqdoctac{simpl}).\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{apply} \coqdocvar{Aop\_sum}. \coqdoctac{apply} \coqdocvar{IHe1}. \coqdoctac{reflexivity}. \coqdoctac{apply} \coqdocvar{IHe2}. \coqdoctac{reflexivity}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{apply} \coqdocvar{Aop\_mul}. \coqdoctac{apply} \coqdocvar{IHe1}. \coqdoctac{reflexivity}. \coqdoctac{apply} \coqdocvar{IHe2}. \coqdoctac{reflexivity}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{apply} \coqdocvar{Aop\_sub}. \coqdoctac{apply} \coqdocvar{IHe1}. \coqdoctac{reflexivity}. \coqdoctac{apply} \coqdocvar{IHe2}. \coqdoctac{reflexivity}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Qed}.\coqdoceol
+\coqdocemptyline
+\end{coqdoccode}
+\subsection{Problema 2}
+
+
+
+Extendemos la definición del while con el comando.
+\begin{verbatim}
+repeat c until b
+\end{verbatim}
+Para que la secuencia c se repita hasta que b sea verdadero.
+
+
+\subsubsection{Extienda la semántica de paso grande con repeat.}
+
+\begin{coqdoccode}
+\coqdocemptyline
+\coqdocemptyline
+\end{coqdoccode}
+Agregamos el comando Repeat al lenguage que desarrollamos en clase \begin{coqdoccode}
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Inductive} \coqdocvar{Com}: \coqdockw{Set} :=\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Skip} : \coqdocvar{Com}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Assg} : \coqdocvar{Vname} \ensuremath{\rightarrow} \coqdocvar{Aexp} \ensuremath{\rightarrow} \coqdocvar{Com}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Seq} : \coqdocvar{Com} \ensuremath{\rightarrow} \coqdocvar{Com} \ensuremath{\rightarrow} \coqdocvar{Com}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{IfC} :  \coqdocvar{Bexp} \ensuremath{\rightarrow} \coqdocvar{Com} \ensuremath{\rightarrow} \coqdocvar{Com} \ensuremath{\rightarrow} \coqdocvar{Com}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{While} : \coqdocvar{Bexp} \ensuremath{\rightarrow} \coqdocvar{Com} \ensuremath{\rightarrow} \coqdocvar{Com}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Repeat} : \coqdocvar{Com} \ensuremath{\rightarrow} \coqdocvar{Bexp} \ensuremath{\rightarrow} \coqdocvar{Com}.\coqdoceol
+\coqdocemptyline
+\end{coqdoccode}
+Y la semantica de paso grande queda entonces definida de la siguiente manera: \begin{coqdoccode}
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Inductive} \coqdocvar{BSSem}:\coqdocvar{Com} \ensuremath{\rightarrow} \coqdocvar{State} \ensuremath{\rightarrow} \coqdocvar{State} \ensuremath{\rightarrow} \coqdockw{Prop} :=\coqdoceol
+\coqdocnoindent
+\ensuremath{|}\coqdocvar{BS\_Assg} : \coqdockw{\ensuremath{\forall}} (\coqdocvar{x}:\coqdocvar{Vname}) (\coqdocvar{a}:\coqdocvar{Aexp}) (\coqdocvar{s}:\coqdocvar{State}),\coqdoceol
+\coqdocindent{6.50em}
+\coqdocvar{BSSem} (\coqdocvar{Assg} \coqdocvar{x} \coqdocvar{a}) \coqdocvar{s} (\coqdocvar{update} \coqdocvar{s} \coqdocvar{x} (\coqdocvar{aval} \coqdocvar{a} \coqdocvar{s}))\coqdoceol
+\coqdocnoindent
+\ensuremath{|}\coqdocvar{BS\_Skip} : \coqdockw{\ensuremath{\forall}} \coqdocvar{s}:\coqdocvar{State}, \coqdocvar{BSSem} \coqdocvar{Skip} \coqdocvar{s} \coqdocvar{s}\coqdoceol
+\coqdocnoindent
+\ensuremath{|}\coqdocvar{BS\_Seq} : \coqdockw{\ensuremath{\forall}} (\coqdocvar{c1}:\coqdocvar{Com}) (\coqdocvar{s1} \coqdocvar{s2}:\coqdocvar{State}), \coqdoceol
+\coqdocindent{6.00em}
+\coqdocvar{BSSem} \coqdocvar{c1} \coqdocvar{s1} \coqdocvar{s2} \ensuremath{\rightarrow} \coqdoceol
+\coqdocindent{6.00em}
+\coqdockw{\ensuremath{\forall}} (\coqdocvar{c2}:\coqdocvar{Com}) (\coqdocvar{s3}:\coqdocvar{State}) , \coqdoceol
+\coqdocindent{7.00em}
+\coqdocvar{BSSem} \coqdocvar{c2} \coqdocvar{s2} \coqdocvar{s3} \ensuremath{\rightarrow} \coqdoceol
+\coqdocindent{7.00em}
+\coqdocvar{BSSem} (\coqdocvar{Seq} \coqdocvar{c1} \coqdocvar{c2}) \coqdocvar{s1} \coqdocvar{s3}\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{BS\_IfT}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{b}:\coqdocvar{Bexp}) (\coqdocvar{s}:\coqdocvar{State}), \coqdoceol
+\coqdocindent{6.00em}
+\coqdocvar{bval} \coqdocvar{b} \coqdocvar{s} = \coqdocvar{true} \ensuremath{\rightarrow} \coqdoceol
+\coqdocindent{6.00em}
+\coqdockw{\ensuremath{\forall}} (\coqdocvar{t}:\coqdocvar{State}),\coqdockw{\ensuremath{\forall}} (\coqdocvar{c1} \coqdocvar{c2}:\coqdocvar{Com}), \coqdoceol
+\coqdocindent{7.00em}
+\coqdocvar{BSSem} \coqdocvar{c1} \coqdocvar{s} \coqdocvar{t} \ensuremath{\rightarrow} \coqdocvar{BSSem} (\coqdocvar{IfC} \coqdocvar{b} \coqdocvar{c1} \coqdocvar{c2}) \coqdocvar{s} \coqdocvar{t}\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{BS\_IfF}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{b}:\coqdocvar{Bexp}) (\coqdocvar{s}:\coqdocvar{State}), \coqdoceol
+\coqdocindent{6.00em}
+\coqdocvar{bval} \coqdocvar{b} \coqdocvar{s} = \coqdocvar{false} \ensuremath{\rightarrow} \coqdoceol
+\coqdocindent{6.00em}
+\coqdockw{\ensuremath{\forall}} (\coqdocvar{t}:\coqdocvar{State}), \coqdockw{\ensuremath{\forall}} (\coqdocvar{c1} \coqdocvar{c2}:\coqdocvar{Com}), \coqdoceol
+\coqdocindent{7.00em}
+\coqdocvar{BSSem} \coqdocvar{c2} \coqdocvar{s} \coqdocvar{t} \ensuremath{\rightarrow} \coqdocvar{BSSem} (\coqdocvar{IfC} \coqdocvar{b} \coqdocvar{c1} \coqdocvar{c2}) \coqdocvar{s} \coqdocvar{t}\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{BS\_WhlF}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{b}:\coqdocvar{Bexp}) (\coqdocvar{c}:\coqdocvar{Com}) (\coqdocvar{s}:\coqdocvar{State}), \coqdoceol
+\coqdocindent{6.50em}
+\coqdocvar{bval} \coqdocvar{b} \coqdocvar{s} = \coqdocvar{false} \ensuremath{\rightarrow}\coqdoceol
+\coqdocindent{6.50em}
+\coqdocvar{BSSem} (\coqdocvar{While} \coqdocvar{b} \coqdocvar{c}) \coqdocvar{s} \coqdocvar{s}\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{BS\_WhlT}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{b}:\coqdocvar{Bexp}) (\coqdocvar{s1}:\coqdocvar{State}), \coqdoceol
+\coqdocindent{6.50em}
+\coqdocvar{bval} \coqdocvar{b} \coqdocvar{s1} = \coqdocvar{true} \ensuremath{\rightarrow}\coqdoceol
+\coqdocindent{6.50em}
+\coqdockw{\ensuremath{\forall}} (\coqdocvar{c}:\coqdocvar{Com}) (\coqdocvar{s2}:\coqdocvar{State}),\coqdoceol
+\coqdocindent{7.50em}
+\coqdocvar{BSSem} \coqdocvar{c} \coqdocvar{s1} \coqdocvar{s2} \ensuremath{\rightarrow}\coqdoceol
+\coqdocindent{7.50em}
+\coqdockw{\ensuremath{\forall}} (\coqdocvar{s3}:\coqdocvar{State}), \coqdoceol
+\coqdocindent{8.50em}
+\coqdocvar{BSSem} (\coqdocvar{While} \coqdocvar{b} \coqdocvar{c}) \coqdocvar{s2} \coqdocvar{s3} \ensuremath{\rightarrow}\coqdoceol
+\coqdocindent{8.50em}
+\coqdocvar{BSSem} (\coqdocvar{While} \coqdocvar{b} \coqdocvar{c}) \coqdocvar{s1} \coqdocvar{s3}\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{BS\_RepT}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{c}:\coqdocvar{Com}) (\coqdocvar{b}:\coqdocvar{Bexp}) (\coqdocvar{s} \coqdocvar{s1} :\coqdocvar{State}), \coqdoceol
+\coqdocindent{6.50em}
+\coqdocvar{BSSem} \coqdocvar{c} \coqdocvar{s} \coqdocvar{s1} \ensuremath{\rightarrow}\coqdoceol
+\coqdocindent{6.50em}
+\coqdocvar{bval} \coqdocvar{b} \coqdocvar{s1} = \coqdocvar{true} \ensuremath{\rightarrow}\coqdoceol
+\coqdocindent{6.50em}
+\coqdocvar{BSSem} (\coqdocvar{Repeat} \coqdocvar{c} \coqdocvar{b}) \coqdocvar{s} \coqdocvar{s1}\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{BS\_RepF}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{c}:\coqdocvar{Com}) (\coqdocvar{b}:\coqdocvar{Bexp}) (\coqdocvar{s} \coqdocvar{s1} :\coqdocvar{State}), \coqdoceol
+\coqdocindent{6.50em}
+\coqdocvar{BSSem} \coqdocvar{c} \coqdocvar{s} \coqdocvar{s1} \ensuremath{\rightarrow}\coqdoceol
+\coqdocindent{6.50em}
+\coqdocvar{bval} \coqdocvar{b} \coqdocvar{s1} = \coqdocvar{false} \ensuremath{\rightarrow}\coqdoceol
+\coqdocindent{7.50em}
+\coqdockw{\ensuremath{\forall}} (\coqdocvar{t}:\coqdocvar{State}), \coqdoceol
+\coqdocindent{8.50em}
+\coqdocvar{BSSem} (\coqdocvar{Repeat} \coqdocvar{c} \coqdocvar{b}) \coqdocvar{s1} \coqdocvar{t} \ensuremath{\rightarrow}\coqdoceol
+\coqdocindent{8.50em}
+\coqdocvar{BSSem} (\coqdocvar{Repeat} \coqdocvar{c} \coqdocvar{b}) \coqdocvar{s} \coqdocvar{t}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Notation} " << c , s >> ==> t" := (\coqdocvar{BSSem} \coqdocvar{c} \coqdocvar{s} \coqdocvar{t}) (\coqdoctac{at} \coqdockw{level} 30).\coqdoceol
+\coqdocnoindent
+\coqdockw{Definition} \coqdocvar{bsequiv} (\coqdocvar{c1} \coqdocvar{c2}:\coqdocvar{Com}):\coqdockw{Prop} := \coqdoceol
+\coqdocindent{1.00em}
+\coqdockw{\ensuremath{\forall}} (\coqdocvar{s} \coqdocvar{t}:\coqdocvar{State}),<< \coqdocvar{c1},\coqdocvar{s} >> ==> \coqdocvar{t} \ensuremath{\leftrightarrow} << \coqdocvar{c2},\coqdocvar{s} >> ==> \coqdocvar{t}.\coqdoceol
+\coqdocindent{0.50em}
+\coqdockw{Notation} "c \~{}\~{} d" := (\coqdocvar{bsequiv} \coqdocvar{c} \coqdocvar{d}) (\coqdoctac{at} \coqdockw{level} 40).\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{const\_bool}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{s'}: \coqdocvar{State}) (\coqdocvar{b}: \coqdocvar{bool} ), \coqdocvar{bval} (\coqdocvar{B} \coqdocvar{b}) \coqdocvar{s'} = \coqdocvar{b}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}. \coqdoctac{intros}. \coqdoctac{reflexivity}. \coqdockw{Qed}.\coqdoceol
+\coqdocemptyline
+\end{coqdoccode}
+
+
+Un lema que prueba el caso trivial cuando until es la constante true, que debería de aplicar el comando una vez y salir inmediatamente. \begin{coqdoccode}
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{repeat\_with\_true}: \coqdoceol
+\coqdocindent{1.00em}
+\coqdockw{\ensuremath{\forall}} (\coqdocvar{c}: \coqdocvar{Com}) (\coqdocvar{s}: \coqdocvar{State}), (\coqdocvar{Repeat} \coqdocvar{c} (\coqdocvar{B} \coqdocvar{true})) \~{}\~{} \coqdocvar{c}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{intros}. \coqdoctac{unfold} \coqdocvar{bsequiv}. \coqdoctac{intros}. \coqdoctac{split}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{intros}. \coqdoctac{inversion} \coqdocvar{H}. \coqdoctac{assumption}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{rewrite} \coqdocvar{const\_bool} \coqdoctac{in} \coqdocvar{H3}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdocvar{exfalso}. \coqdoctac{apply} \coqdocvar{false\_not\_true}. \coqdoctac{assumption}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{intros}. \coqdoctac{apply} \coqdocvar{BS\_RepT} \coqdockw{with} (\coqdocvar{c}:=\coqdocvar{c}) (\coqdocvar{s}:=\coqdocvar{s0}) (\coqdocvar{b}:=\coqdocvar{B} \coqdocvar{true}) (\coqdocvar{s1}:=\coqdocvar{t}).\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{assumption}. \coqdoctac{reflexivity}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdockw{Qed}.\coqdoceol
+\coqdocemptyline
+\end{coqdoccode}
+\subsubsection{Extienda la semántica de paso pequeño con repeat.}
+
+\begin{coqdoccode}
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Inductive} \coqdocvar{SSSem}: \coqdocvar{Com} \ensuremath{\times} \coqdocvar{State} \ensuremath{\rightarrow} \coqdocvar{Com} \ensuremath{\times} \coqdocvar{State} \ensuremath{\rightarrow} \coqdockw{Prop} :=\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{SS\_Assg} : \coqdockw{\ensuremath{\forall}} (\coqdocvar{x}:\coqdocvar{Vname}) (\coqdocvar{a}:\coqdocvar{Aexp}) (\coqdocvar{s}:\coqdocvar{State}),\coqdoceol
+\coqdocindent{8.50em}
+\coqdocvar{SSSem} (\coqdocvar{Assg} \coqdocvar{x} \coqdocvar{a}, \coqdocvar{s})  (\coqdocvar{Skip}, \coqdocvar{update} \coqdocvar{s} \coqdocvar{x} (\coqdocvar{aval} \coqdocvar{a} \coqdocvar{s}))\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{SS\_SeqL} : \coqdockw{\ensuremath{\forall}} (\coqdocvar{c1} \coqdocvar{c1'}:\coqdocvar{Com}) (\coqdocvar{s} \coqdocvar{s'}:\coqdocvar{State}), \coqdoceol
+\coqdocindent{9.00em}
+\coqdocvar{SSSem} (\coqdocvar{c1},\coqdocvar{s}) (\coqdocvar{c1'},\coqdocvar{s'}) \ensuremath{\rightarrow} \coqdoceol
+\coqdocindent{9.00em}
+\coqdockw{\ensuremath{\forall}} (\coqdocvar{c2}:\coqdocvar{Com}), \coqdocvar{SSSem} (\coqdocvar{Seq} \coqdocvar{c1} \coqdocvar{c2}, \coqdocvar{s}) (\coqdocvar{Seq} \coqdocvar{c1'} \coqdocvar{c2}, \coqdocvar{s'}) \coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{SS\_SeqR} : \coqdockw{\ensuremath{\forall}} (\coqdocvar{c2}:\coqdocvar{Com}) (\coqdocvar{s}:\coqdocvar{State}), \coqdocvar{SSSem} (\coqdocvar{Seq} \coqdocvar{Skip} \coqdocvar{c2},\coqdocvar{s}) (\coqdocvar{c2},\coqdocvar{s})\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{SS\_IfT}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{b}:\coqdocvar{Bexp}) (\coqdocvar{s}:\coqdocvar{State}), \coqdocvar{bval} \coqdocvar{b} \coqdocvar{s} = \coqdocvar{true} \ensuremath{\rightarrow} \coqdoceol
+\coqdocindent{9.00em}
+\coqdockw{\ensuremath{\forall}} (\coqdocvar{c1} \coqdocvar{c2}:\coqdocvar{Com}), \coqdocvar{SSSem} (\coqdocvar{IfC} \coqdocvar{b} \coqdocvar{c1} \coqdocvar{c2},\coqdocvar{s}) (\coqdocvar{c1},\coqdocvar{s})\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{SS\_IfF}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{b}:\coqdocvar{Bexp}) (\coqdocvar{s}:\coqdocvar{State}), \coqdocvar{bval} \coqdocvar{b} \coqdocvar{s} = \coqdocvar{false} \ensuremath{\rightarrow} \coqdoceol
+\coqdocindent{9.00em}
+\coqdockw{\ensuremath{\forall}} (\coqdocvar{c1} \coqdocvar{c2}:\coqdocvar{Com}), \coqdocvar{SSSem} (\coqdocvar{IfC} \coqdocvar{b} \coqdocvar{c1} \coqdocvar{c2},\coqdocvar{s}) (\coqdocvar{c2},\coqdocvar{s})\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{SS\_Whl}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{b}:\coqdocvar{Bexp}) (\coqdocvar{c}:\coqdocvar{Com}) (\coqdocvar{s}:\coqdocvar{State}), \coqdoceol
+\coqdocindent{7.50em}
+\coqdocvar{SSSem} (\coqdocvar{While} \coqdocvar{b} \coqdocvar{c}, \coqdocvar{s}) (\coqdocvar{IfC} \coqdocvar{b} (\coqdocvar{Seq} \coqdocvar{c} (\coqdocvar{While} \coqdocvar{b} \coqdocvar{c})) \coqdocvar{Skip},\coqdocvar{s})\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{SS\_Repeat}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{b}:\coqdocvar{Bexp}) (\coqdocvar{c}:\coqdocvar{Com}) (\coqdocvar{s} :\coqdocvar{State}),\coqdoceol
+\coqdocindent{7.50em}
+\coqdocvar{SSSem} (\coqdocvar{Repeat} \coqdocvar{c} \coqdocvar{b}, \coqdocvar{s}) (\coqdocvar{Seq} \coqdocvar{c} (\coqdocvar{IfC} \coqdocvar{b} \coqdocvar{Skip} (\coqdocvar{Repeat} \coqdocvar{c} \coqdocvar{b})),\coqdocvar{s} ).\coqdoceol
+\coqdocemptyline
+\end{coqdoccode}
+\paragraph{Extienda la prueba de equivalencias de las dos semánticas con el caso repeat}
+
+ (puede admitir todos los otros casos en el script correspondiente) \begin{coqdoccode}
+\coqdocemptyline
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Theorem} \coqdocvar{ss\_implies\_bs}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{c}:\coqdocvar{Com}) (\coqdocvar{s} \coqdocvar{t}:\coqdocvar{State}), << \coqdocvar{c},\coqdocvar{s} >> ==> \coqdocvar{t} \coqdoceol
+\coqdocindent{13.00em}
+\ensuremath{\rightarrow}  << \coqdocvar{c},\coqdocvar{s} >> --->* << \coqdocvar{Skip}, \coqdocvar{t} >>.\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{intros}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{induction} \coqdocvar{H}.\coqdoceol
+\coqdocemptyline
+\end{coqdoccode}
+// Casos Assign, Skip, Seq. If true, If false, While false, While true. \begin{coqdoccode}
+\coqdocemptyline
+\coqdocnoindent
+\coqdocvar{admit}. \coqdocvar{admit}. \coqdocvar{admit}. \coqdocvar{admit}. \coqdocvar{admit}. \coqdocvar{admit}. \coqdocvar{admit}.\coqdoceol
+\end{coqdoccode}
+// Caso Repeat: \begin{coqdoccode}
+\coqdocemptyline
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{Tct} \coqdockw{with} (\coqdocvar{y}:=(\coqdocvar{Seq} \coqdocvar{c} (\coqdocvar{IfC} \coqdocvar{b} \coqdocvar{Skip} (\coqdocvar{Repeat} \coqdocvar{c} \coqdocvar{b})),\coqdocvar{s})).\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{SS\_Repeat}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eapply} \coqdocvar{seqskip}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eexact} \coqdocvar{IHBSSem}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{rinTclr}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eapply} \coqdocvar{SS\_IfT}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{assumption}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eapply} \coqdocvar{Tct} \coqdockw{with} (\coqdocvar{y}:=(\coqdocvar{Seq} \coqdocvar{c} (\coqdocvar{IfC} \coqdocvar{b} \coqdocvar{Skip} (\coqdocvar{Repeat} \coqdocvar{c} \coqdocvar{b})),\coqdocvar{s})).\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{SS\_Repeat}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eapply} \coqdocvar{seqskip}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eexact} \coqdocvar{IHBSSem1}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{assert} ( << \coqdocvar{IfC} \coqdocvar{b} \coqdocvar{Skip} (\coqdocvar{Repeat} \coqdocvar{c} \coqdocvar{b}), \coqdocvar{s1} >>  --->  << \coqdocvar{Repeat} \coqdocvar{c} \coqdocvar{b} ,\coqdocvar{s1} >> ).\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{SS\_IfF}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{assumption}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{Tcltr} \coqdockw{with} (\coqdocvar{x}:= (\coqdocvar{IfC} \coqdocvar{b} \coqdocvar{Skip} (\coqdocvar{Repeat} \coqdocvar{c} \coqdocvar{b}), \coqdocvar{s1}) ) (\coqdocvar{y}:= ((\coqdocvar{Repeat} \coqdocvar{c} \coqdocvar{b}), \coqdocvar{s1})).\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{rinTclr}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{assumption}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{assumption}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Qed}.\coqdoceol
+\end{coqdoccode}
+\end{document}

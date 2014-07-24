@@ -1,0 +1,186 @@
+\documentclass[12pt]{report}
+\usepackage[utf8x]{inputenc}
+
+%Warning: tipa declares many non-standard macros used by utf8x to
+%interpret utf8 characters but extra packages might have to be added
+%(e.g. "textgreek" for Greek letters not already in tipa).
+%Use coqdoc's option -p to add new packages.
+\usepackage{tipa}
+
+\usepackage[T1]{fontenc}
+\usepackage{fullpage}
+\usepackage{coqdoc}
+\usepackage{amsmath,amssymb}
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% This file has been automatically generated with the command
+%% coqdoc FabianT3_2.v --latex --utf8 --no-externals -o FabianT3_2.tex 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\coqlibrary{FabianT3 2}{Library }{FabianT3\_2}
+
+\begin{coqdoccode}
+\end{coqdoccode}
+\section{Tarea 3 Fabián Romero}
+
+\begin{coqdoccode}
+\coqdocemptyline
+\coqdocemptyline
+\end{coqdoccode}
+\subsubsection{Problema 3}
+
+
+
+Extendemos la definición del while con el comando
+\begin{verbatim}
+assert b before c
+\end{verbatim}
+Tal que si b se evalúa a verdadero entonces se ejecuta c. En otro caso, la ejecución del programa completo termina.
+
+
+la regla de derivación es:
+
+
+
+\begin{itemize}
+\item  $ \frac{\{P\>\wedge\> b\}\>c\>\{Q\}}{\{P\}\>Assert\>b\>c\>\{Q\}} $.
+
+\end{itemize}
+
+
+Así, queda definido como:
+ \begin{coqdoccode}
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Inductive} \coqdocvar{Com}: \coqdockw{Set} :=\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Skip} : \coqdocvar{Com}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Assg} : \coqdocvar{Vname} \ensuremath{\rightarrow} \coqdocvar{Aexp} \ensuremath{\rightarrow} \coqdocvar{Com}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Seq} : \coqdocvar{Com} \ensuremath{\rightarrow} \coqdocvar{Com} \ensuremath{\rightarrow} \coqdocvar{Com}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{IfC} :  \coqdocvar{Bexp} \ensuremath{\rightarrow} \coqdocvar{Com} \ensuremath{\rightarrow} \coqdocvar{Com} \ensuremath{\rightarrow} \coqdocvar{Com}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{While} : \coqdocvar{Bexp} \ensuremath{\rightarrow} \coqdocvar{Com} \ensuremath{\rightarrow} \coqdocvar{Com}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Repeat} : \coqdocvar{Com} \ensuremath{\rightarrow} \coqdocvar{Bexp} \ensuremath{\rightarrow} \coqdocvar{Com}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Assert} : \coqdocvar{Bexp} \ensuremath{\rightarrow} \coqdocvar{Com} \ensuremath{\rightarrow} \coqdocvar{Com}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Notation} "x ::= a" := (\coqdocvar{Assg} \coqdocvar{x} \coqdocvar{a}) (\coqdoctac{at} \coqdockw{level} 20).\coqdoceol
+\coqdocnoindent
+\coqdockw{Notation} "c ;; c'" := (\coqdocvar{Seq} \coqdocvar{c} \coqdocvar{c'}) (\coqdoctac{at} \coqdockw{level} 30).\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Inductive} \coqdocvar{AxSemH}: \coqdocvar{Assertion} \ensuremath{\rightarrow} \coqdocvar{Com} \ensuremath{\rightarrow} \coqdocvar{Assertion} \ensuremath{\rightarrow} \coqdockw{Prop} :=\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{AxS\_Skip}: \coqdockw{\ensuremath{\forall}} \coqdocvar{P}:\coqdocvar{Assertion}, \coqdocvar{AxSemH} \coqdocvar{P} \coqdocvar{Skip} \coqdocvar{P}\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{AxS\_Assg}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{P}:\coqdocvar{Assertion}) (\coqdocvar{x}:\coqdocvar{Vname}) (\coqdocvar{a}:\coqdocvar{Aexp}),\coqdoceol
+\coqdocindent{7.00em}
+\coqdocvar{AxSemH} (\coqdocvar{assupd} \coqdocvar{x} \coqdocvar{a} \coqdocvar{P}) (\coqdocvar{Assg} \coqdocvar{x} \coqdocvar{a}) \coqdocvar{P}\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{AxS\_Seq}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{P} \coqdocvar{Q} \coqdocvar{R}:\coqdocvar{Assertion}) (\coqdocvar{c1} \coqdocvar{c2}:\coqdocvar{Com}),\coqdoceol
+\coqdocindent{6.50em}
+\coqdocvar{AxSemH} \coqdocvar{P} \coqdocvar{c1} \coqdocvar{R} \ensuremath{\rightarrow} \coqdocvar{AxSemH} \coqdocvar{R} \coqdocvar{c2} \coqdocvar{Q} \ensuremath{\rightarrow} \coqdocvar{AxSemH} \coqdocvar{P} (\coqdocvar{Seq} \coqdocvar{c1} \coqdocvar{c2}) \coqdocvar{Q}\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{AxS\_If}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{P} \coqdocvar{Q}:\coqdocvar{Assertion}) (\coqdocvar{b}:\coqdocvar{Bexp}) (\coqdocvar{c1} \coqdocvar{c2}:\coqdocvar{Com}),\coqdoceol
+\coqdocindent{6.00em}
+\coqdocvar{AxSemH} (\coqdocvar{AndAss} \coqdocvar{P} (\coqdocvar{Istrue} \coqdocvar{b})) \coqdocvar{c1} \coqdocvar{Q} \ensuremath{\rightarrow}\coqdoceol
+\coqdocindent{6.00em}
+\coqdocvar{AxSemH} (\coqdocvar{AndAss} \coqdocvar{P} (\coqdocvar{Isfalse} \coqdocvar{b})) \coqdocvar{c2} \coqdocvar{Q} \ensuremath{\rightarrow} \coqdocvar{AxSemH} \coqdocvar{P} (\coqdocvar{IfC} \coqdocvar{b} \coqdocvar{c1} \coqdocvar{c2}) \coqdocvar{Q}\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{AxS\_While}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{P}:\coqdocvar{Assertion}) (\coqdocvar{b}:\coqdocvar{Bexp}) (\coqdocvar{c}:\coqdocvar{Com}), \coqdoceol
+\coqdocindent{7.50em}
+\coqdocvar{AxSemH} (\coqdocvar{AndAss} \coqdocvar{P} (\coqdocvar{Istrue} \coqdocvar{b})) \coqdocvar{c} \coqdocvar{P} \ensuremath{\rightarrow}\coqdoceol
+\coqdocindent{7.50em}
+\coqdocvar{AxSemH} \coqdocvar{P} (\coqdocvar{While} \coqdocvar{b} \coqdocvar{c}) (\coqdocvar{AndAss} \coqdocvar{P} (\coqdocvar{Isfalse} \coqdocvar{b}))\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{AxS\_Cons}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{P} \coqdocvar{P'} \coqdocvar{Q} \coqdocvar{Q'}:\coqdocvar{Assertion}) (\coqdocvar{c}:\coqdocvar{Com}), \coqdoceol
+\coqdocindent{7.00em}
+\coqdocvar{ImplAss} \coqdocvar{P} \coqdocvar{P'} \ensuremath{\rightarrow} \coqdocvar{AxSemH} \coqdocvar{P'} \coqdocvar{c} \coqdocvar{Q'} \ensuremath{\rightarrow} \coqdocvar{ImplAss} \coqdocvar{Q'} \coqdocvar{Q} \ensuremath{\rightarrow} \coqdocvar{AxSemH} \coqdocvar{P} \coqdocvar{c} \coqdocvar{Q}\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{AxS\_Assert}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{P} \coqdocvar{Q}:\coqdocvar{Assertion}) (\coqdocvar{b}:\coqdocvar{Bexp}) (\coqdocvar{c}:\coqdocvar{Com}), \coqdoceol
+\coqdocindent{7.00em}
+\coqdocvar{AxSemH} (\coqdocvar{AndAss} \coqdocvar{P} (\coqdocvar{Istrue} \coqdocvar{b})) \coqdocvar{c} \coqdocvar{Q} \ensuremath{\rightarrow}\coqdoceol
+\coqdocindent{7.50em}
+\coqdocvar{AxSemH} \coqdocvar{P} (\coqdocvar{Assert} \coqdocvar{b} \coqdocvar{c}) \coqdocvar{Q}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Notation} "\{\{ P \}\} c \{\{ Q \}\}" := (\coqdocvar{AxSemH} \coqdocvar{P} \coqdocvar{c} \coqdocvar{Q}) (\coqdoctac{at} \coqdockw{level} 30).\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Definition} \coqdocvar{assert\_implies} (\coqdocvar{P} \coqdocvar{Q} : \coqdocvar{Assertion}) : \coqdockw{Prop} :=\coqdoceol
+\coqdocindent{1.00em}
+\coqdockw{\ensuremath{\forall}} \coqdocvar{st}, \coqdocvar{P} \coqdocvar{st} \ensuremath{\rightarrow} \coqdocvar{Q} \coqdocvar{st}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{a2} : \coqdockw{\ensuremath{\forall}} (\coqdocvar{P} :\coqdocvar{Assertion}), \coqdocvar{assert\_implies} (\coqdocvar{AndAss} \coqdocvar{P} (\coqdocvar{Istrue} (\coqdocvar{B} \coqdocvar{true}))) \coqdocvar{P}. \coqdocvar{Admitted}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{e1} : \coqdockw{\ensuremath{\forall}} (\coqdocvar{P'} \coqdocvar{P} \coqdocvar{Q} :\coqdocvar{Assertion}) (\coqdocvar{c} :\coqdocvar{Com}),\coqdoceol
+\coqdocnoindent
+\{\{ \coqdocvar{P'} \}\} \coqdocvar{c} \{\{ \coqdocvar{Q} \}\} \ensuremath{\rightarrow} \coqdocvar{assert\_implies} \coqdocvar{P} \coqdocvar{P'} \ensuremath{\rightarrow} \{\{ \coqdocvar{P} \}\} \coqdocvar{c} \{\{ \coqdocvar{Q} \}\}. \coqdocvar{Admitted}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{ej11} : \coqdockw{\ensuremath{\forall}} (\coqdocvar{s}:\coqdocvar{State}) (\coqdocvar{P}: \coqdocvar{Assertion}), \{\{ \coqdocvar{P} \}\}  \coqdocvar{Assert} (\coqdocvar{B} \coqdocvar{true}) \coqdocvar{Skip} \{\{ \coqdocvar{P} \}\}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{constructor}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{e1} \coqdockw{with} (\coqdocvar{P'}:=\coqdocvar{P}).\coqdoceol
+\coqdocnoindent
+\coqdoctac{constructor}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{a2}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Qed}.\coqdoceol
+\coqdocemptyline
+\end{coqdoccode}
+\section{Pruebe las siguientes reglas derivadas de la lógica de Hoare:}
+
+
+
+\subsection{$ \frac{P\rightarrow Q}{\{P\}\>Skip\>\{Q\}} $}
+
+\begin{coqdoccode}
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{ej4\_1} : \coqdockw{\ensuremath{\forall}} (\coqdocvar{P} \coqdocvar{Q}: \coqdocvar{Assertion}), \coqdocvar{assert\_implies} \coqdocvar{P} \coqdocvar{Q} \ensuremath{\rightarrow} \{\{ \coqdocvar{P} \}\}  \coqdocvar{Skip} \{\{ \coqdocvar{Q} \}\}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{intros}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{e1} \coqdockw{with} (\coqdocvar{P'}:=\coqdocvar{Q}) (\coqdocvar{P}:=\coqdocvar{P}) (\coqdocvar{c}:= \coqdocvar{Skip}).\coqdoceol
+\coqdocnoindent
+\coqdoctac{constructor}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{trivial}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Qed}.\coqdoceol
+\coqdocemptyline
+\end{coqdoccode}
+\subsection{$ \frac{P\rightarrow Q[x/a]}{\{P\}\>x:=a\>\{Q\}} $}
+
+\begin{coqdoccode}
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{ej4\_2} : \coqdockw{\ensuremath{\forall}} (\coqdocvar{P} \coqdocvar{Q}: \coqdocvar{Assertion}) (\coqdocvar{a}: \coqdocvar{Aexp}) (\coqdocvar{x}: \coqdocvar{Vname}), \coqdocvar{assert\_implies} \coqdocvar{P} (\coqdocvar{assupd} \coqdocvar{x} \coqdocvar{a} \coqdocvar{Q}) \ensuremath{\rightarrow} \{\{ \coqdocvar{P} \}\}  (\coqdocvar{Assg} \coqdocvar{x} \coqdocvar{a}) \{\{ \coqdocvar{Q} \}\}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{intros}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{e1} \coqdockw{with} (\coqdocvar{P'}:=(\coqdocvar{assupd} \coqdocvar{x} \coqdocvar{a} \coqdocvar{Q})) (\coqdocvar{P}:=\coqdocvar{P}) (\coqdocvar{c}:= \coqdocvar{Assg} \coqdocvar{x} \coqdocvar{a}).\coqdoceol
+\coqdocnoindent
+\coqdoctac{constructor}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{trivial}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Qed}.\coqdoceol
+\coqdocemptyline
+\end{coqdoccode}
+\end{document}

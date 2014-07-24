@@ -12,25 +12,87 @@
 \maketitle
 \begin{enumerate}
 
-\item[\bf{Problema 1}] Recuerden la platica de Borzoo sobre program repair. Encuentra un algoritmo polinomial que repare la secuencia de estados, en el caso de una sola condición de progreso $\box(P \models \Diamond Q)$, en donde hay un ciclo y solo puedes quitar transiciones. Demuestra que es correcto y que es polinomial.
+\item[{\bf Problema 1}] Recuerden la platica de Borzoo sobre program repair. Encuentra un algoritmo polinomial que repare la secuencia de estados, en el caso de una sola condición de progreso $\box(P \models \Diamond Q)$, en donde hay un ciclo y solo puedes quitar transiciones. Demuestra que es correcto y que es polinomial.
+
+\item[\bf{Respuesta}] Suponiendo que la revisión de la condición de progreso puede revisarse en tiempo constante.\\
+Sea $\mathcal{G=\{V,E\}}$ la gráfica de transiciones.
+
+Para podar la gráfica se tendría el siguiente algoritmo:\\
+\begin{enumerate}
+\item Marcar todos los vértices excepto el inicial como no visitados\\
+  complejidad $O(|\mathcal{V}|)$
+\item Eliminar todos los vértices terminales donde no se cumple $\mathcal{Q}$\\
+  complejidad $O(\mathcal{|V|+|E|})$
+\item para cada vertice $v\in V . Q(v)=true$ que sea de estado terminal y marcado como no visitado: \\
+  complejidad $O(|\mathcal{V}|* loop)$
+\begin{enumerate}
+\item Se busca un camino $P_v$ de longitud mínima desde el estado inicial $v$(podemos usar Dijkstra)
+  complejidad $O(\mathcal{|E|+|V|}log|\mathcal{V}|)$
+\item En la gráfica inducida $\mathcal{G}_P$ resultante al quitar de $\mathcal{G}$ las aristas de $P_v$ se busca otro camino de longitud mínima, si se encuentra, la última arista donde se intersecta con $P$ se elimina.\\
+  complejidad $O(\mathcal{|V| * (|E|+|V|}log|\mathcal{V}|))$
+\item Repetir el paso anterior hasta que no haya otro camino, y se marca $v$ como visitado
+\item Eliminar todos los vértices terminales donde no se cumple $\mathcal{Q}$\\
+  complejidad $O(\mathcal{|V|+|E|})$
+\end{itemize}
+
+en pseudocódigo, asumiendo que previamente esta implementada la función  $q$ que verifica la propiedad, el algoritmo de dijkstra y una funcion  last que dados dos caminos encuentra la ultima arista en el primero que incide con el segundo.
+\newpage
+\lstset{
+  numbers=left,
+  firstnumber=1,
+  numberfirstline=true
+}
+\begin{lstlisting}[frame=single]
+v.visitado=false for v in V where v != vo
+V=V.filter( q(x) )
+E=E.filter( (e)-> e.i in V and e.f in V )
+while (v = V.find( q(v) and  
+                   v.terminal and 
+                   not v.visitado) != null):
+    p=dijskstra(v0,v)
+    E'=E.filter( (e)-> e not in p)
+    while(q=dijskstra(v0,v) != null):
+      E'=E'.filter( (e)-> e not in q)
+      E = E - last(q,p)
+    v.visitado=true
+    V=V.filter( q(x) )
+    E=E.filter( (e)-> e.i in V and e.f in V )
+\end{lstlisting}
+
+La complejidad del código se demustra basado en dos invarientes de los ciclos while.
+el while interno (linea 9) cada vez que se ejecuta, el conjunto $\mathcal{E}$ disminuye en uno, por lo tanto no puede ejecutarse mas que $O(|E|)$.
+el while externo (linea 4) cada vez que se ejecuta, en el conjunto $\mathcal{E}$ un elemento se marca como visitado y nunca mas se marca como no visitado de nuevo, por lo que no puede ejecutarse mas de $O(|V|)$ veces y como se sabe que dijsktra es correcto, sabemos que termina en un tiempo finito de hecho acotado por $O(|E|*|V|*O(dijkstra))$ y por lo tanto es tiempo polinomial.\\
+Para ver que el resultado es correcto, solo falta notar que cada ejecución del ciclo while externo, se elimina una arista de un ciclo que lleva de $v_0$ a $v$, por lo que al final de la ejecución, queda un arbol, cuya raiz es el nodo inicial y todas las hojas estan en estados terminales donde $\mathcal{Q}$ se cumple, que es exactamente el objetivo del algoritmo $\blacksquare$
 
 
 
 
-\item[\bf{Problema 2}] Explicar por qué el problema de encontrar un ciclo que pase por 2 vértices dados es NP-Completo. (Solo dar un esbozo de la prueba).
+
+
+\item[\bf{Problema 2}] Explicar por qué el problema de encontrar un ciclo que pase por 2 vértices dados es NP-Completo. (Solo dar un esbozo de la prueba).\\
+
+Sabemos que el problema de encontrar un ciclo hamiltoneano en una gráfica es NP completo.
+Y reducimos el problema de encontrar un ciclo que pase por 2 vertices dados al problema del ciclo hamiltonaneo de la siguiente manera.\\
+
+Supongamos que tenemos un algoritmo $c2v$ que encuentra un ciclo que pasa por 2 vertices dados. Dada una gráfica $G$ queremos encontrar un ciclo hamiltoneano.\\
+tomamos $c2v$ y obtenemos un ciclo en $G$ (o una prueba de que no hay ningun ciclo).\\
+Si encontramos el ciclo $C_1$, considere la gráfica $G_{C1}$ que es la gráfica inducida en $G$ al eliminar $C$ y todos los vértices por los que $C$ para, excepto por dos consecutivos cualesqiera en $C$ $v_{ic_1}$ y $v_{fc_1})$, y buscamos un ciclo que una $=(v_{ic_1},v_{fc_1})$,  si se encuentra, quiere decir que hay al menos 2 caminos entre $=(v_{ic_1},v_{fc_1})$ que no incluyen a $e_1$, por lo que podemos tomar $C_1$ y uno de esos caminos (uno tiene que ser diferente a $C_1$) tendríamos un ciclo más grande que $C_1$ en $G$ que no repite vértices, repetimos este proceso hasta que tengamos un ciclo que pase por todos los vértices de $G$.
+ Este proceso no es más que aplicar a lo mas $|V|$ veces $c2v$, es decir podemos reducir el problema del ciclo hamiltoneano a $c2v$, por lo que este problema es NP completo.
+
+
 
 \item[\bf{Problema 3}] Recordemos ahora el modelo de memoria compartida wait-free y asíncrono para n procesos. El algoritmo que ejecutan los procesos en primera instancia fue:
 
 \begin{lstlisting}[frame=single]
 Alg(id):
-    r := − 1
+    r:= −1
     view := id
     loop:
         r := r+1
         mem[r] := write(view)
         X := scan(mem[r])
-        view := conjunto de id’s en X
-    until |view|= n−r
+        view := conjunto de id s en X
+    until |view|= n - r
 output view
 \end{lstlisting}
 Después vimos una modificación al algoritmo, en el cual un proceso ``no olvida'' si en una iteración anterior vio a algún otro proceso. Cambiamos el código de la siguiente manera:
@@ -43,10 +105,25 @@ Alg(id):
         mem[r] := write(view)
         X := scan(mem[r])
         view := view U conjunto de id’s en X
-    until |view| >= n−r
+    until |view| >= n - r
 output view
 \end{lstlisting}.\\
 
 Demuestra que los dos algoritmos son correctos y que cumplen la propiedad de que las vistas de los procesos están contenidas de acuerdo al orden en que los procesos terminan su iteración. (i.e. el proceso j terminó después que el proceso k, entonces la vista del proceso j está contenida en la vista del proceso k).
+
+\item[\bf{Respuesta}]
+Para demostrar la contención de las vistas en la ronda $j$ considere dos procesos $u$ y $v$, supongamos sin perdida de generalidad que $u$ corrió el ciclo por $j-$ésima vez, antes que $v$, por lo tanto, al ejecutar la linea 6, $u$ escribió y en la linea 8, leyo su propio estado y algunos otros, así, cuando $v$ ejecutó el ciclo $j-$ésima vez, leyo todo lo que leyo $u$ puesto que ningun proceso pudo cambiar lo que ya habia escrito en esa ronda, leyo tambien lo que escribio $u$ y por lo tanto $view_u \subseteq view_v$, esto es válido para ambos algoritmos.\\
+
+
+Para demostrar que {\bf el primer algoritmo termina}, se toma como invariante la siguiente. Despues de $k$ rondas, $k$ procesos han terminado. Por inducción sobre $k$, el caso base es 0 y dice que despues de $0$ rondas $0$ procesos han terminado, lo cual es cierto, pues ni siquiera se ha comenzado.
+Supongamos que hasta la ronda $k-1$ han salido $k$ procesos. (H de I)\\
+Para la ronda $k$, han llegado $n-k+1$ procesos por hipotesis de inducción, ahora observe el último proceso en escribir en la ronda $k$, para el $|view|=n-k$ pues ya todos los demás estan en $view$ y  sólo para este, pues los demás vieron menos elementos, así entonces en la ronda $k$ sale un proceso más y por hipótesis de induccíon quedan exactamente $n-k$ procesos $\blacksquare$  
+
+Para demostrar que {\bf el segundo algoritmo termina}, La prueba es muy similar al anterior, se toma como invariante la siguiente. Despues de $k$ rondas, $k$ procesos han terminado. Por inducción sobre $k$, el caso base es 0 y dice que despues de $0$ rondas $0$ procesos han terminado, lo cual es cierto, pues ni siquiera se ha comenzado.
+Supongamos que hasta la ronda $k-1$ han salido $k$ procesos. (H de I)\\
+Para la ronda $k$, han llegado $n-k+1$ procesos por hipotesis de inducción, ahora observe el último proceso en escribir en la ronda $k$, para el $|view| >=n-k$ pues ya todos los demás estan en $view$ y el se ve a si mismo, y sólo para este proceso la desigualdad es válida, pues los demás vieron menos elementos, así entonces en la ronda $k$ sale un proceso más y por hipótesis de induccíon quedan exactamente $n-k$ procesos $\blacksquare$  
+
+
+
 \end{enumerate}
 \end{document}

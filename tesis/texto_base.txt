@@ -1,0 +1,6 @@
+There are many libraries for quantitative finance. Most of them are proprietary and programmed in ``close to the metal'' languages such as c++. 
+This is because speed and accuracy play an important role in finance, more so in the valuation and trading areas. 
+
+In the case of stock valuation several goals collide. The analysis is hard due to the complex, interdependent and  concurrent behavior.  Speed here is vital, because today, high frequency trading (HFT) is the norm. Having a valuation done faster or more accurate than that of a competitor can yield a potentially insurmountable advantage. Even if it is just a $\mu s$ faster or a $\mu \pounds$ more accurate.
+
+Besides speed, another desirable trait is correctness. But since it has been long thought that it is unfeasible to achieve it. The industry has settled with lesser goals such as unit testing, model validation and debugging.

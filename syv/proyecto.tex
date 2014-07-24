@@ -1,0 +1,1009 @@
+\documentclass[12pt]{report}
+\usepackage[utf8x]{inputenc}
+
+%Warning: tipa declares many non-standard macros used by utf8x to
+%interpret utf8 characters but extra packages might have to be added
+%(e.g. "textgreek" for Greek letters not already in tipa).
+%Use coqdoc's option -p to add new packages.
+\usepackage{tipa}
+
+\usepackage[T1]{fontenc}
+\usepackage{fullpage}
+\usepackage{coqdoc}
+\usepackage{amsmath,amssymb}
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% This file has been automatically generated with the command
+%% coqdoc proyecto.v --latex --utf8 --no-externals -o proyecto.tex 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\coqlibrary{proyecto}{Library }{proyecto}
+
+\begin{coqdoccode}
+\end{coqdoccode}
+\section{Proyecto final. Semántica de PIC}
+
+\begin{coqdoccode}
+\coqdocemptyline
+\coqdocemptyline
+\end{coqdoccode}
+El objetivo de este proyecto es presentar una semántica, equivalente a la semántica de paso pequeño vista en clase, que contenga el conjunto de operaciones del ensamblador estandar de la familia de microcontroladores PIC. 
+
+
+Un proyecto más ambicioso sería crear un modelo completo de \textit{máquina virtual} de los microcontroladores PIC, así como un lenguage de programación de alto nivel más adecuado que el lenguage IMP-While visto en clase o una generación a partir de CompCert, optimización de código, etc.
+
+
+Aquí se usa una pequeña \textit{máquina virtual} (\textit{vm})con registros ilimitados, pila ilimitada, sin afectaciones a banderas, sin interrupciones y sin instucciones temporales como SLEEP y otras operaciones secuenciales de comunicación temporal, que son muy usadas en la práctica, como conectar a un motor de pasos o tomar lecturas de voltaje, tampoco hay etapa de optimizacion y menos aún considerar la optimización y su relación con los efectos colaterales como comunicación. También se considera que todas las instrucciones se ejecutan en un solo paso de relog. hay un registro especial, que se llama \textit{reg} sobre el cual se llevan a cambio todas las operaciones y un acumulador especial \textit{acc}
+
+El manejo de saltos y el contador de programa lo haremos por medio de etiquetas de arribo, puesto que los ensambladores de PIC permiten dicha práctica y facilita el mapeo con la semantica de paso pequeño. 
+
+\section{Elementos y estructuras}
+
+
+
+ tal y como fueron vistas en clase, incluimos las bibliotecas, y ponemos notación de operación y construcción de listas \begin{coqdoccode}
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Require} \coqdockw{Import} \coqdocvar{Coq.Bool.Bool}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Require} \coqdockw{Import} \coqdocvar{Coq.Lists.List}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Require} \coqdockw{Import} \coqdocvar{Coq.Strings.String}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Require} \coqdockw{Import} \coqdocvar{ZArith}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Definition} \coqdocvar{admit} \{\coqdocvar{T}: \coqdockw{Type}\} : \coqdocvar{T}. \coqdocvar{Admitted}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Notation} "x :: l" := (\coqdocvar{cons} \coqdocvar{x} \coqdocvar{l}) (\coqdoctac{at} \coqdockw{level} 60, \coqdoctac{right} \coqdockw{associativity}).\coqdoceol
+\coqdocnoindent
+\coqdockw{Notation} "[ ]" := \coqdocvar{nil}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Notation} "[ x , .. , y ]" := (\coqdocvar{cons} \coqdocvar{x} .. (\coqdocvar{cons} \coqdocvar{y} \coqdocvar{nil}) ..).\coqdoceol
+\coqdocnoindent
+\coqdockw{Open} \coqdockw{Scope} \coqdocvar{Z\_scope}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Open} \coqdockw{Scope} \coqdocvar{string\_scope}.\coqdoceol
+\coqdocemptyline
+\end{coqdoccode}
+Estructuras de alojamiento de datos \begin{coqdoccode}
+\coqdocnoindent
+\coqdockw{Definition} \coqdocvar{Vname} := \coqdocvar{string}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Definition} \coqdocvar{Value} := \coqdocvar{Z}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Definition} \coqdocvar{State} := \coqdocvar{Vname} \ensuremath{\rightarrow} \coqdocvar{Value}.\coqdoceol
+\coqdocemptyline
+\end{coqdoccode}
+\subsection{Instrucciones}
+
+
+
+
+
+Un programa es un conjunto de instrucciones, ejemplo:
+
+
+$
+\begin{tabular}{lll}
+{\bf Label}              & {\bf Operator} & {\bf Operand} \\
+\hline
+l1: & LD & x \\
+ & ADD & 3 \\
+ & JMP & l1 \\
+\end{tabular}
+$
+
+
+La sintaxis de nuestra \textit{vm} es:
+
+
+\begin{verbatim}
+i ::=| NOP                          no operacion
+     | LD op                        load
+     | ST id                        store
+     | JMP lbl | JMPC lbl           saltos
+     | ADD op | SUB op              enteros
+     | AND op | OR op | XOR op      bit por bit
+     | NOT op                       negación bit menos significativo
+     | COMF                         complemento (negación de todos los bits)
+     | EQ op | GE op
+     | GT op                 
+     | RET                          fin de programa
+
+\end{verbatim}
+ 
+
+\subsection{Instrucciones no consideradas}
+
+
+
+
+Por razones de simplicidad y/o por que el lenguage objetivo no cubre algunas de estas funciones y no hay optimizador que podría hacer uso de ellas, las siguientes operaciones, disponibles en PIC, no son parte de nuestra \textit{vm}
+
+\begin{verbatim}
+   INC,                             incremento
+   DEC,                             decremento
+   CALL,RETURN                      llamar y regresar de subrutina                  
+   SLEEP,                           cambiar a modo sleep
+   CLRWDT                           Clear watchdog timer, 
+   ANDWF, XORWF, IORWF              operaciones lógicas contra constantes,
+   ADDWF, SUBWF                     operacopnes aritméticas contra constantes,
+   RLF, RRF                         rotacion a la izq y derecha (por medio del bit de acarreo)
+   BTFSC,BTFSS                      Salto de instruccion si un bit esta activo o inactivo.
+   RETFIE                           regreso desde interupción
+   SWAP   
+   BCF,CSF                          set bit /clear bit 
+\end{verbatim}
+
+
+\subsection{Semántica operacional}
+
+
+
+
+Load, carga al registro.  $\frac{ {\bf P(i)=LD}  op \>\>\> \sigma'=\sigma[reg \rightarrow op]}{P \models (\sigma,i) \rightarrow (\sigma',i+1)}$ 
+
+
+Store, guarda el valor del registro en la variable. $\frac{ {\bf P(i)=ST}  x \>\>\> \sigma'=\sigma[x \rightarrow reg]}{P \models (\sigma,i) \rightarrow (\sigma',i+1)}$
+
+
+JMP. Salto incondicional  $\frac{ {\bf P(i)=JMP}  x \>\>\> \sigma(reg)=True}{P \models (\sigma,i) \rightarrow (\sigma',lbl)}$
+
+
+\begin{coqdoccode}
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Inductive} \coqdocvar{Aexp} : \coqdockw{Set} :=\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{N} : \coqdocvar{Z} \ensuremath{\rightarrow} \coqdocvar{Aexp}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{V} : \coqdocvar{Vname} \ensuremath{\rightarrow} \coqdocvar{Aexp}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Plus} : \coqdocvar{Aexp} \ensuremath{\rightarrow} \coqdocvar{Aexp} \ensuremath{\rightarrow} \coqdocvar{Aexp}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Prod} : \coqdocvar{Aexp} \ensuremath{\rightarrow} \coqdocvar{Aexp} \ensuremath{\rightarrow} \coqdocvar{Aexp}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Minus} : \coqdocvar{Aexp} \ensuremath{\rightarrow} \coqdocvar{Aexp} \ensuremath{\rightarrow} \coqdocvar{Aexp}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Fixpoint} \coqdocvar{aval} (\coqdocvar{a}:\coqdocvar{Aexp}) (\coqdocvar{s}:\coqdocvar{State}): \coqdocvar{Value}:=\coqdoceol
+\coqdocnoindent
+\coqdockw{match} \coqdocvar{a} \coqdockw{with}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{N} \coqdocvar{n} \ensuremath{\Rightarrow}  \coqdocvar{n} \coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{V} \coqdocvar{x} \ensuremath{\Rightarrow} \coqdocvar{s} \coqdocvar{x}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Plus} \coqdocvar{a1} \coqdocvar{a2} \ensuremath{\Rightarrow} (\coqdocvar{aval} \coqdocvar{a1} \coqdocvar{s}) + (\coqdocvar{aval} \coqdocvar{a2} \coqdocvar{s})\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Prod} \coqdocvar{a1} \coqdocvar{a2} \ensuremath{\Rightarrow} (\coqdocvar{aval} \coqdocvar{a1} \coqdocvar{s}) \ensuremath{\times} (\coqdocvar{aval} \coqdocvar{a2} \coqdocvar{s})\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Minus} \coqdocvar{a1} \coqdocvar{a2} \ensuremath{\Rightarrow} (\coqdocvar{aval} \coqdocvar{a1} \coqdocvar{s}) - (\coqdocvar{aval} \coqdocvar{a2} \coqdocvar{s})\coqdoceol
+\coqdocnoindent
+\coqdockw{end}.\coqdoceol
+\coqdocemptyline
+\end{coqdoccode}
+\section{Expresiones booleanas}
+
+
+
+
+
+La sintaxis y evaluación de expresiones aritmeticas.
+
+
+La descripción en BNF es:
+\begin{verbatim}
+Bexp:= B | Eq Bexp Bexp | Lt Bexp Bexp  | Not Bexp | Bexp And Bexp
+\end{verbatim}
+
+
+donde B es un valor booleano, observe que en este lenguaje no hay variables booleanas
+
+
+\begin{coqdoccode}
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Inductive} \coqdocvar{Bexp}: \coqdockw{Set} :=\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{B} : \coqdocvar{bool} \ensuremath{\rightarrow} \coqdocvar{Bexp}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Eq} : \coqdocvar{Aexp} \ensuremath{\rightarrow} \coqdocvar{Aexp} \ensuremath{\rightarrow} \coqdocvar{Bexp}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Lt} : \coqdocvar{Aexp} \ensuremath{\rightarrow} \coqdocvar{Aexp} \ensuremath{\rightarrow} \coqdocvar{Bexp}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Not} : \coqdocvar{Bexp} \ensuremath{\rightarrow} \coqdocvar{Bexp}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{And} : \coqdocvar{Bexp} \ensuremath{\rightarrow} \coqdocvar{Bexp} \ensuremath{\rightarrow} \coqdocvar{Bexp}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Fixpoint} \coqdocvar{bval} (\coqdocvar{a}:\coqdocvar{Bexp}) (\coqdocvar{s}:\coqdocvar{State}): \coqdocvar{bool}:=\coqdoceol
+\coqdocnoindent
+\coqdockw{match} \coqdocvar{a} \coqdockw{with}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{B} \coqdocvar{b} \ensuremath{\Rightarrow}  \coqdocvar{b} \coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Eq} \coqdocvar{a1} \coqdocvar{a2} \ensuremath{\Rightarrow} \coqdocvar{Zeq\_bool} (\coqdocvar{aval} \coqdocvar{a1} \coqdocvar{s}) (\coqdocvar{aval} \coqdocvar{a2} \coqdocvar{s})\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Lt} \coqdocvar{a1} \coqdocvar{a2} \ensuremath{\Rightarrow} \coqdocvar{Zlt\_bool} (\coqdocvar{aval} \coqdocvar{a1} \coqdocvar{s}) (\coqdocvar{aval} \coqdocvar{a2} \coqdocvar{s})\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Not} \coqdocvar{b} \ensuremath{\Rightarrow} \coqdocvar{negb} (\coqdocvar{bval} \coqdocvar{b} \coqdocvar{s})\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{And} \coqdocvar{b1} \coqdocvar{b2} \ensuremath{\Rightarrow} \coqdocvar{andb} (\coqdocvar{bval} \coqdocvar{b1} \coqdocvar{s}) (\coqdocvar{bval} \coqdocvar{b2} \coqdocvar{s})\coqdoceol
+\coqdocnoindent
+\coqdockw{end}.\coqdoceol
+\coqdocemptyline
+\end{coqdoccode}
+\section{Conjuntos de variables y sus operaciones}
+
+\begin{coqdoccode}
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Hypothesis} \coqdocvar{VarSet}: \coqdockw{Set}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Variable} \coqdocvar{empty} : \coqdocvar{VarSet}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Variable} \coqdocvar{single} : \coqdocvar{Vname} \ensuremath{\rightarrow} \coqdocvar{VarSet}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Variable} \coqdocvar{union} : \coqdocvar{VarSet} \ensuremath{\rightarrow} \coqdocvar{VarSet} \ensuremath{\rightarrow} \coqdocvar{VarSet}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Variable} \coqdocvar{elemvs}: \coqdocvar{Vname} \ensuremath{\rightarrow} \coqdocvar{VarSet} \ensuremath{\rightarrow} \coqdockw{Prop}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Variable} \coqdocvar{elem\_single}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{x}:\coqdocvar{Vname}), \coqdocvar{elemvs} \coqdocvar{x} (\coqdocvar{single} \coqdocvar{x}).\coqdoceol
+\coqdocnoindent
+\coqdockw{Variable} \coqdocvar{elem\_union\_R}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{x}:\coqdocvar{Vname}) (\coqdocvar{e} \coqdocvar{e'}:\coqdocvar{VarSet}), \coqdocvar{elemvs} \coqdocvar{x} \coqdocvar{e} \ensuremath{\rightarrow} \coqdocvar{elemvs} \coqdocvar{x} (\coqdocvar{union} \coqdocvar{e} \coqdocvar{e'}).\coqdoceol
+\coqdocnoindent
+\coqdockw{Variable} \coqdocvar{elem\_union\_L}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{x}:\coqdocvar{Vname}) (\coqdocvar{e} \coqdocvar{e'}:\coqdocvar{VarSet}), \coqdocvar{elemvs} \coqdocvar{x} \coqdocvar{e} \ensuremath{\rightarrow} \coqdocvar{elemvs} \coqdocvar{x} (\coqdocvar{union} \coqdocvar{e'} \coqdocvar{e}).\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Fixpoint} \coqdocvar{VAexp} (\coqdocvar{a}:\coqdocvar{Aexp}) : \coqdocvar{VarSet} :=\coqdoceol
+\coqdocnoindent
+\coqdockw{match} \coqdocvar{a} \coqdockw{with}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{N} \coqdocvar{n} \ensuremath{\Rightarrow} \coqdocvar{empty}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{V} \coqdocvar{v} \ensuremath{\Rightarrow} \coqdocvar{single} \coqdocvar{v}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Plus} \coqdocvar{a1} \coqdocvar{a2} \ensuremath{\Rightarrow} \coqdocvar{union} (\coqdocvar{VAexp} \coqdocvar{a1}) (\coqdocvar{VAexp} \coqdocvar{a2})\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Prod} \coqdocvar{a1} \coqdocvar{a2} \ensuremath{\Rightarrow} \coqdocvar{union} (\coqdocvar{VAexp} \coqdocvar{a1}) (\coqdocvar{VAexp} \coqdocvar{a2})\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Minus} \coqdocvar{a1} \coqdocvar{a2} \ensuremath{\Rightarrow} \coqdocvar{union} (\coqdocvar{VAexp} \coqdocvar{a1})  (\coqdocvar{VAexp} \coqdocvar{a2})\coqdoceol
+\coqdocnoindent
+\coqdockw{end}.\coqdoceol
+\coqdocemptyline
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Fixpoint} \coqdocvar{VBexp} (\coqdocvar{b}:\coqdocvar{Bexp}) : \coqdocvar{VarSet} := \coqdoceol
+\coqdocnoindent
+\coqdockw{match} \coqdocvar{b} \coqdockw{with}\coqdoceol
+\coqdocnoindent
+\ensuremath{|}\coqdocvar{B} \coqdocvar{b} \ensuremath{\Rightarrow} \coqdocvar{empty}\coqdoceol
+\coqdocnoindent
+\ensuremath{|}\coqdocvar{Eq} \coqdocvar{a1} \coqdocvar{a2} \ensuremath{\Rightarrow} \coqdocvar{union} (\coqdocvar{VAexp} \coqdocvar{a1}) (\coqdocvar{VAexp} \coqdocvar{a2}) \coqdoceol
+\coqdocnoindent
+\ensuremath{|}\coqdocvar{Lt} \coqdocvar{a1} \coqdocvar{a2} \ensuremath{\Rightarrow} \coqdocvar{union} (\coqdocvar{VAexp} \coqdocvar{a1}) (\coqdocvar{VAexp} \coqdocvar{a2}) \coqdoceol
+\coqdocnoindent
+\ensuremath{|}\coqdocvar{Not} \coqdocvar{b1} \ensuremath{\Rightarrow} \coqdocvar{VBexp} \coqdocvar{b1}\coqdoceol
+\coqdocnoindent
+\ensuremath{|}\coqdocvar{And} \coqdocvar{b1} \coqdocvar{b2} \ensuremath{\Rightarrow} \coqdocvar{union} (\coqdocvar{VBexp} \coqdocvar{b1}) (\coqdocvar{VBexp} \coqdocvar{b2}) \coqdoceol
+\coqdocnoindent
+\coqdockw{end}.\coqdoceol
+\coqdocemptyline
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Fixpoint} \coqdocvar{sustae} (\coqdocvar{a}:\coqdocvar{Aexp}) (\coqdocvar{x}:\coqdocvar{Vname}) (\coqdocvar{e}: \coqdocvar{Aexp}): \coqdocvar{Aexp} :=\coqdoceol
+\coqdocnoindent
+\coqdockw{match} \coqdocvar{a} \coqdockw{with}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{N} \coqdocvar{n} \ensuremath{\Rightarrow} \coqdocvar{N} \coqdocvar{n} \coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{V} \coqdocvar{y} \ensuremath{\Rightarrow} \coqdockw{if} \coqdocvar{string\_dec} \coqdocvar{x} \coqdocvar{y} \coqdockw{then} \coqdocvar{e} \coqdockw{else} \coqdocvar{V} \coqdocvar{y}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Plus} \coqdocvar{a1} \coqdocvar{a2} \ensuremath{\Rightarrow} \coqdocvar{Plus} (\coqdocvar{sustae} \coqdocvar{a1} \coqdocvar{x} \coqdocvar{e}) (\coqdocvar{sustae} \coqdocvar{a2} \coqdocvar{x} \coqdocvar{e})\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Prod} \coqdocvar{a1} \coqdocvar{a2} \ensuremath{\Rightarrow} \coqdocvar{Prod} (\coqdocvar{sustae} \coqdocvar{a1} \coqdocvar{x} \coqdocvar{e}) (\coqdocvar{sustae} \coqdocvar{a2} \coqdocvar{x} \coqdocvar{e})\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Minus} \coqdocvar{a1} \coqdocvar{a2} \ensuremath{\Rightarrow} \coqdocvar{Minus} (\coqdocvar{sustae} \coqdocvar{a1} \coqdocvar{x} \coqdocvar{e}) (\coqdocvar{sustae} \coqdocvar{a2} \coqdocvar{x} \coqdocvar{e})\coqdoceol
+\coqdocnoindent
+\coqdockw{end}.\coqdoceol
+\coqdocemptyline
+\end{coqdoccode}
+ Ejemplo de sustitución \begin{coqdoccode}
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Eval} \coqdoctac{simpl} \coqdoctac{in} (\coqdocvar{sustae} (\coqdocvar{Plus} (\coqdocvar{V} "x") (\coqdocvar{N} 1)) "x" (\coqdocvar{N} 3)).\coqdoceol
+\end{coqdoccode}
+
+
+\begin{verbatim}
+= Plus (N 3) (N 1) : Aexp     
+\end{verbatim}
+\begin{coqdoccode}
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Definition} \coqdocvar{update} (\coqdocvar{s}: \coqdocvar{State}) (\coqdocvar{y}:\coqdocvar{Vname}) (\coqdocvar{v}:\coqdocvar{Value}): \coqdocvar{State} := \coqdoceol
+\coqdocindent{1.00em}
+\coqdockw{fun} (\coqdocvar{x}:\coqdocvar{Vname}) \ensuremath{\Rightarrow} \coqdockw{if} \coqdocvar{string\_dec} \coqdocvar{x} \coqdocvar{y} \coqdockw{then} \coqdocvar{v} \coqdockw{else} \coqdocvar{s} \coqdocvar{x}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Check} \coqdocvar{string\_dec}.\coqdoceol
+\end{coqdoccode}
+
+
+\begin{verbatim}
+string_dec
+     : forall s1 s2 : string, {s1 = s2} + {s1 <> s2}
+\end{verbatim}
+\begin{coqdoccode}
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{upd\_eq}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{s}: \coqdocvar{State}) (\coqdocvar{y}:\coqdocvar{Vname}) (\coqdocvar{v}:\coqdocvar{Value}), \coqdocvar{update} \coqdocvar{s} \coqdocvar{y} \coqdocvar{v} \coqdocvar{y} = \coqdocvar{v}.\coqdoceol
+\coqdocnoindent
+\coqdocvar{Admitted}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{upd\_neq}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{s}: \coqdocvar{State}) (\coqdocvar{y} \coqdocvar{x}:\coqdocvar{Vname}) (\coqdocvar{v}:\coqdocvar{Value}), \coqdocvar{y} \ensuremath{\not=} \coqdocvar{x} \ensuremath{\rightarrow} \coqdocvar{update} \coqdocvar{s} \coqdocvar{y} \coqdocvar{v} \coqdocvar{x} = \coqdocvar{s} \coqdocvar{x}.\coqdoceol
+\coqdocnoindent
+\coqdocvar{Admitted}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{sust\_ae}: \coqdockw{\ensuremath{\forall}} \coqdocvar{a} \coqdocvar{y} \coqdocvar{e} \coqdocvar{s}, \coqdoceol
+\coqdocnoindent
+\coqdocvar{aval} (\coqdocvar{sustae} \coqdocvar{a} \coqdocvar{y} \coqdocvar{e}) \coqdocvar{s} = \coqdocvar{aval} \coqdocvar{a} (\coqdocvar{update} \coqdocvar{s} \coqdocvar{y} (\coqdocvar{aval} \coqdocvar{e} \coqdocvar{s})).\coqdoceol
+\coqdocnoindent
+\coqdocvar{Admitted}.\coqdoceol
+\coqdocemptyline
+\end{coqdoccode}
+\subsection{Semántica operacional PIC}
+
+\begin{coqdoccode}
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Inductive} \coqdocvar{I}\coqdoceol
+\coqdocnoindent
+\coqdockw{Inductive} \coqdocvar{Operandos}: \coqdockw{Set} :=\coqdoceol
+\coqdocnoindent
+\coqdoceol
+\coqdocnoindent
+\coqdockw{Inductive} \coqdocvar{Inst} : \coqdockw{Set} :=\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{NOP} : \coqdocvar{Inst}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{LD} : \coqdocvar{Vname} \ensuremath{\rightarrow} (\coqdocvar{op} : \coqdocvar{Operands})\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{ST} (\coqdocvar{x} : \coqdocvar{ident})\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{SR} (\coqdocvar{x} : \coqdocvar{ident}) \coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{RS} (\coqdocvar{x} : \coqdocvar{ident})\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{JMP} (\coqdocvar{l} : \coqdocvar{nat}) \coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{JMPC} (\coqdocvar{l} : \coqdocvar{nat}) \coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{JMPCN} (\coqdocvar{l} : \coqdocvar{nat})\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{ADD} (\coqdocvar{op} : \coqdocvar{Operands}) \coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{SUB} (\coqdocvar{op} : \coqdocvar{Operands})\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{MUL} (\coqdocvar{op} : \coqdocvar{Operands})\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{AND} (\coqdocvar{op} : \coqdocvar{Operands}) \coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{OR} (\coqdocvar{op} : \coqdocvar{Operands})\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{ANDN} (\coqdocvar{op} : \coqdocvar{Operands}) \coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{ORN} (\coqdocvar{op} : \coqdocvar{Operands})\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{NOT} (\coqdocvar{op} : \coqdocvar{Operands}) \coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{EQ} (\coqdocvar{op} : \coqdocvar{Operands})\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{GT} (\coqdocvar{op} : \coqdocvar{Operands}) \coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{GE} (\coqdocvar{op} : \coqdocvar{Operands})\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{TON} (\coqdocvar{q} \coqdocvar{et} : \coqdocvar{ident}) (\coqdocvar{pt} : \coqdocvar{time})\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{RET}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Inductive} \coqdocvar{Com}: \coqdockw{Set} :=\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Skip} : \coqdocvar{Com}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Assg} : \coqdocvar{Vname} \ensuremath{\rightarrow} \coqdocvar{Aexp} \ensuremath{\rightarrow} \coqdocvar{Com}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{Seq} : \coqdocvar{Com} \ensuremath{\rightarrow} \coqdocvar{Com} \ensuremath{\rightarrow} \coqdocvar{Com}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{IfC} :  \coqdocvar{Bexp} \ensuremath{\rightarrow} \coqdocvar{Com} \ensuremath{\rightarrow} \coqdocvar{Com} \ensuremath{\rightarrow} \coqdocvar{Com}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{While} : \coqdocvar{Bexp} \ensuremath{\rightarrow} \coqdocvar{Com} \ensuremath{\rightarrow} \coqdocvar{Com}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Notation} "x ::= a" := (\coqdocvar{Assg} \coqdocvar{x} \coqdocvar{a}) (\coqdoctac{at} \coqdockw{level} 20).\coqdoceol
+\coqdocnoindent
+\coqdockw{Notation} "c ;; c'" := (\coqdocvar{Seq} \coqdocvar{c} \coqdocvar{c'}) (\coqdoctac{at} \coqdockw{level} 30).\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Inductive} \coqdocvar{BSSem}:\coqdocvar{Com} \ensuremath{\rightarrow} \coqdocvar{State} \ensuremath{\rightarrow} \coqdocvar{State} \ensuremath{\rightarrow} \coqdockw{Prop} :=\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{BS\_Assg} : \coqdockw{\ensuremath{\forall}} (\coqdocvar{x}:\coqdocvar{Vname}) (\coqdocvar{a}:\coqdocvar{Aexp}) (\coqdocvar{s}:\coqdocvar{State}),\coqdoceol
+\coqdocindent{8.50em}
+\coqdocvar{BSSem} (\coqdocvar{Assg} \coqdocvar{x} \coqdocvar{a}) \coqdocvar{s} (\coqdocvar{update} \coqdocvar{s} \coqdocvar{x} (\coqdocvar{aval} \coqdocvar{a} \coqdocvar{s}))\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{BS\_Skip} : \coqdockw{\ensuremath{\forall}} \coqdocvar{s}:\coqdocvar{State}, \coqdocvar{BSSem} \coqdocvar{Skip} \coqdocvar{s} \coqdocvar{s}\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{BS\_Seq} : \coqdockw{\ensuremath{\forall}} (\coqdocvar{c1}:\coqdocvar{Com}) (\coqdocvar{s1} \coqdocvar{s2}:\coqdocvar{State}), \coqdoceol
+\coqdocindent{9.00em}
+\coqdocvar{BSSem} \coqdocvar{c1} \coqdocvar{s1} \coqdocvar{s2} \ensuremath{\rightarrow} \coqdoceol
+\coqdocindent{9.00em}
+\coqdockw{\ensuremath{\forall}} (\coqdocvar{c2}:\coqdocvar{Com}) (\coqdocvar{s3}:\coqdocvar{State}) , \coqdocvar{BSSem} \coqdocvar{c2} \coqdocvar{s2} \coqdocvar{s3} \ensuremath{\rightarrow} \coqdoceol
+\coqdocindent{9.00em}
+\coqdocvar{BSSem} (\coqdocvar{Seq} \coqdocvar{c1} \coqdocvar{c2}) \coqdocvar{s1} \coqdocvar{s3}\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{BS\_IfT}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{b}:\coqdocvar{Bexp}) (\coqdocvar{s}:\coqdocvar{State}), \coqdocvar{bval} \coqdocvar{b} \coqdocvar{s} = \coqdocvar{true} \ensuremath{\rightarrow} \coqdoceol
+\coqdocindent{5.50em}
+\coqdockw{\ensuremath{\forall}} (\coqdocvar{t}:\coqdocvar{State}),\coqdoceol
+\coqdocindent{6.50em}
+\coqdockw{\ensuremath{\forall}} (\coqdocvar{c1} \coqdocvar{c2}:\coqdocvar{Com}), \coqdocvar{BSSem} \coqdocvar{c1} \coqdocvar{s} \coqdocvar{t} \ensuremath{\rightarrow} \coqdocvar{BSSem} (\coqdocvar{IfC} \coqdocvar{b} \coqdocvar{c1} \coqdocvar{c2}) \coqdocvar{s} \coqdocvar{t}\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{BS\_IfF}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{b}:\coqdocvar{Bexp}) (\coqdocvar{s}:\coqdocvar{State}), \coqdocvar{bval} \coqdocvar{b} \coqdocvar{s} = \coqdocvar{false} \ensuremath{\rightarrow} \coqdoceol
+\coqdocindent{5.50em}
+\coqdockw{\ensuremath{\forall}} (\coqdocvar{t}:\coqdocvar{State}),\coqdoceol
+\coqdocindent{6.50em}
+\coqdockw{\ensuremath{\forall}} (\coqdocvar{c1} \coqdocvar{c2}:\coqdocvar{Com}), \coqdocvar{BSSem} \coqdocvar{c2} \coqdocvar{s} \coqdocvar{t} \ensuremath{\rightarrow} \coqdocvar{BSSem} (\coqdocvar{IfC} \coqdocvar{b} \coqdocvar{c1} \coqdocvar{c2}) \coqdocvar{s} \coqdocvar{t}\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{BS\_WhlF}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{b}:\coqdocvar{Bexp}) (\coqdocvar{c}:\coqdocvar{Com}) (\coqdocvar{s}:\coqdocvar{State}), \coqdocvar{bval} \coqdocvar{b} \coqdocvar{s} = \coqdocvar{false} \ensuremath{\rightarrow}\coqdoceol
+\coqdocindent{7.50em}
+\coqdocvar{BSSem} (\coqdocvar{While} \coqdocvar{b} \coqdocvar{c}) \coqdocvar{s} \coqdocvar{s}\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{BS\_WhlT}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{b}:\coqdocvar{Bexp}) (\coqdocvar{s1}:\coqdocvar{State}), \coqdocvar{bval} \coqdocvar{b} \coqdocvar{s1} = \coqdocvar{true} \ensuremath{\rightarrow}\coqdoceol
+\coqdocindent{10.00em}
+\coqdockw{\ensuremath{\forall}} (\coqdocvar{c}:\coqdocvar{Com}) (\coqdocvar{s2}:\coqdocvar{State}), \coqdocvar{BSSem} \coqdocvar{c} \coqdocvar{s1} \coqdocvar{s2} \ensuremath{\rightarrow}\coqdoceol
+\coqdocindent{11.50em}
+\coqdockw{\ensuremath{\forall}} (\coqdocvar{s3}:\coqdocvar{State}), \coqdocvar{BSSem} (\coqdocvar{While} \coqdocvar{b} \coqdocvar{c}) \coqdocvar{s2} \coqdocvar{s3} \ensuremath{\rightarrow}\coqdoceol
+\coqdocindent{13.00em}
+\coqdocvar{BSSem} (\coqdocvar{While} \coqdocvar{b} \coqdocvar{c}) \coqdocvar{s1} \coqdocvar{s3}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Notation} " << c , s >> ==> t" := (\coqdocvar{BSSem} \coqdocvar{c} \coqdocvar{s} \coqdocvar{t}) (\coqdoctac{at} \coqdockw{level} 30).\coqdoceol
+\coqdocnoindent
+\coqdockw{Notation} " <[ c , s ]> ==P t" :=(\coqdocvar{BSSem} \coqdocvar{c} \coqdocvar{s} \coqdocvar{t}) (\coqdoctac{at} \coqdockw{level} 30).\coqdoceol
+\coqdocemptyline
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Definition} \coqdocvar{p1} :=  "x" ::= \coqdocvar{N} 5 ;; "y" ::= \coqdocvar{V} "x".\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{ejp1}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{s}:\coqdocvar{State}), \coqdoctac{\ensuremath{\exists}} \coqdocvar{t}:\coqdocvar{State}, << \coqdocvar{p1} , \coqdocvar{s} >> ==> \coqdocvar{t}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{intros}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eexists}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{unfold} \coqdocvar{p1}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eapply} \coqdocvar{BS\_Seq}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eapply} \coqdocvar{BS\_Assg}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eapply} \coqdocvar{BS\_Assg}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Qed}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Print} \coqdocvar{ejp1}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Definition} \coqdocvar{bsequiv} (\coqdocvar{c1} \coqdocvar{c2}:\coqdocvar{Com}):\coqdockw{Prop} := \coqdockw{\ensuremath{\forall}} (\coqdocvar{s} \coqdocvar{t}:\coqdocvar{State}), \coqdoceol
+\coqdocindent{19.50em}
+<< \coqdocvar{c1},\coqdocvar{s} >> ==> \coqdocvar{t} \ensuremath{\leftrightarrow} << \coqdocvar{c2},\coqdocvar{s} >> ==> \coqdocvar{t}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Check} \coqdocvar{bsequiv}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Notation} "c \~{}\~{} d" := (\coqdocvar{bsequiv} \coqdocvar{c} \coqdocvar{d}) (\coqdoctac{at} \coqdockw{level} 40).\coqdoceol
+\coqdocemptyline
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{equiv\_if\_A}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{b}:\coqdocvar{Bexp}) (\coqdocvar{c}:\coqdocvar{Com}), \coqdocvar{IfC} \coqdocvar{b} \coqdocvar{c} \coqdocvar{c} \~{}\~{} \coqdocvar{c}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{intros}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{unfold} \coqdocvar{bsequiv}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{intros}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{split}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{intros}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{inversion} \coqdocvar{H}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{trivial}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{trivial}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{intros}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{case} (\coqdocvar{bool\_dec} (\coqdocvar{bval} \coqdocvar{b} \coqdocvar{s}) \coqdocvar{true}).\coqdoceol
+\coqdocnoindent
+\coqdoctac{intros}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{BS\_IfT}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{trivial}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{trivial}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{intros}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{BS\_IfF}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{not\_true\_is\_false}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{trivial}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{trivial}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Qed}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{equiv\_if\_B}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{b}:\coqdocvar{Bexp}) (\coqdocvar{c1} \coqdocvar{c2}:\coqdocvar{Com}), \coqdocvar{IfC} \coqdocvar{b} \coqdocvar{c1} \coqdocvar{c2} \~{}\~{} \coqdocvar{IfC} (\coqdocvar{Not} \coqdocvar{b}) \coqdocvar{c2} \coqdocvar{c1}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{intros}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{unfold} \coqdocvar{bsequiv}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{intros}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{split}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{intros}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{inversion} \coqdocvar{H}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{BS\_IfF}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{simpl}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{rewrite} \coqdocvar{H5}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{simpl}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{trivial}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{trivial}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{BS\_IfT}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{simpl}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{rewrite} \coqdocvar{H5}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{simpl}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{trivial}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{trivial}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{intros}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{case} (\coqdocvar{bool\_dec} (\coqdocvar{bval} \coqdocvar{b} \coqdocvar{s})  \coqdocvar{true}).\coqdoceol
+\coqdocnoindent
+\coqdoctac{intros}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{BS\_IfT}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{trivial}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{inversion} \coqdocvar{H}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{simpl} \coqdoctac{in} \coqdocvar{H5}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{rewrite} \coqdocvar{e} \coqdoctac{in} \coqdocvar{H5}.\coqdoceol
+\coqdocnoindent
+\coqdocvar{exfalso}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{intuition}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{trivial}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{intros}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{BS\_IfF}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{not\_true\_is\_false}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{trivial}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{inversion} \coqdocvar{H}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{trivial}.\coqdoceol
+\coqdocnoindent
+\coqdocvar{exfalso}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{simpl} \coqdoctac{in} \coqdocvar{H5}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{n}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{negb\_false\_iff}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{trivial}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Qed}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{equiv\_unfold\_while}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{b}:\coqdocvar{Bexp}) (\coqdocvar{c}:\coqdocvar{Com}), \coqdoceol
+\coqdocindent{13.50em}
+\coqdocvar{While} \coqdocvar{b} \coqdocvar{c} \~{}\~{} \coqdocvar{IfC} \coqdocvar{b} (\coqdocvar{c} ;; (\coqdocvar{While} \coqdocvar{b} \coqdocvar{c})) \coqdocvar{Skip}.\coqdoceol
+\coqdocnoindent
+\coqdocvar{Admitted}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Theorem} \coqdocvar{cong\_while}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{b}:\coqdocvar{Bexp}) (\coqdocvar{c} \coqdocvar{c'}:\coqdocvar{Com}) (\coqdocvar{s} \coqdocvar{t}:\coqdocvar{State}), \coqdoceol
+\coqdocindent{11.00em}
+<< \coqdocvar{While} \coqdocvar{b} \coqdocvar{c} , \coqdocvar{s} >> ==> \coqdocvar{t}  \ensuremath{\rightarrow} \coqdocvar{c} \~{}\~{} \coqdocvar{c'} \ensuremath{\rightarrow} << \coqdocvar{While} \coqdocvar{b} \coqdocvar{c'} , \coqdocvar{s} >> ==> \coqdocvar{t}.\coqdoceol
+\coqdocnoindent
+\coqdocvar{Admitted}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Theorem} \coqdocvar{determ\_Imp}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{c}:\coqdocvar{Com}) (\coqdocvar{s} \coqdocvar{t} \coqdocvar{t'}:\coqdocvar{State}),\coqdoceol
+\coqdocindent{11.00em}
+<< \coqdocvar{c} , \coqdocvar{s} >> ==> \coqdocvar{t} \ensuremath{\rightarrow} << \coqdocvar{c} , \coqdocvar{s} >> ==> \coqdocvar{t'} \ensuremath{\rightarrow} \coqdocvar{t} = \coqdocvar{t'}.\coqdoceol
+\coqdocnoindent
+\coqdocvar{Admitted}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Inductive} \coqdocvar{SSSem}: \coqdocvar{Com} \ensuremath{\times} \coqdocvar{State} \ensuremath{\rightarrow} \coqdocvar{Com} \ensuremath{\times} \coqdocvar{State} \ensuremath{\rightarrow} \coqdockw{Prop} :=\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{SS\_Assg} : \coqdockw{\ensuremath{\forall}} (\coqdocvar{x}:\coqdocvar{Vname}) (\coqdocvar{a}:\coqdocvar{Aexp}) (\coqdocvar{s}:\coqdocvar{State}),\coqdoceol
+\coqdocindent{8.50em}
+\coqdocvar{SSSem} (\coqdocvar{Assg} \coqdocvar{x} \coqdocvar{a}, \coqdocvar{s})  (\coqdocvar{Skip}, \coqdocvar{update} \coqdocvar{s} \coqdocvar{x} (\coqdocvar{aval} \coqdocvar{a} \coqdocvar{s}))\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{SS\_SeqL} : \coqdockw{\ensuremath{\forall}} (\coqdocvar{c1} \coqdocvar{c1'}:\coqdocvar{Com}) (\coqdocvar{s} \coqdocvar{s'}:\coqdocvar{State}), \coqdoceol
+\coqdocindent{9.00em}
+\coqdocvar{SSSem} (\coqdocvar{c1},\coqdocvar{s}) (\coqdocvar{c1'},\coqdocvar{s'}) \ensuremath{\rightarrow} \coqdoceol
+\coqdocindent{9.00em}
+\coqdockw{\ensuremath{\forall}} (\coqdocvar{c2}:\coqdocvar{Com}), \coqdocvar{SSSem} (\coqdocvar{Seq} \coqdocvar{c1} \coqdocvar{c2}, \coqdocvar{s}) (\coqdocvar{Seq} \coqdocvar{c1'} \coqdocvar{c2}, \coqdocvar{s'}) \coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{SS\_SeqR} : \coqdockw{\ensuremath{\forall}} (\coqdocvar{c2}:\coqdocvar{Com}) (\coqdocvar{s}:\coqdocvar{State}), \coqdocvar{SSSem} (\coqdocvar{Seq} \coqdocvar{Skip} \coqdocvar{c2},\coqdocvar{s}) (\coqdocvar{c2},\coqdocvar{s})\coqdoceol
+\coqdocnoindent
+\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{SS\_IfT}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{b}:\coqdocvar{Bexp}) (\coqdocvar{s}:\coqdocvar{State}), \coqdocvar{bval} \coqdocvar{b} \coqdocvar{s} = \coqdocvar{true} \ensuremath{\rightarrow} \coqdoceol
+\coqdocindent{9.00em}
+\coqdockw{\ensuremath{\forall}} (\coqdocvar{c1} \coqdocvar{c2}:\coqdocvar{Com}), \coqdocvar{SSSem} (\coqdocvar{IfC} \coqdocvar{b} \coqdocvar{c1} \coqdocvar{c2},\coqdocvar{s}) (\coqdocvar{c1},\coqdocvar{s})\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{SS\_IfF}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{b}:\coqdocvar{Bexp}) (\coqdocvar{s}:\coqdocvar{State}), \coqdocvar{bval} \coqdocvar{b} \coqdocvar{s} = \coqdocvar{false} \ensuremath{\rightarrow} \coqdoceol
+\coqdocindent{9.00em}
+\coqdockw{\ensuremath{\forall}} (\coqdocvar{c1} \coqdocvar{c2}:\coqdocvar{Com}), \coqdocvar{SSSem} (\coqdocvar{IfC} \coqdocvar{b} \coqdocvar{c1} \coqdocvar{c2},\coqdocvar{s}) (\coqdocvar{c2},\coqdocvar{s})\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|}\coqdocvar{SS\_Whl}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{b}:\coqdocvar{Bexp}) (\coqdocvar{c}:\coqdocvar{Com}) (\coqdocvar{s}:\coqdocvar{State}), \coqdoceol
+\coqdocindent{7.50em}
+\coqdocvar{SSSem} (\coqdocvar{While} \coqdocvar{b} \coqdocvar{c}, \coqdocvar{s}) (\coqdocvar{IfC} \coqdocvar{b} (\coqdocvar{Seq} \coqdocvar{c} (\coqdocvar{While} \coqdocvar{b} \coqdocvar{c})) \coqdocvar{Skip},\coqdocvar{s}).\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Notation} " '<<' c , s '>>'  --->  '<<' c' , s' '>>'":= (\coqdocvar{SSSem} (\coqdocvar{c},\coqdocvar{s}) (\coqdocvar{c'},\coqdocvar{s'})) (\coqdoctac{at} \coqdockw{level} 30).\coqdoceol
+\coqdocemptyline
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Inductive} \coqdocvar{Tcl} \{\coqdocvar{A}:\coqdockw{Type}\} (\coqdocvar{R}:\coqdocvar{A} \ensuremath{\rightarrow} \coqdocvar{A} \ensuremath{\rightarrow} \coqdockw{Prop}): \coqdocvar{A} \ensuremath{\rightarrow} \coqdocvar{A} \ensuremath{\rightarrow} \coqdockw{Prop} :=\coqdoceol
+\coqdocindent{1.00em}
+\ensuremath{|} \coqdocvar{TCr} : \coqdockw{\ensuremath{\forall}} (\coqdocvar{x}:\coqdocvar{A}), \coqdocvar{Tcl} \coqdocvar{R} \coqdocvar{x} \coqdocvar{x} \coqdoceol
+\coqdocindent{1.00em}
+\ensuremath{|} \coqdocvar{Tct} : \coqdockw{\ensuremath{\forall}} (\coqdocvar{x} \coqdocvar{y} \coqdocvar{z}:\coqdocvar{A}), \coqdocvar{R} \coqdocvar{x} \coqdocvar{y} \ensuremath{\rightarrow} \coqdocvar{Tcl} \coqdocvar{R} \coqdocvar{y} \coqdocvar{z} \ensuremath{\rightarrow} \coqdocvar{Tcl} \coqdocvar{R} \coqdocvar{x} \coqdocvar{z}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Check} \coqdocvar{Tcl\_ind}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{Tcltr}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{A}:\coqdockw{Type}) (\coqdocvar{R}:\coqdocvar{A} \ensuremath{\rightarrow} \coqdocvar{A} \ensuremath{\rightarrow} \coqdockw{Prop}), \coqdockw{\ensuremath{\forall}} (\coqdocvar{x} \coqdocvar{y} \coqdocvar{z}:\coqdocvar{A}), \coqdocvar{Tcl} \coqdocvar{R} \coqdocvar{x} \coqdocvar{y} \ensuremath{\rightarrow} \coqdocvar{Tcl} \coqdocvar{R} \coqdocvar{y} \coqdocvar{z} \ensuremath{\rightarrow} \coqdocvar{Tcl} \coqdocvar{R} \coqdocvar{x} \coqdocvar{z}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{intros}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{induction} \coqdocvar{H}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{trivial}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{assert} (\coqdocvar{Tcl} \coqdocvar{R} \coqdocvar{y} \coqdocvar{z}).\coqdoceol
+\coqdocnoindent
+\coqdoctac{exact} (\coqdocvar{IHTcl} \coqdocvar{H0}).\coqdoceol
+\coqdocnoindent
+\coqdoctac{eapply} \coqdocvar{Tct}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eexact} \coqdocvar{H}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{trivial}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Qed}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{rinTclr}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{A}:\coqdockw{Type}) (\coqdocvar{R}:\coqdocvar{A} \ensuremath{\rightarrow} \coqdocvar{A} \ensuremath{\rightarrow} \coqdockw{Prop}), \coqdockw{\ensuremath{\forall}} (\coqdocvar{x} \coqdocvar{y}:\coqdocvar{A}), \coqdocvar{R} \coqdocvar{x} \coqdocvar{y} \ensuremath{\rightarrow} \coqdocvar{Tcl} \coqdocvar{R} \coqdocvar{x} \coqdocvar{y}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{intros}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eapply} \coqdocvar{Tct}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eexact} \coqdocvar{H}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{TCr}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Qed}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{Tclcr}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{A}:\coqdockw{Type}) (\coqdocvar{R}:\coqdocvar{A} \ensuremath{\rightarrow} \coqdocvar{A} \ensuremath{\rightarrow} \coqdockw{Prop}), \coqdockw{\ensuremath{\forall}} (\coqdocvar{x} \coqdocvar{y} \coqdocvar{z}:\coqdocvar{A}), \coqdocvar{Tcl} \coqdocvar{R} \coqdocvar{x} \coqdocvar{y} \ensuremath{\rightarrow} \coqdocvar{R} \coqdocvar{y} \coqdocvar{z} \ensuremath{\rightarrow} \coqdocvar{Tcl} \coqdocvar{R} \coqdocvar{x} \coqdocvar{z}.\coqdoceol
+\coqdocnoindent
+\coqdocvar{Admitted}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Definition} \coqdocvar{SSSemStar} := \coqdocvar{Tcl} \coqdocvar{SSSem}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Notation} " '<<' c , s '>>'  --->*  '<<' c' , s' '>>'":= (\coqdocvar{SSSemStar} (\coqdocvar{c},\coqdocvar{s}) (\coqdocvar{c'},\coqdocvar{s'})) (\coqdoctac{at} \coqdockw{level} 30).\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{Xsss\_seq}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{c1} \coqdocvar{c1'}:\coqdocvar{Com}) (\coqdocvar{s} \coqdocvar{s'}:\coqdocvar{State}), << \coqdocvar{c1} , \coqdocvar{s} >> --->*  << \coqdocvar{c1'},\coqdocvar{s'}>> \ensuremath{\rightarrow} \coqdockw{\ensuremath{\forall}} (\coqdocvar{c2}:\coqdocvar{Com}), << \coqdocvar{c1};;\coqdocvar{c2},\coqdocvar{s} >> --->* << \coqdocvar{c1'};;\coqdocvar{c2},\coqdocvar{s'} >>.\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{intros}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{induction} \coqdocvar{H}.\coqdoceol
+\coqdocnoindent
+\coqdocvar{admit}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdoctac{trivial}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Qed}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{sss\_seqG}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{cs1} \coqdocvar{cs1'}: \coqdocvar{Com}\ensuremath{\times}\coqdocvar{State}), \coqdocvar{SSSemStar} \coqdocvar{cs1} \coqdocvar{cs1'} \ensuremath{\rightarrow} \coqdockw{\ensuremath{\forall}} (\coqdocvar{c2}:\coqdocvar{Com}), \coqdoceol
+\coqdocindent{9.00em}
+\coqdocvar{SSSemStar} (\coqdocvar{pair} (\coqdocvar{fst} \coqdocvar{cs1} ;; \coqdocvar{c2}) (\coqdocvar{snd} \coqdocvar{cs1}))  (\coqdocvar{pair} (\coqdocvar{fst} \coqdocvar{cs1'} ;; \coqdocvar{c2}) (\coqdocvar{snd} \coqdocvar{cs1'})).\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{intros} \coqdocvar{cs1} \coqdocvar{cs1'} \coqdocvar{H}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{induction} \coqdocvar{H}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{constructor}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{intros}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{cut} (\coqdocvar{SSSem} (\coqdocvar{fst} \coqdocvar{x};; \coqdocvar{c2}, \coqdocvar{snd} \coqdocvar{x}) (\coqdocvar{fst} \coqdocvar{y};;\coqdocvar{c2},\coqdocvar{snd} \coqdocvar{y})).\coqdoceol
+\coqdocnoindent
+\coqdoctac{intros}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eapply} \coqdocvar{Tct}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eexact} \coqdocvar{H1}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{IHTcl}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{replace} \coqdocvar{x} \coqdockw{with} (\coqdocvar{fst} \coqdocvar{x},\coqdocvar{snd} \coqdocvar{x}) \coqdoctac{in} \coqdocvar{H}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{replace} \coqdocvar{y} \coqdockw{with} (\coqdocvar{fst} \coqdocvar{y},\coqdocvar{snd} \coqdocvar{y}) \coqdoctac{in} \coqdocvar{H}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{SS\_SeqL}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{trivial}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{symmetry}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{surjective\_pairing}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{symmetry}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{surjective\_pairing}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Qed}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Print} \coqdocvar{pair}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{sss\_seq}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{c1} \coqdocvar{c1'}:\coqdocvar{Com}) (\coqdocvar{s} \coqdocvar{s'}:\coqdocvar{State}), << \coqdocvar{c1} , \coqdocvar{s} >> --->*  << \coqdocvar{c1'},\coqdocvar{s'}>> \ensuremath{\rightarrow} \coqdockw{\ensuremath{\forall}} (\coqdocvar{c2}:\coqdocvar{Com}), << \coqdocvar{c1};;\coqdocvar{c2},\coqdocvar{s} >> --->* << \coqdocvar{c1'};;\coqdocvar{c2},\coqdocvar{s'} >>.\coqdoceol
+\coqdocnoindent
+\coqdocvar{Admitted}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{seqskip}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{c1}:\coqdocvar{Com}) (\coqdocvar{s1} \coqdocvar{s2}:\coqdocvar{State}), \coqdocvar{SSSemStar} (\coqdocvar{c1},\coqdocvar{s1}) (\coqdocvar{Skip},\coqdocvar{s2}) \ensuremath{\rightarrow}\coqdoceol
+\coqdocindent{8.50em}
+\coqdockw{\ensuremath{\forall}} (\coqdocvar{c2}:\coqdocvar{Com}) (\coqdocvar{s3}:\coqdocvar{State}), \coqdocvar{SSSemStar} (\coqdocvar{c2},\coqdocvar{s2}) (\coqdocvar{Skip},\coqdocvar{s3}) \ensuremath{\rightarrow} \coqdocvar{SSSemStar} (\coqdocvar{c1} ;; \coqdocvar{c2}, \coqdocvar{s1}) (\coqdocvar{Skip},\coqdocvar{s3}).\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{intros}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{inversion} \coqdocvar{H}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eapply}  \coqdocvar{Tct}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eapply} \coqdocvar{SS\_SeqR}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{trivial}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{cut} (<< \coqdocvar{c1} ;; \coqdocvar{c2}, \coqdocvar{s1} >> --->* << \coqdocvar{Skip} ;; \coqdocvar{c2}, \coqdocvar{s2} >>).\coqdoceol
+\coqdocnoindent
+\coqdoctac{intros}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{assert} ( << \coqdocvar{Skip} ;; \coqdocvar{c2}, \coqdocvar{s2} >> ---> << \coqdocvar{c2},\coqdocvar{s2} >>).\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{SS\_SeqR}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{assert} ( << \coqdocvar{c1} ;; \coqdocvar{c2}, \coqdocvar{s1} >> --->* << \coqdocvar{c2},\coqdocvar{s2} >>).\coqdoceol
+\coqdocnoindent
+\coqdoctac{eapply} \coqdocvar{Tclcr}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eexact} \coqdocvar{H5}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{exact} \coqdocvar{H6}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eapply} \coqdocvar{Tcltr}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eexact} \coqdocvar{H7}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{exact} \coqdocvar{H0}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{sss\_seq}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{exact} \coqdocvar{H}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Qed}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{sscbs1}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{c} \coqdocvar{c'}:\coqdocvar{Com}) (\coqdocvar{s} \coqdocvar{s'}:\coqdocvar{State}), << \coqdocvar{c},\coqdocvar{s} >> ---> << \coqdocvar{c'},\coqdocvar{s'} >> \ensuremath{\rightarrow} \coqdockw{\ensuremath{\forall}} (\coqdocvar{t}:\coqdocvar{State}), << \coqdocvar{c'},\coqdocvar{s'} >> ==> \coqdocvar{t} \ensuremath{\rightarrow} << \coqdocvar{c},\coqdocvar{s} >> ==> \coqdocvar{t}.\coqdoceol
+\coqdocnoindent
+\coqdocvar{Admitted}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{sscbs}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{c} \coqdocvar{c'}:\coqdocvar{Com}) (\coqdocvar{s} \coqdocvar{s'}:\coqdocvar{State}), << \coqdocvar{c},\coqdocvar{s} >> --->* << \coqdocvar{c'},\coqdocvar{s'} >> \ensuremath{\rightarrow} \coqdockw{\ensuremath{\forall}} (\coqdocvar{t}:\coqdocvar{State}), << \coqdocvar{c'},\coqdocvar{s'} >> ==> \coqdocvar{t} \ensuremath{\rightarrow} << \coqdocvar{c},\coqdocvar{s} >> ==> \coqdocvar{t}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{intros} \coqdocvar{c} \coqdocvar{c'} \coqdocvar{s} \coqdocvar{s'} \coqdocvar{H}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{induction} \coqdocvar{H}.\coqdoceol
+\coqdocnoindent
+\coqdocvar{Admitted}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Theorem} \coqdocvar{ss\_implies\_bs}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{c}:\coqdocvar{Com}) (\coqdocvar{s} \coqdocvar{t}:\coqdocvar{State}), << \coqdocvar{c},\coqdocvar{s} >> ==> \coqdocvar{t} \coqdoceol
+\coqdocindent{13.00em}
+\ensuremath{\rightarrow}  << \coqdocvar{c},\coqdocvar{s} >> --->* << \coqdocvar{Skip}, \coqdocvar{t} >>.\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{intros}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{induction} \coqdocvar{H}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{rinTclr}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{constructor}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{constructor}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eapply} \coqdocvar{seqskip}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eexact} \coqdocvar{IHBSSem1}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{trivial}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eapply} \coqdocvar{Tct}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eapply} \coqdocvar{SS\_IfT}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{trivial}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{trivial}.\coqdoceol
+\coqdocnoindent
+\coqdocvar{admit}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eapply} \coqdocvar{Tct}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eapply} \coqdocvar{SS\_Whl}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{rinTclr}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{constructor}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{trivial}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eapply} \coqdocvar{Tct}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{constructor}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eapply} \coqdocvar{Tct}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{constructor}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{trivial}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eapply} \coqdocvar{seqskip}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eexact} \coqdocvar{IHBSSem1}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eexact} \coqdocvar{IHBSSem2}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Qed}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Theorem} \coqdocvar{bs\_implies\_ss\_G}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{cs} \coqdocvar{st}:\coqdocvar{Com}\ensuremath{\times}\coqdocvar{State}),  \coqdocvar{SSSemStar} \coqdocvar{cs} \coqdocvar{st} \ensuremath{\rightarrow} \coqdocvar{fst} \coqdocvar{st} = \coqdocvar{Skip} \ensuremath{\rightarrow} \coqdoceol
+\coqdocindent{1.00em}
+\coqdocvar{BSSem} (\coqdocvar{fst} \coqdocvar{cs}) (\coqdocvar{snd} \coqdocvar{cs}) (\coqdocvar{snd} \coqdocvar{st}).\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{intros}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{induction} \coqdocvar{H}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{rewrite} \coqdocvar{H0}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{constructor}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{assert} ( << \coqdocvar{fst} \coqdocvar{y}, \coqdocvar{snd} \coqdocvar{y} >> ==> \coqdocvar{snd} \coqdocvar{z}).\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{IHTcl}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{trivial}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{replace} \coqdocvar{x} \coqdockw{with} (\coqdocvar{fst} \coqdocvar{x},\coqdocvar{snd} \coqdocvar{x}) \coqdoctac{in} \coqdocvar{H}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{replace} \coqdocvar{y} \coqdockw{with} (\coqdocvar{fst} \coqdocvar{y},\coqdocvar{snd} \coqdocvar{y}) \coqdoctac{in} \coqdocvar{H}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{replace} \coqdocvar{y} \coqdockw{with} (\coqdocvar{fst} \coqdocvar{y},\coqdocvar{snd} \coqdocvar{y}) \coqdoctac{in} \coqdocvar{H1}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{replace} \coqdocvar{z} \coqdockw{with} (\coqdocvar{fst} \coqdocvar{z},\coqdocvar{snd} \coqdocvar{z}) \coqdoctac{in} \coqdocvar{H1}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eapply} \coqdocvar{sscbs1}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eexact} \coqdocvar{H}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{exact} \coqdocvar{H2}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{symmetry}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{surjective\_pairing}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{symmetry}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{surjective\_pairing}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{symmetry}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{surjective\_pairing}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{symmetry}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{apply} \coqdocvar{surjective\_pairing}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Qed}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Theorem} \coqdocvar{bs\_implies\_ss}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{c}:\coqdocvar{Com}) (\coqdocvar{s} \coqdocvar{t}:\coqdocvar{State}),  << \coqdocvar{c},\coqdocvar{s} >> --->* << \coqdocvar{Skip}, \coqdocvar{t} >> \coqdoceol
+\coqdocindent{13.50em}
+\ensuremath{\rightarrow} << \coqdocvar{c},\coqdocvar{s} >> ==> \coqdocvar{t}.\coqdoceol
+\coqdocnoindent
+\coqdocvar{Admitted}.\coqdoceol
+\end{coqdoccode}
+\end{document}

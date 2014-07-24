@@ -1,0 +1,30 @@
+digraph G {
+  size ="4,4";
+  subgraph cluster0 {
+    a0 [label=" "];
+    a1 [label=" "];
+    a2 [label=" "];
+    a0 -> a1 -> a0;
+    a1 -> a2 -> a1;
+    a0 -> a2 -> a0;
+  }
+
+  subgraph cluster1 {
+    b0 [label=" "];
+    b1 [label=" "];
+    b2 [label=" "];
+    b0 -> b1 -> b0;
+    b0 -> b2 -> b0;
+    b1 -> b2 -> b1;
+  }
+
+    subgraph cluster2 {
+    c0 [label=" "];
+    c1 [label=" "];
+    c2 [label=" "];
+    c0 -> c0;
+    c1 -> c1;
+    c2 -> c2;
+  }
+
+}

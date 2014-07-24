@@ -1,0 +1,35 @@
+digraph G {
+  splines=false;
+  ratio =1;
+  p0_q0 -> p0_r0 [arrowhead=both];
+  p0_r0 -> q0_r0 [arrowhead=none];
+  q0_r0 -> p0_q0 [arrowhead=none]; // 000
+  
+  p0_q0 -> p0_r1 [arrowhead=none];
+  p0_r1 -> q0_r1 [arrowhead=none];
+  q0_r1 -> p0_q0 [arrowhead=none]; // 001
+  
+  p0_q1 -> p0_r0 [arrowhead=none];
+  p0_r0 -> q1_r0 [arrowhead=none];
+  q1_r0 -> p0_q1 [arrowhead=none]; // 010
+  
+  p0_q1 -> p0_r1 [arrowhead=none];
+  p0_r1 -> q1_r1 [arrowhead=none];
+  q1_r1 -> p0_q1 [arrowhead=none]; // 011
+
+  p1_q0 -> p1_r0 [arrowhead=none];
+  p1_r0 -> q0_r0 [arrowhead=none];
+  q0_r0 -> p1_q0 [arrowhead=none]; // 100
+  
+  p1_q0 -> p1_r1 [arrowhead=none];
+  p1_r1 -> q0_r1 [arrowhead=none];
+  q0_r1 -> p1_q0 [arrowhead=none]; // 101
+  
+  p1_q1 -> p1_r0 [arrowhead=none];
+  p1_r0 -> q1_r0 [arrowhead=none];
+  q1_r0 -> p1_q1 [arrowhead=none]; // 110
+  
+  p1_q1 -> p1_r1 [arrowhead=none];
+  p1_r1 -> q1_r1 [arrowhead=none];
+  q1_r1 -> p1_q1 [arrowhead=none]; // 111
+}
