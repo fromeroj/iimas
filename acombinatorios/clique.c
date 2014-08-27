@@ -1,12 +1,12 @@
 #include<stdio.h>
 #include<stdint.h>
 
-#define BF int_fast32_t
+#define BIT_FIELD int_fast32_t
 #define max_n 32 
 
-BF g[max_n];
+BIT_FIELD g[max_n];
 
-print_matrix(){
+void print_matrix(){
   int j,k,m;
   for(k=0;k<max_n;k++)if(g[k])m=k+1;
   for(k=0;k<m;k++){
@@ -15,7 +15,7 @@ print_matrix(){
   }
 }
 
-print_set(BF i) {
+void print_set(BIT_FIELD i) {
   int j;
   for(j=0;j<max_n;j++)if((1<<j)&i)printf("%d ",j);
   printf("\n");
@@ -36,14 +36,14 @@ void readfile(char* filename){
     fclose(datafile);
 }
 
-BF bx(int j){
+BIT_FIELD bx(int j){
   int k;
-  BF r=0;
+  BIT_FIELD r=0;
   for(k=j;k<max_n;k++)r=r|1<<k;
   return r;
 }
 
-allCliques(BF clique, BF candidatos){
+void allCliques(BIT_FIELD clique, BIT_FIELD candidatos){
   int k;
   if(candidatos==0){
     print_set(clique);
@@ -56,9 +56,9 @@ allCliques(BF clique, BF candidatos){
   }
 }
 
-main()
+int main(int argc, char** argv)
 {
-  BF clique, candidatos;
+  BIT_FIELD clique, candidatos;
   int k;
   readfile("data.txt");
   print_matrix();
@@ -68,6 +68,5 @@ main()
   }
   clique=0;
   allCliques(clique, candidatos );
+  return(0);
 }
-
-
