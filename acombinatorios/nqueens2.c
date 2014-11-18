@@ -1,56 +1,47 @@
 #include <stdio.h> 
 #define max_n 50 
 
-int B[max_n];
+int BOARD[max_n];
 int size;
 
-void printSol(){ 
+void print_sol(){ 
   int k;
-  for(k=1;k<=size;k++) printf("%4d",B[k]); 
+  for(k=0;k<size;k++) printf("%4d",BOARD[k]+1); 
   printf("\n"); 
 } 
 
-int noConflictos(int k) 
+int no_conflictos(int k) 
 { 
-  printf("no conflictos la columna %d no debe estar en coflicto \n",k);
-  printSol();
   int i; 
   for(i=0;i<k;i++){ 
-    if(B[i]==B[k] || abs(k-i)==abs(B[k]-B[i])) {
-      printf("conflicto!");
+    if(BOARD[i]==BOARD[k] || abs(k-i)==abs(BOARD[k]-BOARD[i])) {
       return(0);
     }
-    printf("no conflicto!");
-    return(1); 
   }
+  return(1); 
 }
 
-void queens(int current) 
+int queens(int current) 
 { 
-  int j,k;
+  int k;
+  print_sol();
+  if(current==size){
+    print_sol();
+    return(1);
+  }
   for(k=0;k<size;k++){
-    for(j=0;j<current;j++){
-      if(B[j]==k){
-        break;
-      }
-    }
-    printf("Intentando en %d, el valor %d\n",current,k);
-    B[current]=k;
-    if(noConflictos(k)){
-      if(current==size){
-        printSol(size);
-        return;
-      }
-      queens(current+1);
+    BOARD[current]=k;
+    if(no_conflictos(current)){
+      if(queens(current+1))return(1);
     }
   }
+  return(0);
 }
 
 int main(int argc, char **argv) 
 { 
   int k;
   size=(argc>1)?atoi(argv[1]):8;
-  for(k=0;k<size;k++)B[k]=-1;
+  for(k=0;k<size;k++)BOARD[k]=-1;
   queens(0);
-} 
-
+}

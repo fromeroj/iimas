@@ -69,5 +69,3 @@ main()
   clique=0;
   allCliques(clique, candidatos );
 }
-
-
