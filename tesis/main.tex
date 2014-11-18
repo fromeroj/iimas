@@ -31,17 +31,12 @@
 \usepackage[utf8]{inputenc}
 \usepackage{listings}
 \usepackage{lipsum} % Inserts dummy text
-
 \usepackage{booktabs} % Better horizontal rules in tables
-
 \usepackage{graphicx} % Needed to insert images into the document
 \graphicspath{{graphics/}} % Sets the default location of pictures
 \setkeys{Gin}{width=\linewidth,totalheight=\textheight,keepaspectratio} % Improves figure scaling
-
-%\usepackage{tikz-cd}
 \usepackage{tikz}
 \usetikzlibrary{patterns}
-
 \usepackage{fancyvrb} % Allows customization of verbatim environments
 \fvset{fontsize=\normalsize} % The font size of all verbatim text can be changed here
 
@@ -65,6 +60,7 @@
 \newcommand{\blankpage}{\newpage\hbox{}\thispagestyle{empty}\newpage} % Command to insert a blank page
 
 \usepackage{units} % Used for printing standard units
+\usepackage[shortlabels]{enumitem}
 
 \newcommand{\hlred}[1]{\textcolor{Maroon}{#1}} % Print text in maroon
 \newcommand{\hangleft}[1]{\makebox[0pt][r]{#1}} % Used for printing commands in the index, moves the slash left so the command name aligns with the rest of the text in the index 
@@ -121,6 +117,8 @@
 \newcommand{\vdqi}{\textit{VDQI}\xspace}
 \newcommand{\pfds}{\textbf{\textit{PFDS}}\xspace}
 \newcommand{\fp}{\textbf{\textit{FP}}\xspace}
+\newcommand{\ds}{\textbf{\textit{DS}}\xspace}
+\newcommand{\sh}{\textbf{\textit{WFSM}}\xspace}
 \newcommand{\ei}{\textit{EI}\xspace}
 \newcommand{\ve}{\textit{VE}\xspace}
 \newcommand{\be}{\textit{BE}\xspace}
@@ -207,34 +205,35 @@ Copyright \copyright\ \the\year\ \thanklessauthor
 %----------------------------------------------------------------------------------------
 \chapter{Summary} 
 
-A distributed system (DS) can be defined as a collection of processes executing 
-a protocol (algorithm) within a communicating environment. 
-Studying such operational description to find properties on DS has shown to be 
-a complex task, even when the number of processes and connections is limited 
-and/or following simple patterns. It's complexity comes for the number of possible 
-interactions of their elements  and the dynamics of such interactions.
+A distributed system \ds can be defined operationally as a collection of 
+processes executing a protocol (algorithm) within a communicating environment.
 
-On it's seminal paper \cite{Herlihy1999} Herlihy  introduced a characterization of DS, 
+Studying \ds operationally has shown to be a complex task, even when the number 
+of processes and connections is limited and/or following simple patterns. 
+It's complexity arises from the number of possible interactions between their 
+elements and the dynamics of such interactions.\\
+
+On it's seminal paper \cite{Herlihy1999} Herlihy  introduced a characterization of \ds, 
 mapping the specifics of such protocols and environments to a topological structure.
 In this combinatorial description all possible events on the dynamic of the interactions 
 are represented simultaneously on a single topological structure.
-Such approach it is a deliberated trade off. Interchanging one model with complex 
+Such approach is a deliberated trade off. Interchanging one model with complex 
 dynamics and relatively simple elements for other with complex elements but static.
 
-This technique for the analysis of distributed systems has gained significant traction 
+This technique for the analysis of \ds has gained significant traction 
 and has become widely used.
 Gaining from a large set of topology results that can be immediately applied, and, as 
 he argues. Our minds are much better equipped for analyzing static entities even when they are very complex than for dynamic ones even if they are sparse.
 
-(DS) have been studied from many areas and multiple angles, in particular, it has been 
+\ds have been studied from many areas and multiple angles, in particular, it has been 
 covered on many diferent logic aproaches, epistemic logic \cite{Meyer:1995} is a natural formulation for 
-them, there's a great tradition on the field of artificial inteligence associating several logics to the study of (DS) \cite{HandbookAI1}, and many other logics as multi modal logic \cite{Hintikka1962}, dynamic epistemic logic \cite{Ditmarsch:2007}, among many others.
+them, there's a great tradition on the field of artificial inteligence associating several logics to the study of \ds \cite{HandbookAI1}, and many other logics as multi modal logic \cite{Hintikka1962}, dynamic epistemic logic \cite{Ditmarsch:2007}, among many others.
 \newpage
 
 Those works are intended to comprehend communications, epistemic development and 
 behavior of such systems from an operational point of view.
 
-In this work, we intend to mimic the aproach taken by Herlihy, and to map their topological models to kripke structures, the computational power of those processes to axioms, semantics and inference  rules of a formal logic system. And to transform some of the results to logical equivalents, in order to develop techniques, methods and insight that can help to solve other problems or to be able to find other characteristics on the resulting models, such as completion, consistency, decidability, etc.
+The objective of this work, is to mimic the aproach taken by Herlihy, first, by mapping those topological objects into Kripke semantics. Then, by studying a especific problem in the light of logical systems. The problem to study will be the consensus problem on the wait free shared memory model (\sh).
 
 %
 %Ever since Herlihy  introduced it. The topological characterization for distributed computing has gained significant traction. And has become a widely used technique for the analysis of distributed systems. In which, a distributed system is regarded as a collection of processes executing a protocol within a communicating environment. Mapping the specifics of such processes and their environment to a topological structure.\\
@@ -248,9 +247,9 @@ In this work, we intend to mimic the aproach taken by Herlihy, and to map their 
 %How we express the weakness of  logic
 
 \chapter{Background} % The asterisk leaves out this chapter from the table of contents
-\section{Distributed computing, wait free shared memory model}
+\section{Distributed computing, wait free shared memory model \sh}
 
-Very early on the study of distributed systems, Leslie Lamport noticed an important trait of them: There is a partial order on the set of all system events. \cite{Lamport78}.\\
+Very early on the study of distributed systems, Leslie Lamport noticed an important trait of them: There is a partial order on the set of all system events. \cite{Lamport78}. He also show how to find a total order for a specific model, but this is not limited to such model, the {\bf order-extension principle} states that a total order can be found as a linear extension for any partial order.\\
 
 Lets consider $n$ identified processes comunicating in a shared memory enviromnent running a wait-free protocol. Such as that described on \cite{Herlihy1999}.\\
 
@@ -265,6 +264,7 @@ return $\displaystyle \delta $(local_state)
 
 So, the partial order induced by such algorithm, says if $a \ge b$ in time, meaning $b$ updated the shared memory not latter than $a$, also can be interpreted as $a$ ``knows'' the state of $b$. \\
 Observe that this simple fact will have a deep impact when we translate this model to a logic system, because it means we can derive epistemic results from the adecuate accesibility semantics.\\
+It is easy to fing a total order in this case, as the time (in the clock of the shared memory) when writings were done.
 
 \subsection{Partial Orders}
 
@@ -284,7 +284,7 @@ Define a polytope $O(P)$ in $ \mathbb{R}^{|P|} $, such polytope is called order 
 
 \section{The Topological Structure of Asynchronous Computability}
 
-Once we have stablished that fact, if we consider all posible orderings of events under the consider model, it is easy to see by symmetry that we have manifolds.\\
+Once we have stablished that fact, if we consider all posible orderings of events under \sh, we know by symmetry that they are manifolds.\\
 
 The interpretation is the following:\\
 Every element of $P$ is a process, every simplex where it is contained is the {\bf linear extension} of all process contained on that simplex.
@@ -292,7 +292,7 @@ Every element of $P$ is a process, every simplex where it is contained is the {\
 Let see for example, the case of 3 processes and a single round of comunication.\\
 
 
-first lets see all total orders:
+All total orders (possible executions):
 
 \begin{tabular}{ l | r r r r}
   \hline                       
@@ -307,9 +307,10 @@ $c b a$ &         &         &         & $c<b<a$\\
   \hline  
 \end{tabular}
 
-Those are all possible executions, given the model, a node, can view all elements that are lesser or equals than itself, and only knows that.
+Those are all (13) possible executions, in this model, they will be faces.\\
+A node, can view all elements that are lesser or equals than itself, and only knows that.
 
-So, all posible nodes are:
+So, all nodes are:
 \begin{tabular}{ c}
   \hline                       
 $a$ \\
@@ -323,53 +324,12 @@ $c \le a$ \\
 $a \le c$ \\
 $ {a,b} \le c$ \\
 $ {b,c} \le a$ \\
-$ {c,b} \le a$ \\
-  \hline  
-\end{tabular}
-
-\begin{tabular}{ l | r r r }
-  \hline                       
-$ order $ & $a$ & $b$ & $c$ \\
-  \hline
-$a=b=c$ & $a=b=c$ &         &         \\                       
-$a=b<c$ & $a=b$   &         & $a=b<c$ \\
-$a<b=c$ & $a$     & $a<b=c$ &         \\
-$a<b<c$ &         & $a<b$   & $a<b<c$ \\
-$a=c<b$ & $a=c$   & $a=c<b$ &         \\
-$a<c<b$ & $a<c<b$ & $a<c<b$ & $a<c<b$ \\
-$b<a=c$ & $b<a=c$ & $b<a=c$ & $b<a=c$ \\
-$b<a<c$ & $b<a<c$ & $b<a<c$ & $b<a<c$ \\
-$b=c<a$ & $b=c<a$ & $b=c<a$ & $b=c<a$ \\
-$b<c<a$ & $b<c<a$ & $b<c<a$ & $b<c<a$ \\
-$c<a=b$ & $c<a=b$ & $c<a=b$ & $c<a=b$ \\
-$c<a<b$ & $c<a<b$ & $c<a<b$ & $c<a<b$ \\
-$c<b<a$ & $c<b<a$ & $c<b<a$ & $c<b<a$ \\
+$ {c,a} \le b$ \\
   \hline  
 \end{tabular}
 
 
-
-%\begin{tikzcd}[tips=false,column sep=1em,row sep=1.5em]
-% &&& a \ar{dr}\ar{dl} &&& \\
-% && ba \ar{d} && ca \ar{d} &&\\
-% && abc &  & bac & & \\
-% & ab &  &  &  & ac & \\
-% & &  & a &  & & \\
-%b & & cb &  & bc & & c\\
-%A_1 \ar{dr} &&&& B_1 \ar{dl} \\
-%& A(A_1\cap B_1) \ar{dr}
-%  \ar[densely dotted,shift left=.2ex]{d}
-%  \ar[densely dotted,shift right=.2ex]{d} &&
-%  B(A_1\cap B_1) \ar{dl}
-%  \ar[densely dotted,shift left=.2ex]{d}
-%  \ar[densely dotted,shift right=.2ex]{d} \\
-%& A(A_1\cap B_1) \ar{dl} \ar{dr} & A_1\cap B_1 \ar{d} &
-%  B(A_1\cap B_1) \ar{dl} \ar{dr} \\
-%A \ar{dr} && D \ar{dl} \ar{dr}  && B \ar{dl} \\
-%& A\cap B_1 \ar{dr} && A_1\cap B \ar{dl} \\
-%&& A\cap B
-%\end{tikzcd}
-
+And the simplicial complex will be:
 
 \begin{tikzpicture}
     \tikzstyle{red}=[circle,thick,draw=red,fill=red,inner sep=0pt,minimum width=4pt,minimum height=4pt]
@@ -426,28 +386,16 @@ $c<b<a$ & $c<b<a$ & $c<b<a$ & $c<b<a$ \\
     \node at (4.7,8.0) {c>b>a};
     \node at (6.0,8.0) {c=b>a};
     \node at (7.3,8.0) {b>c>a};
-\end{tikzpicture}
-
-
-\begin{tikzpicture}
-\node (c)[circle,draw] at (0,0) {a=b=c};
-\foreach \angle/\label in {0/{$b>a>c$},30/{$b>a=c$},60/{$b>c>a$},90/{$c=b>a$},120/{$c>b>a$},150/{$c>a=b$},180/{$c>a>b$},210/{$c=a>b$},240/{$a>c>b$},270/{$c>a>b$},300/{$a>b=c$},330/{$a>b>c$}}
-\node[circle,draw] (\angle) at (\angle:5) {\label};
-\foreach \node/\to in {210/240,210/270,210/300,210/330,240/300,240/330,270/330,60/90,90/120,120/60,0/30,150/180,240/270,270/300,300/330}
-\draw (\node)  -- (\to)node;%[pos=0.5,sloped,above];// {{\color{red}$a$}};
-\foreach \node in {210,240,...,330}
-\draw (c)  -- (\node)node;%[pos=0.5,sloped,above] {{\color{red}$a$}};
-
-\end{tikzpicture}
-
-
-\subsections{Remarks}
-
-In the construction of the simplicial complex:
-\begin{itemize} 
-\item Every node, it is a possible final state of a single process.
-\item Every edge connects two nodes, for which there is a possible execution of events, they could simultaneously be the possible final state.
-\item Every simplicial complex of dimmention n, connects n+1 nodes of n+1 different processes for which there is a possible execution where they could simultaneously be the possible final state.
+\end{tikzpicture}\\
+\newpage
+Remarks
+\begin{itemize}[topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex]
+\item Every face (triangle) is a possible execution (total order).
+\item Given the edges of a triangle, the execution is the linear extension of them.
+\item Two triangles joined by an edge are two executions where 2 processes can't distinguish between (those are the processes in the edge).
+\item Any edge belonging to two triangles has exactly one $\le$ sign.
+\item If two triangles are joined by an edge, their execution is one the case ``='' and the other ``>'' in the $\le$ sign.
+\item two triangles are joined by only a vertex, are such that only that process can't distinguish between them.
 \end{itemize}
 
 
@@ -455,14 +403,61 @@ In the construction of the simplicial complex:
 
 \subsubsection{Definition}\\
 
-TODO.
-\newpage
+A multi modal Kripke structure is a pair $K = (W, \rightarrow)$ where $W$ is a set of worlds and $\rightarrow$ is a family of relations $\rightarrow_i \subseteq W \times W$ indexed by a fixed set $I$.\\
 
-\subsubsection{Mapping}
+A multi modal Kripke model is a tuple $M=(W,\rightarrow,P,V)$ where $(W, \rightarrow)$ is a Kripke structure, $P$ is the set of propositional constants, and $V:W\rightarrow \mathcal{P}(P)$ is a valuation function\\
 
-We will use all possible executions (total orders) as worlds.\\
+A formula in $\mathcal{L}(P)$ is interpreted in a Kripke model \\
+$M=(W,\rightarrow,P,V)$ at some $w\in W$ as follows:
+\begin{itemize}[topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex]
+\item $(M,w) \models p$ iff $p\in V(w)$
+\item $(M,w) \models \ \phi_1 \vee \phi_2$ iff $(M,w) \models \ \phi_1$ or $(M,w) \models \ \phi_2$
+\item $(M,w) \models \ \neg\phi$ if is not the case that $(M,w) \models \phi$
+\item $(M,w) \models \ \langle i \rangle \phi$ iff there exists $w'\in W$ such that:\\ $w\rightarrow_i w'$ and  $(M,w') \models \ \phi$
+\end{itemize}
 
-The accessibility relation will be always symetrical, (B)
+We will use the total order as  propositional constants, for the example we are dealing with, posible executions are here $W$, let's see accesibility for agent $a$ 
+
+\begin{tikzpicture}
+\node (c)[circle,draw] at (0,0) {a=b=c};
+\foreach \angle/\label in {0/{$b>a>c$},30/{$b>a=c$},60/{$b>c>a$},90/{$c=b>a$},120/{$c>b>a$},150/{$c>a=b$},180/{$c>a>b$},210/{$c=a>b$},240/{$a>c>b$},270/{$c>a>b$},300/{$a>b=c$},330/{$a>b>c$}}
+\node[circle,draw] (\angle) at (\angle:5) {\label};
+\foreach \node/\to in {210/240,210/270,210/300,210/330,240/300,240/330,270/330,60/90,90/120,120/60,0/30,150/180,240/270,270/300,300/330}
+\draw[red] (\node)  -- (\to)node;%[pos=0.5,sloped,above];// {{\color{red}$a$}};
+\foreach \node in {210,240,...,330}
+\draw[red] (c)  -- (\node)node;%[pos=0.5,sloped,above] {{\color{red}$a$}};
+\end{tikzpicture}
+
+We can see all three agents simultaneously:\\
+
+\begin{tikzpicture}
+\node (c)[circle,draw] at (0,0) {a=b=c};
+\foreach \angle/\label in {0/{$b>a>c$},30/{$b>a=c$},60/{$b>c>a$},90/{$c=b>a$},120/{$c>b>a$},150/{$c>a=b$},180/{$c>a>b$},210/{$c=a>b$},240/{$a>c>b$},270/{$c>a>b$},300/{$a>b=c$},330/{$a>b>c$}}
+\node[circle,draw] (\angle) at (\angle:5) {\label};
+\foreach \node/\to in {90/120,90/150,90/180,90/210,120/150,120/180,120/210,150/180,150/210,180/210,300/330,330/0,300/0,30/60,240/270}
+\draw[green,dashed,ultra thick] (\node)  to  (\to)node;%[pos=0.5,sloped,above];// {{\color{red}$a$}};
+\foreach \node/\to in {330/0,330/30,330/60,330/90,0/30,0/60,0/90,30/60,30/90,60/90,180/210,180/240,210/240,120/150,270/300}
+\draw[blue,dashdotted,ultra thick] (\node)  to  (\to)node;%[pos=0.5,sloped,above];// {{\color{red}$a$}};
+\foreach \node/\to in {210/240,210/270,210/300,210/330,240/300,240/330,270/330,60/90,90/120,120/60,0/30,150/180,240/270,270/300,300/330}
+\draw[red,dotted,ultra thick] (\node)  -- (\to)node;%[pos=0.5,sloped,above];// {{\color{red}$a$}};
+\foreach \node in {330,0,30,60,90}
+\draw[blue,dashdotted,ultra thick] (c)  -- (\node)node;%[pos=0.5,sloped,above] {{\color{red}$a$}};
+\foreach \node in {210,240,...,330}
+\draw[red,dotted,ultra thick] (c)  -- (\node)node;%[pos=0.5,sloped,above] {{\color{red}$a$}};
+\foreach \node in {90,120,...,210}
+\draw[green,dashed,ultra thick] (c)  -- (\node)node;%[pos=0.5,sloped,above] {{\color{red}$a$}};
+\end{tikzpicture}
+
+
+\subsections{Remarks}
+
+\begin{itemize}[topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex]
+\item transitivity.
+\item reflexivity.
+\item every world has access to another world for every modality.
+\end{itemize}
+
+
 
 \section{Specific objectives}
 
