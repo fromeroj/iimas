@@ -1,5 +1,8 @@
 #include <stdio.h> 
+#include <stdlib.h>
+
 #define max_n 50 
+
 int A[max_n],S[max_n]; 
 
 void printSol(int m){ 
@@ -11,12 +14,15 @@ void printSol(int m){
 int noReina_Fila_Col(int k) 
 { 
   int i; 
-  for(i=1;i<k;i++) 
-    if(A[i]==S[k] || abs(k-i)==abs(S[k]-A[i])) 
+  for(i=1;i<k;i++) { 
+      if(A[i]==S[k] || abs(k-i)==abs(S[k]-A[i])){  
       return(1); 
+    }
+  } 
   return(0); 
-} 
- 
+}
+
+
 void BackTrack(int n) 
 { 
   int k; 
@@ -35,10 +41,12 @@ void BackTrack(int n)
   } 
 } 
 
-int main(int argc, char **argv) 
+int main(int argc, char** argv) 
 { 
-  int n = 8; 
-  if(argc>1) n=atoi(argv[1]);
-  BackTrack(n); 
-} 
 
+  int n = 8; 
+  printf("%d -%s- \n",argc,argv[1]);
+  if(argc>1){ n=atoi(argv[1]); } 
+  BackTrack(n);
+  return(0);
+}
