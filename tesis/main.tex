@@ -23,7 +23,7 @@
 %	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
 %----------------------------------------------------------------------------------------
 
-\documentclass{tufte-book} % Use the tufte-book class which in turn uses the tufte-common class
+\documentclass[oneside,openany]{tufte-book} % Use the tufte-book class which in turn uses the tufte-common class
 
 \hypersetup{colorlinks} % Comment this line if you don't wish to have colored links
 \usepackage{hyperref}
@@ -137,9 +137,10 @@
 
 \title{Characterization of topological models for distributed computing with logical systems.} % Title of the book
 
-\author{Fabián Romero} % Author
+\author{Fabián Romero } % Author
 
-\publisher{Posgrado en Ciencia e Ingeniería de la Computación} % Publisher
+\publisher{Posgrado en Ciencia e Ingeniería de la Computación\\
+Supervisor: Francisco Hernández Quiroz} % Publisher
 
 %----------------------------------------------------------------------------------------
 
@@ -203,7 +204,11 @@ Copyright \copyright\ \the\year\ \thanklessauthor
 %----------------------------------------------------------------------------------------
 %	INTRODUCTION
 %----------------------------------------------------------------------------------------
-\chapter{Summary} 
+\chapter{Synopsis}
+
+The objective of this work is to study the topological model for distributed computing from a formal logic perspective by mapping those topological models to Kripke frames and then, by applying model checking and other techniques. Specifically targeting consensus problem as a subject of study.
+
+\chapter{Introduction} 
 
 A distributed system \ds can be defined operationally as a collection of 
 processes executing a protocol (algorithm) within a communicating environment.
@@ -226,16 +231,26 @@ Gaining from a large set of topology results that can be immediately applied, an
 he argues. Our minds are much better equipped for analyzing static entities even when they are very complex than for dynamic ones even if they are sparse.
 
 \ds have been studied from many areas and multiple angles, in particular, it has been 
-covered on many diferent logic aproaches, epistemic logic \cite{Meyer:1995} is a natural formulation for 
-them, there's a great tradition on the field of artificial inteligence associating several logics to the study of \ds \cite{HandbookAI1}, and many other logics as multi modal logic \cite{Hintikka1962}, dynamic epistemic logic \cite{Ditmarsch:2007}, among many others.
-\newpage
+covered on many different logic approaches, epistemic logic \cite{Meyer:1995} is a natural formulation for 
+them, there's a great tradition on the field of artificial intelligence associating several logics to the study of \ds \cite{HandbookAI1}, and many other logics as multi modal logic \cite{Hintikka1962}, dynamic epistemic logic \cite{Ditmarsch:2007}, among many others.
 
 Those works are intended to comprehend communications, epistemic development and 
 behavior of such systems from an operational point of view.
 
-The objective of this work, is to mimic the aproach taken by Herlihy, first, by mapping those topological objects into Kripke semantics. Then, by studying a especific problem in the light of logical systems. The problem to study will be the consensus problem on the wait free shared memory model (\sh).
+\chapter{General Objective}
+
+The objective of this work, is to mimic the approach taken by Herlihy but using formal logic as model, first, by mapping topological descriptions of {\ds} into Kripke frames. Then, by studying a specific problem in the light of logical systems. The problem to study will be the consensus problem on the wait free shared memory model (\sh).
+
+\chapter{Specific Objectives}
+
+
+\begin{itemize}[topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex]
+\item Describe a way to map topological models to Kripke frames.
+\item Study which properties such frames will have.
+\end{itemize}
 
 %
+
 %Ever since Herlihy  introduced it. The topological characterization for distributed computing has gained significant traction. And has become a widely used technique for the analysis of distributed systems. In which, a distributed system is regarded as a collection of processes executing a protocol within a communicating environment. Mapping the specifics of such processes and their environment to a topological structure.\\
 
 %Such view it is completely compatible with the studies of many logical systems. For example, epistemic logic is a natural formulation of it. Many other logical systems map the assumptions of knowledge of communicating agents. Such as multi modal logic, dynamic logic etc.
@@ -251,7 +266,7 @@ The objective of this work, is to mimic the aproach taken by Herlihy, first, by 
 
 Very early on the study of distributed systems, Leslie Lamport noticed an important trait of them: There is a partial order on the set of all system events. \cite{Lamport78}. He also show how to find a total order for a specific model, but this is not limited to such model, the {\bf order-extension principle} states that a total order can be found as a linear extension for any partial order.\\
 
-Lets consider $n$ identified processes comunicating in a shared memory enviromnent running a wait-free protocol. Such as that described on \cite{Herlihy1999}.\\
+Lets consider $n$ identified processes communicating in a shared memory environment running a wait-free protocol. Such as that described on \cite{Herlihy1999}.\\
 
 \begin{lstlisting}[mathescape,language=json,firstnumber=1,basicstyle=\footnotesize,commentstyle=\color{gray},caption={Normal form wait free protocol},label=amb]
 --code for process i 
@@ -263,14 +278,14 @@ return $\displaystyle \delta $(local_state)
 \end{lstlisting}
 
 So, the partial order induced by such algorithm, says if $a \ge b$ in time, meaning $b$ updated the shared memory not latter than $a$, also can be interpreted as $a$ ``knows'' the state of $b$. \\
-Observe that this simple fact will have a deep impact when we translate this model to a logic system, because it means we can derive epistemic results from the adecuate accesibility semantics.\\
-It is easy to fing a total order in this case, as the time (in the clock of the shared memory) when writings were done.
+Observe that this simple fact will have a deep impact when we translate this model to a logic system, because it means we can derive epistemic results from the adequate accessibility semantics.\\
+It is easy to find a total order in this case, as the time (in the clock of the shared memory) when writings were done.
 
 \subsection{Partial Orders}
 
 {\bf Definitions}
 \begin{itemize}
-\item[{\bf poset}] A partially ordered set (a.k.a poset) is a pair $(P,\ge)$ where $P$ is a finite set and $\ge$ is a reflexive, antisymmetric and transitive relation over $P$.
+\item[{\bf poset}] A partially ordered set (a.k.a poset) is a pair $(P,\ge)$ where $P$ is a finite set and $\ge$ is a reflexive, anti symmetric and transitive relation over $P$.
 \item[{\bf linear extension}] Given a poset $(P,\ge)$ let $\lambda$ be a bijection from $P$ to $\{1,...,|P|\}$ such that $\forall i,j$ if $|P| \ge j > i \ge 1$ then $\lambda(j) > \lambda(i)$. $\lambda$ is a linear extension
 \item[{\bf order polytope}] The following linear constraints:\\
 $$
@@ -284,12 +299,12 @@ Define a polytope $O(P)$ in $ \mathbb{R}^{|P|} $, such polytope is called order 
 
 \section{The Topological Structure of Asynchronous Computability}
 
-Once we have stablished that fact, if we consider all posible orderings of events under \sh, we know by symmetry that they are manifolds.\\
+Once we have established that fact, if we consider all possible orderings of events under \sh, we know by symmetry that they are manifolds.\\
 
 The interpretation is the following:\\
 Every element of $P$ is a process, every simplex where it is contained is the {\bf linear extension} of all process contained on that simplex.
 
-Let see for example, the case of 3 processes and a single round of comunication.\\
+Let see for example, the case of 3 processes and a single round of communication.\\
 
 
 All total orders (possible executions):
@@ -399,9 +414,9 @@ Remarks
 \end{itemize}
 
 
-\subsection{Kripke structures}
+\section{Kripke structures}
 
-\subsubsection{Definition}\\
+\section{Definition}
 
 A multi modal Kripke structure is a pair $K = (W, \rightarrow)$ where $W$ is a set of worlds and $\rightarrow$ is a family of relations $\rightarrow_i \subseteq W \times W$ indexed by a fixed set $I$.\\
 
@@ -416,16 +431,16 @@ $M=(W,\rightarrow,P,V)$ at some $w\in W$ as follows:
 \item $(M,w) \models \ \langle i \rangle \phi$ iff there exists $w'\in W$ such that:\\ $w\rightarrow_i w'$ and  $(M,w') \models \ \phi$
 \end{itemize}
 
-We will use the total order as  propositional constants, for the example we are dealing with, posible executions are here $W$, let's see accesibility for agent $a$ 
+We will use the total order as  propositional constants, for the example we are dealing with, possible executions are here $W$, let's see accesibility for agent $a$ 
 
 \begin{tikzpicture}
 \node (c)[circle,draw] at (0,0) {a=b=c};
 \foreach \angle/\label in {0/{$b>a>c$},30/{$b>a=c$},60/{$b>c>a$},90/{$c=b>a$},120/{$c>b>a$},150/{$c>a=b$},180/{$c>a>b$},210/{$c=a>b$},240/{$a>c>b$},270/{$c>a>b$},300/{$a>b=c$},330/{$a>b>c$}}
 \node[circle,draw] (\angle) at (\angle:5) {\label};
 \foreach \node/\to in {210/240,210/270,210/300,210/330,240/300,240/330,270/330,60/90,90/120,120/60,0/30,150/180,240/270,270/300,300/330}
-\draw[red] (\node)  -- (\to)node;%[pos=0.5,sloped,above];// {{\color{red}$a$}};
+\draw[red] (\node)  -- (\to)node {};%[pos=0.5,sloped,above];// {{\color{red}$a$}};
 \foreach \node in {210,240,...,330}
-\draw[red] (c)  -- (\node)node;%[pos=0.5,sloped,above] {{\color{red}$a$}};
+\draw[red] (c)  -- (\node)node {};%[pos=0.5,sloped,above] {{\color{red}$a$}};
 \end{tikzpicture}
 
 We can see all three agents simultaneously:\\
@@ -435,21 +450,21 @@ We can see all three agents simultaneously:\\
 \foreach \angle/\label in {0/{$b>a>c$},30/{$b>a=c$},60/{$b>c>a$},90/{$c=b>a$},120/{$c>b>a$},150/{$c>a=b$},180/{$c>a>b$},210/{$c=a>b$},240/{$a>c>b$},270/{$c>a>b$},300/{$a>b=c$},330/{$a>b>c$}}
 \node[circle,draw] (\angle) at (\angle:5) {\label};
 \foreach \node/\to in {90/120,90/150,90/180,90/210,120/150,120/180,120/210,150/180,150/210,180/210,300/330,330/0,300/0,30/60,240/270}
-\draw[green,dashed,ultra thick] (\node)  to  (\to)node;%[pos=0.5,sloped,above];// {{\color{red}$a$}};
+\draw[green,dashed,ultra thick] (\node)  to  (\to)node {};%[pos=0.5,sloped,above];// {{\color{red}$a$}};
 \foreach \node/\to in {330/0,330/30,330/60,330/90,0/30,0/60,0/90,30/60,30/90,60/90,180/210,180/240,210/240,120/150,270/300}
-\draw[blue,dashdotted,ultra thick] (\node)  to  (\to)node;%[pos=0.5,sloped,above];// {{\color{red}$a$}};
+\draw[blue,dashdotted,ultra thick] (\node)  to  (\to)node {};%[pos=0.5,sloped,above];// {{\color{red}$a$}};
 \foreach \node/\to in {210/240,210/270,210/300,210/330,240/300,240/330,270/330,60/90,90/120,120/60,0/30,150/180,240/270,270/300,300/330}
-\draw[red,dotted,ultra thick] (\node)  -- (\to)node;%[pos=0.5,sloped,above];// {{\color{red}$a$}};
+\draw[red,dotted,ultra thick] (\node)  -- (\to)node {};%[pos=0.5,sloped,above];// {{\color{red}$a$}};
 \foreach \node in {330,0,30,60,90}
-\draw[blue,dashdotted,ultra thick] (c)  -- (\node)node;%[pos=0.5,sloped,above] {{\color{red}$a$}};
+\draw[blue,dashdotted,ultra thick] (c)  -- (\node)node {};%[pos=0.5,sloped,above] {{\color{red}$a$}};
 \foreach \node in {210,240,...,330}
-\draw[red,dotted,ultra thick] (c)  -- (\node)node;%[pos=0.5,sloped,above] {{\color{red}$a$}};
+\draw[red,dotted,ultra thick] (c)  -- (\node)node {};%[pos=0.5,sloped,above] {{\color{red}$a$}};
 \foreach \node in {90,120,...,210}
-\draw[green,dashed,ultra thick] (c)  -- (\node)node;%[pos=0.5,sloped,above] {{\color{red}$a$}};
+\draw[green,dashed,ultra thick] (c)  -- (\node)node {};%[pos=0.5,sloped,above] {{\color{red}$a$}};
 \end{tikzpicture}
 
 
-\subsections{Remarks}
+\subsection{Remarks}
 
 \begin{itemize}[topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex]
 \item transitivity.
@@ -457,9 +472,6 @@ We can see all three agents simultaneously:\\
 \item every world has access to another world for every modality.
 \end{itemize}
 
-
-
-\section{Specific objectives}
 
 %----------------------------------------------------------------------------------------
 
