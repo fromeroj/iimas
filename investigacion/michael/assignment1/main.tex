@@ -1,0 +1,86 @@
+\documentclass{article}
+\usepackage{listings}
+\usepackage[utf8]{inputenc}
+\usepackage{ amssymb }
+\usepackage{amsfonts}
+\usepackage{cite}
+\usepackage{graphicx}
+\usepackage{amsthm}
+\usepackage[table]{xcolor}
+
+% Theorem Styles
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+% Definition Styles
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}{Example}[section]
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+\title{Sperner Lema, from a kripke model's perspective}
+\author{Fabian Romero}
+\date{}
+\begin{document}
+\maketitle
+
+\abstract{This is a preeliminary effort to describe Sperner lemma }
+
+\section{One dimentional Sperner's lemma }
+
+On the case of dimention one of the weak Sperner lemma can be stated as follow.
+
+\begin{theorem}[One dimentional weak Sperner's lemma]
+    Given an interval on the real line which has been subdivided into $k-1$ subintervals, and the $k$ vertices labeled with either $0$ or $1$, if the boundary points have different label, there is one interval having different labels on its endpoints.\\
+\end{theorem}
+
+
+
+The strong Sperner lemma is almost identical, changing ``there is one interval'' for ``there is a odd number of intervals''.
+
+
+
+
+
+Sperner's lema is a fixed point theorem.
+
+Sperner's lemma states that every Sperner coloring (described below) of a triangulation of an n-dimensional simplex contains a cell colored with a complete set of colors
+
+asdlaskdj asdk  \cite{Huang_onthe} sdfsdf
+
+
+\section{Conceptos Básicos}
+\begin{enumerate}
+  
+\item[\bf{Problema 1}] Define claramente que es un sistema complejo.\\
+\item[\bf{Respuesta}] Los sistemas complejos son sistemas que exhiben varias características  Incluyendo: \\
+\begin{itemize}
+\item{\bf Ciclos de retroalimentación} Donde los cambios de una variable resultan en una amplificación (retroalimentación positiva) ó una amortiguación (retroalimentación negativa).
+\item{\bf Interdependencia}  Muchas variables fuertemente interdependientes, con múltiples entradas contribuyendo a las salidas observadas. 
+\item{\bf Caos, Autosemejanza} Extrema sensibilidad a las condiciones iniciales, geometría fractal y criticidad auto-organizada. 
+\item{\bf Metaestabilidad} Múltiples meta estados estacionarios, donde un pequeño cambio en términos pueden precipitar un cambio ilimitado en el sistema.
+\item{\bf Irregularidad}  Distribución no gaussiana de los resultados, donde salidas que estan muy lejos del promedio son muy frecuentes.
+\end{itemize}
+
+\item[\bf{Problema 2}] Describe 3 ejemplos de sistemas complejos, explicando claramente por
+qué sería útil considerarlos como complejos. Los ejemplos deben ser ejemplos de la vida diaria, no los clásicos que hay en toda la bibliografía.
+\item[\bf{Respuesta}]
+
+\begin{enumerate}
+\item {\bf Comportamiento del mercado.}
+El sistema económico es un sistema altamente correlacionado, donde los precios de los bienes están influenciados por bienes alternativos, sustitutos, por las tendencias, modas, etc.
+Esto crea un sistema rico en interacciones y fuertemente codependiente.
+
+\item {\bf Influencia social.}
+Se conoce que hay ``lideres de opinion'', ``seguidores'', etc. Por la literatura del Marketing, aunque no solo restringido a los productos, sino a todo tipo de ideas, politicas, sociales, etc. Es un fenomeno muy complejo, y su estudio podría dar luz en temas de gran interes social y político.
+
+\end{enumerate}
+\end{enumerate}
+\bibliographystyle{IEEEtran}
+\bibliography{IEEEabrv,main}
+%\bibliography{TareaExamen}
+%\bibliographystyle{plain}
+\end{document}
+
