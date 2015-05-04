@@ -19,9 +19,9 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%----------------------------------------------------------------------------------------
+%--------------------------------------------------------------------------
 %	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
-%----------------------------------------------------------------------------------------
+%------------------------------------------------------------------------
 
 \documentclass[oneside,openany]{tufte-book} % Use the tufte-book class which in turn uses the tufte-common class
 
@@ -139,7 +139,13 @@
 
 \author{Fabián Romero } % Author
 
-\publisher{Posgrado en Ciencia e Ingeniería de la Computación\\
+\publisher{
+  A thesis submitted in partial fulfillment \\
+  of the requirements for the degree of\\
+  Master of Computer Sciences \\
+  University of Mexico (UNAM)
+
+  Posgrado en Ciencia e Ingeniería de la Computación\\
 Supervisor: Francisco Hernández Quiroz} % Publisher
 
 %----------------------------------------------------------------------------------------
@@ -196,7 +202,7 @@ Copyright \copyright\ \the\year\ \thanklessauthor
 
 \par Licensed under the Apache License, Version 2.0 (the ``License''); you may not use this file except in compliance with the License. You may obtain a copy of the License at \url{http://www.apache.org/licenses/LICENSE-2.0}. Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \smallcaps{``AS IS'' BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND}, either express or implied. See the License for the specific language governing permissions and limitations under the License.\index{license}
 
-\end{fullwidth}
+\end{fullwidth} 
 
 %----------------------------------------------------------------------------------------
 \tableofcontents % Print the table of contents
@@ -204,26 +210,28 @@ Copyright \copyright\ \the\year\ \thanklessauthor
 %----------------------------------------------------------------------------------------
 %	INTRODUCTION
 %----------------------------------------------------------------------------------------
-\chapter{Synopsis}
+\chapter{Abstract}
 
-The objective of this work is to study the topological model for distributed computing from a formal logic perspective by mapping those topological models to Kripke frames and then, by applying model checking and other techniques. Specifically targeting consensus problem as a subject of study.
+
+The objective of this work is to study the topological model for distributed computing from a formal logic perspective by mapping those topological models to Kripke frames and then study then by applying model checking and other techniques. Specifically targeting consensus problem as a subject of study.
 
 \chapter{Introduction} 
 
-A distributed system \ds can be defined operationally as a collection of 
-processes executing a protocol (algorithm) within a communicating environment.
+Today, large data processing facilities provide significant computing capabilities. Being able to orchestrate them in a coherent way will unleash enourmus computing power currently underutilized. In order to do so, we need more comprehensive models for \ds. There are new and exiting methods which allow to study \ds which provide new ways to explore them theoretically and even create effectively computations to find relevant properties.\\
 
-Studying \ds operationally has shown to be a complex task, even when the number 
-of processes and connections is limited and/or following simple patterns. 
+A distributed system \ds can be defined operationally as a collection of processes executing a protocol (algorithm) within a communicating environment.
+
+Studying \ds operationally has shown to be a complex task, even when the number of processes and connections is limited and/or following simple patterns. 
 It's complexity arises from the number of possible interactions between their 
 elements and the dynamics of such interactions.\\
 
+For example, internet services are higly complex environments containing hundreds, thousands or even millions of components, all of them interacting, the events of the communications and changes of state yields a combinatorial explosion.
+
 On it's seminal paper \cite{Herlihy1999} Herlihy  introduced a characterization of \ds, 
 mapping the specifics of such protocols and environments to a topological structure.
-In this combinatorial description all possible events on the dynamic of the interactions 
-are represented simultaneously on a single topological structure.
+In this combinatorial description all possible events on the of the interactions dynamics  are represented {\bf simultaneously} on a single topological structure.\\
 Such approach is a deliberated trade off. Interchanging one model with complex 
-dynamics and relatively simple elements for other with complex elements but static.
+dynamics for other with far more elements in a complex entanglement. But quite importantly, this model is static.\\
 
 This technique for the analysis of \ds has gained significant traction 
 and has become widely used.
@@ -231,11 +239,13 @@ Gaining from a large set of topology results that can be immediately applied, an
 he argues. Our minds are much better equipped for analyzing static entities even when they are very complex than for dynamic ones even if they are sparse.
 
 \ds have been studied from many areas and multiple angles, in particular, it has been 
-covered on many different logic approaches, epistemic logic \cite{Meyer:1995} is a natural formulation for 
-them, there's a great tradition on the field of artificial intelligence associating several logics to the study of \ds \cite{HandbookAI1}, and many other logics as multi modal logic \cite{Hintikka1962}, dynamic epistemic logic \cite{Ditmarsch:2007}, among many others.
+covered on many different logic approaches, epistemic logic \cite{Meyer:1995} is a natural formulation for them, there's a great tradition on the field of artificial intelligence associating several logics to the study of \ds \cite{HandbookAI1}, and many other logics as multi modal logic \cite{Hintikka1962}, dynamic epistemic logic \cite{Ditmarsch:2007}, among many others.
 
-Those works are intended to comprehend communications, epistemic development and 
-behavior of such systems from an operational point of view.
+Those works are intended to comprehend communications, epistemic development and behavior of such systems from an operational point of view.\\
+
+This work has a different intention, the main idea is to preserve the spirit of Herlihy's work by creating a large static structure representing all possible states and transitions 
+
+
 
 \chapter{General Objective}
 
