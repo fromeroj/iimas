@@ -1,0 +1,41 @@
+A distributed system (DS) can be defined as a collection of processes executing 
+a protocol (algorithm) within a communicating environment.
+
+Studying such operational description to find properties on DS has shown to be 
+a complex task, even when the number of processes and connections is limited 
+and/or following simple patterns.
+
+It's complexity comes for the number of possible interactions of their elements 
+and the dynamics of such interactions.
+
+On it's seminal paper Herlihy introduced a characterization of DS, mapping the 
+specifics of such protocols and environments to a topological structure.
+ 
+This is a combinatorial description, because all possible events on the dynamic 
+of the interactions are represented simultaneously on a single topological structure.
+
+Such approach it is a deliberated trade off. Interchanging one model with complex 
+dynamics and relatively simple elements for other with complex elements but static.
+
+This technique for the analysis of distributed systems has gained significant traction 
+and has become a widely used.
+
+Gaining from a large set of topology results that can be immediately applied, and, as 
+he argues. 
+
+Our minds are much better equipped for analyzing static entities even when they are 
+very complex than for dynamic ones even if they are sparse.
+
+(DS) have been studied from many areas and multiple angles, in particular, it has been covered
+on many diferent logic aproaches, epistemic logic is a natural formulation for them, there's a 
+great tradition on the field of artificial inteligence associating several logics to the study
+of (DS), and many other logics as multi modal logic, dynamic logic, etc. 
+
+Many of those works are intended to comprehend communications, epistemic development and 
+behavior of such systems from an operational point of view.
+
+In this work, we intend to mimic the aproach taken by Herlihy, and to map their topological models
+to kripke structures, the computational power of those processes to axioms, semantics and inference 
+rules of a formal logic system. And to transform some of the results to logical equivalents, in order 
+to develop techniques, methods and insight that can help to solve other problems or to be able to 
+find other characteristics on the resulting models, such as completion, consistency, decidability, etc.
