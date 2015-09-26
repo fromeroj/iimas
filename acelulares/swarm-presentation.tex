@@ -1,0 +1,145 @@
+\documentclass[hyperref={pdfpagelabels=false}]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage{mathalfa}
+% By  using hyperref={pdfpagelabels=false} you get rid off:
+% Package hyperref Warning: Option `pdfpagelabels' is turned off
+% (hyperref)                because \thepage is undefined.
+% Hyperref stopped early
+%
+
+\usepackage{lmodern}
+% Using lmondern and you get rid off this:
+% LaTeX Font Warning: Font shape `OT1/cmss/m/n' in size <4> not available
+% (Font)              size <5> substituted on input line 22.
+% LaTeX Font Warning: Size substitutions with differences
+% (Font)              up to 1.0pt have occurred.
+%
+
+% If \titel{…} \author{…} come after \begin{document}
+% you get the following warnig:
+% Package hyperref Warning: Option `pdfauthor' has already been used,
+% (hyperref) ...
+% So it is here before \begin{document}
+
+\usetheme{AnnArbor}
+\usecolortheme{beaver}
+\title{ Verifying emergent properties of swarms }
+\author{Panagiotis Kouvaros and Alessio Lomuscio }
+\date{}
+% additional usepackage{beamerthemeshadow} is used
+
+%\usepackage{beamerthemeshadow}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\section{Introduction}
+
+\subsection{Introduction}
+\begin{frame}
+\frametitle{Swarms}
+\begin{itemize}
+\item Many behaviourally identical agents
+\item some may fail
+\item focus on {\it emergent behaviour}.\\
+  Trait of the swarm as a whole possibly not predictablefrom the behaviour of the individual agents (herd behaviour, flocking, etc.)
+\item establish a lower bound on the number of agents
+\item sound and complete!
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Emergent behaviour}
+\begin{itemize}
+
+\item many behaviourally identical agents
+\item some may fail
+\item we focus on emergent behaviour
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Assumptions}
+\begin{itemize}
+\item discrete arena in two spacial dimensions (+ time)
+\item limited signal reach
+\item can be extended to thee spacial dimentions
+\item arena with periodic boundaries
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{ Model }
+    $$\mathcal{R}(\alpha , \beta ) = (L, I, Act, P, t)$$
+\begin{itemize}
+\item[$\alpha$] arena size
+\item[$\beta$] signal reach
+\item[L] $\{1,..,\alpha\} \times \{1,..,\alpha\} \times S$
+\item[]  neighbourhood - Chebyshev distance
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{  Chebyshev distance }
+Chebyshev (discrete) distance with periodic boundaries.
+\includegraphics[width=200px]{chev.png}
+\end{frame}
+
+\begin{frame}
+  \frametitle{ Model }
+Protocol (Action on a local state):
+$$P : L \rightarrow \mathcal{P}(Act)$$
+Transition function:
+$$ t : L \times L_E \times Act \times \mathcal{P}(Act) \times Act_E \rightarrow L $$\\
+Takes agent's state, environment's state, agent, neighbours and environment actions to determine next agent state.
+\end{frame}
+
+\section{ Swarm Systems}
+\begin{frame}
+  \frametitle{ Swarm System }
+  Environment:
+  $$ \mathcal{E} = (L_E, I_E, Act_E. P_E, t_E)$$
+  No empty set $I_E$ initial states, states $L_E$ with $I_E  \subseteq L_E$
+, and a nonempty set of actions ActE. The environment
+E also includes a protocol $PE : LE \rightarrow P(ActE)$,
+and a transition function $$ t_E : L_E \times Act_E \times P(Act) \rightarrow L_E$$
+Swarm System:
+$$S = \langle \mathcal{R,E,V} \rangle$$
+template agent, template environment and a labeling function $\mathcal{V}: L \times L_E  \rightarrow \mathcal{P}(AP)$ to a set $AP$ of atomic propositions.
+\end{frame}
+
+\begin{frame}
+  \frametitle{ Swarm System }
+  for $n>0$ the concrete swarm $S(n)$ will encode precisely n agents interacting with the environment.\\
+Let $\{1,...,n\}$ the set of the concrete agents in
+$S(n)$. For any $i \in \{1,...,n\}$, the i-th  agent $R_i =(L_i,I_i,Act_i,P_i,t_i)$ is\\
+$L\i= L \times \{i\}$,$I=i=I \times  \{i\}$, $Act_i=Act$, $P_i$ described as $a \in P_i(l,i)$ iff $a \in P(l)$ and $t_i((l,i),l_E,a,A,a_E=(l',i)$ iff $t(l,a_E,A,a_E)=l'$\\
+Basically, an indexation by the agent's number.\\
+A global state\\ $$ g = (l_1,..., l_n, l_E)$$
+is a snapshot of the environment and all the agents.\\
+denote $\mathfrak{N}(g,i)$ the set of agents in the neighbourhood of i when $S(n)$ is at a global state g.
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{ Global transition relation }
+  $ \mathcal{T}(n) \subseteq G(n) \times ACT(n) \times G(n)$ on a set $G(n)$ of concrete global states on $S(n)$ as $(g,\bar{a},g')$ in $\mathcal{T}(n)$ iff
+  $\bar{a}.E \in P_E(g.E and t_E(g.E,bar{a}.E,A)) = g'.E$ with $A=\{\bar{a}.i | i \in \{1,...,n\}\}$
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{  }
+\end{frame}
+
+\begin{frame}
+  \frametitle{  }
+\end{frame}
+
+\end{document}
