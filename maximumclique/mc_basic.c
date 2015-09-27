@@ -28,7 +28,7 @@ uint64_t* graph;
 uint64_t* solution;  /* In the same adjaceny list format */
 uint64_t* all_off;    /* This is an adjacency list with all bits set */
 uint64_t* all_on;     /* This is an adjacency list with all bits unset */
-
+int nodes=0;
 /*
  *  Note: clock functions are for time keeping nothing especific for MC problem
  */
@@ -58,7 +58,8 @@ float stop_clock(float startTime){
  * Parameters
  * a,b  -- pointers to the adjacency lists.
  * Returns.
- * a pointer to a NEWLY ALLOCATED adjacency list.       */
+ * a pointer to a NEWLY ALLOCATED adjacency list.
+ * the client is expected to clean up for this         */
 uint64_t* intersection(uint64_t* a,uint64_t* b){
   int i;
   uint64_t* c=(uint64_t*)calloc(words, sizeof(uint64_t));
@@ -183,7 +184,7 @@ void read_graph(char* fileName){
       sscanf(linebuf, "%s %s %d  %d", p, edge, &size, &edges );
       words=((size/64)+1);
       if(strcmp(edge,"edge")==0){
-	printf("Initializing graph with %d words of size %d\n",size+1,words);
+	printf("Initializing graph with %d rows of %d words each\n",size+1,words);
 	graph=(uint64_t*)calloc((size+1)*words, sizeof(uint64_t));
       }
     }
@@ -241,29 +242,50 @@ void saveSolution(uint64_t* c){
   free(solution);
   solution=intersection(all_on,c);
   max_size=popcount(c);
-  printf("Solucion actual: ");
-  printSet(c,1);
+  //printf("Solucion actual: ");
+  //printSet(c,1);
 }
 
-void expand(uint64_t* c,uint64_t* p){
-  int i;
-  //  printf("[[Expand]] p: %s c: %s)\n",printSet(p),printSet(c));
-  //  (&operations)+;
-  for(i=popcount(p);i>0;i--){
-    if(popcount(c)+popcount(p)<=max_size)return;
+int* indexes(uint64_t* p,int pp){
+  int i,j=0;
+  int* r;
+  r=calloc(pp, sizeof(int));
+  for(i=1;i<=size;i++){
+    if(get_bit(p,i)){
+      r[j]=i;
+      j++;
+      if(j==pp)break;
+    }
+  }
+  return r;
+}
+
+void expand(uint64_t* c,uint64_t* p,int pc,int pp){
+  int i,pnp;
+  //  printSet(p,1);
+  //printf("expand %d \n",pp);
+  nodes++;
+  //int* ix=indexes(p,pp);
+  for(i=0;i<pp;i++)
+    //    printf("%d,",ix[i]);
+    //printf("\n");
+  for(i=pp;i>0;i--){
+    if(pc+pp<=max_size)return;
+    //int v=ix[i-1];//getIndexNthBit(p,i);
     int v=getIndexNthBit(p,i);
-    set_bit(c,v,1);
+    //    printf("+++++ %d: (%d,%d) +++++\n",i,v,ix[i-1]);
+    set_bit(c,v,1);pc++;
     uint64_t* np=intersection(p,nbhd(v));
-    //    printf("adding v:%d, Nbhd v:%s ->np:%s \n",v,printSet(nbhd(v)),printSet(np));
-    if(popcount(np)==0 && (popcount(c)>=max_size) )saveSolution(c);
-    if(popcount(np)>0){
-      expand(c,np);
+    pnp=popcount(np);
+    if(pnp==0 && ((pc+1)>=max_size) )saveSolution(c);
+    if(pnp>0){
+      expand(c,np,pc,pnp);
     }
     free(np);
-    set_bit(c,v,0);
-    set_bit(p,v,0);
-    //printf("[[Retract %d]] p: %s c: %s)\n",v,printSet(p),printSet(c));
+    set_bit(c,v,0);pc--;
+    set_bit(p,v,0);pp--;
   }
+  //free(ix);
 }
 
 void search(){
@@ -274,8 +296,9 @@ void search(){
   printSet(c,0);
   printf("  p:");
   printSet(c,1);
-  expand(c,p);
+  expand(c,p,0,size);
 }
+
 
 int main ( int argc, char *argv[] ){
   int i;
@@ -284,7 +307,6 @@ int main ( int argc, char *argv[] ){
   }else{
     float start=start_clock();
     read_graph(argv[1]);
-    //print_graph();
     printf("size: %d\n",size);
     all_off=(uint64_t*)calloc(words, sizeof(uint64_t));
     all_on=(uint64_t*)calloc(words, sizeof(uint64_t));
@@ -294,8 +316,8 @@ int main ( int argc, char *argv[] ){
     int c =popcount( solution );
     printf("solution %"PRIx64" \n %d elements\n",solution[0],c);
     printSet(solution,1);
-    printf("solution %"PRIx64" \n %d elements\n",solution[0],c);
-    save_pixmap();
+    printf("solution %"PRIx64" \n %d elements %d nodes\n",solution[0],c,nodes);
+    // save_pixmap();
     stop_clock(start);
   }
   return 0;
