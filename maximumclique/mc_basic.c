@@ -207,7 +207,7 @@ void printSet(uint64_t* c,int newLine){
   printf(":");
   for(i=1;i<=size;i++){
     if((c[i/64] & ONE<<(i%64))>0){
-      printf("%d,",i);
+      printf("%d ",i);
     }
   }
   printf("}");
@@ -239,9 +239,12 @@ int getIndexNthBit(uint64_t* c,int n){
 }
 
 void saveSolution(uint64_t* c){
+  int pcc=popcount(c);
   free(solution);
-  solution=intersection(all_on,c);
-  max_size=popcount(c);
+  solution=intersection(c,c);
+  max_size=pcc;
+  printf("Current sol: [%d]",max_size);
+  printSet(c,1);
 }
 
 int* indexes(uint64_t* p,int pp){
@@ -267,7 +270,7 @@ void expand(uint64_t* c,uint64_t* p,int c_count,int p_count){
     set_bit(c,v,1);c_count++;
     uint64_t* np=intersection(p,nbhd(v));
     pnp=popcount(np);
-    if(pnp==0 && ((c_count+1)>=max_size) )saveSolution(c);
+    if(pnp==0 && ((c_count+1)>max_size) )saveSolution(c);
     if(pnp>0){
       expand(c,np,c_count,pnp);
     }
@@ -281,10 +284,6 @@ void search(){
   uint64_t* c=intersection(all_off,all_off);   /* Using intersection for copy */
   uint64_t* p=intersection(all_on,all_on);
   p[0]=(p[0]>>1)<<1;
-  printf("Start search: c:");
-  printSet(c,0);
-  printf("  p:");
-  printSet(p,1);
   expand(c,p,0,size);
 }
 

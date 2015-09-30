@@ -152,9 +152,28 @@ void print_graph(uint64_t* g){
   }
 }
 
+void save_pixmap(char* fileName,uint64_t* g){
+  if(g==NULL)g=graph;
+  int i,j;
+  FILE *fp = fopen(fileName, "w");
+  if (fp == NULL) exit(1);
+  fprintf(fp, "/* XPM */\nstatic char * XFACE[] = {\n\"%d %d 3 1\",\n",size,size);
+  fprintf(fp, "\n\"w c #FFFFFF\",\n\"g c #555555\",\n\"r c #FF0000\",\n");
+  for(i=1;i<=size;i++){
+    putc('"',fp);
+    for(j=1;j<=size;j++)putc(has_edge(i,j,g)?'g':'w',fp);
+    putc('"',fp);
+    if(i<size)putc(',',fp);
+    putc('\n',fp);
+  }
+    putc('}',fp);
+    putc(';',fp);
+  fclose(fp);
+}
+
 /* save_pixmap -- utility function that saves an image on xpm format of the
  *  matrix of adjacency the graph on the file '/tmp/sol.xpm'                    */
-void save_pixmap(){
+void save_solution_pixmap(){
   int i,j;
   char c;
   FILE *fp = fopen("/tmp/sol.xpm", "w");
@@ -222,7 +241,7 @@ void printSet(uint64_t* c,int newLine){
   printf(":");
   for(i=1;i<=size;i++){
     if((c[i/64] & ONE<<(i%64))>0){
-      printf("%d,",i);
+      printf("%d ",i);
     }
   }
   printf("}");
@@ -236,7 +255,7 @@ int popcount(uint64_t* c){
   return count;
 }
 
-int getIndexNthBit(uint64_t* c,int n){
+int get_index_bit_n(uint64_t* c,int n){
   if(n>size) return -1;
   int i,j,count=0;
   for(i=0;i<words;i++){
@@ -253,9 +272,18 @@ int getIndexNthBit(uint64_t* c,int n){
   return -1;
 }
 
-void saveSolution(uint64_t* c){
+void save_solution(uint64_t* c){
+  int i,v;
   free(solution);
-  solution=intersection(all_on,c);
+  solution=intersection(all_off,all_off);
+  for(i=1;i<=size;i++){
+    v=vertices[i].index;
+    if(get_bit(c,i)){
+      solution[v/64]|=ONE<<(v%64);
+      printf("%d ",v);
+    }
+  }
+  printf(" size %d\n",popcount(c));
   max_size=popcount(c);
 }
 
@@ -281,7 +309,7 @@ void bb_colour(uint64_t* p,int* u,int* colour,int p_count){
     uint64_t* q=intersection(cpp,cpp);
     q_count=cpp_count;
     while(q_count){
-      v=getIndexNthBit(q,1);
+      v=get_index_bit_n(q,1); //   use ffsll(q) to speed up.
       set_bit(cpp,v,0);cpp_count--;
       set_bit(q,v,0);
       for(j=0;j<words;j++)q[j]&=inverse_n[v*words+j];
@@ -292,11 +320,14 @@ void bb_colour(uint64_t* p,int* u,int* colour,int p_count){
     }
     free(q);
   }
+  //  for(i=0;i<=p_count;i++)printf("{%d,%d},",i,colour[i]);
+  //printf("\n");
+  //  printf("Colour class %d \n",colour_class);
   free(cpp);
 }
 
 
-void expand(uint64_t* c,uint64_t* p,int c_count,int p_count){
+void bb_max_clique(uint64_t* c,uint64_t* p,int c_count,int p_count){
   int i,j,pnp,v;
   uint64_t* new_p;
   nodes++;
@@ -311,8 +342,8 @@ void expand(uint64_t* c,uint64_t* p,int c_count,int p_count){
     set_bit(c,v,1);c_count++;
     for(j=0;j<words;j++)new_p[j]&=graph_n[v*words+j];
     pnp=popcount(new_p);
-    if(pnp==0 && c_count >= max_size) saveSolution(c);
-    if(pnp>0)expand(c,new_p,c_count,pnp);
+    if( (pnp==0) && (c_count > max_size)) save_solution(c);
+    if(pnp>0)bb_max_clique(c,new_p,c_count,pnp);
     set_bit(p,v,0);c_count--;
     set_bit(c,v,0);c_count--;
   }
@@ -331,10 +362,10 @@ int compare_vertices (const void * a, const void * b)
   int bi = ((const struct vertex*)b)->index;
   if(ai==0)return -1;
   if(bi==0)return 1;
-  if(ad<bd)return 1;
-  if(ad==bd && an<bn)return 1;
-  if(ad==bd && an==bn && ai<bi)return 1;
-  return -1;
+  if(ad<bd)return -1;
+  if(ad==bd && an<bn)return -1;
+  if(ad==bd && an==bn && ai<bi)return -1;
+  return 1;
 }
 
 void order_vertices(){
@@ -360,17 +391,16 @@ void order_vertices(){
     for(j=0;j<words;j++){
       inverse_n[i*words+j] = graph_n[i*words+j] ^ all_on[j];
     }
-    printf("\n");
     inverse_n[i*words]=(inverse_n[i*words]>>1)<<1;
-    printf("\n");
   }
-  printf("*************\n");
-  print_graph(NULL);
-  printf("*************\n");
-  print_graph(graph_n);
-  printf("*************\n");
-  print_graph(inverse_n);
-  printf("*************\n");
+
+  /*  for(i=0;i<size+1;i++){
+    printf("(%d,%d,%d)  ",vertices[i].index,vertices[i].degree,vertices[i].nbhd_degree);
+  }
+  printf("---------------\n");*/
+  save_pixmap("/tmp/g.xpm",graph);
+  save_pixmap("/tmp/n.xpm",graph_n);
+  save_pixmap("/tmp/inv_n.xpm",inverse_n);
 }
 
 void search(){
@@ -383,12 +413,8 @@ void search(){
   uint64_t* p=intersection(all_on,all_on);
   p[0]=(p[0]>>1)<<1;
   order_vertices();
-  expand(c,p,0,size);
+  bb_max_clique(c,p,0,size);
 }
-
-
-
-
 
 int main ( int argc, char *argv[] ){
   if ( argc != 2 ){
